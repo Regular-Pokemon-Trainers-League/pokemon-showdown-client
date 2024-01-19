@@ -8,10 +8,10 @@ $cleaned = false;
 
 foreach ($_COOKIE as $name => $value) {
 	if (strlen($value) > 3000) {
-		setcookie($name, '', time()-1000, '/', 'play.pokemonshowdown.com');
-		setcookie($name, '', time()-1000, '/', '.play.pokemonshowdown.com');
-		setcookie($name, '', time()-1000, '/', 'pokemonshowdown.com');
-		setcookie($name, '', time()-1000, '/', '.pokemonshowdown.com');
+		setcookie($name, '', time()-1000, '/', 'rptl.us');
+		setcookie($name, '', time()-1000, '/', '.rptl.us');
+		setcookie($name, '', time()-1000, '/', 'rptl.us');
+		setcookie($name, '', time()-1000, '/', '.rptl.us');
 		$cleaned = true;
 	}
 }
