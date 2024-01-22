@@ -111,6 +111,7 @@ compiledFiles += compiler.compileToFile(
 		'caches/pokemon-showdown/server/chat-formatter.ts',
 		'play.pokemonshowdown.com/data/text.js',
 		'play.pokemonshowdown.com/src/battle-text-parser.ts',
+		'play.pokemonshowdown.com/src/battle-revolution-announcer.ts',
 	],
 	'play.pokemonshowdown.com/js/battledata.js',
 	compileOpts
