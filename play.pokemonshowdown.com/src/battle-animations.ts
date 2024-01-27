@@ -1414,7 +1414,9 @@ export class BattleScene implements BattleSceneStub {
 		this.wait(100);
 		pokemon.sprite.updateStatbar(pokemon);
 		if (this.acceleration < 3) this.waitFor($effect);
-		this.announcer.announceAbility(result)
+
+		var duration = this.announcer.announceAbility(result)
+		this.wait(duration > 900 ? duration-900 : 0);
 	}
 	damageAnim(pokemon: Pokemon, damage: number | string) {
 		if (!this.animating) return;

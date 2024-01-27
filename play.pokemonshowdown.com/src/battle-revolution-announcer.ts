@@ -1,19 +1,29 @@
-import { timers } from 'jquery';
 import {BattleSound} from './battle-sound';
+import AnnounceDurations from 'announce'
 
 export class Announcer {
 
+    url = "https://rptl.us"
     constructor() {
 
     }
 
-    announceAbility(ability: String) {
+    announceAbility(ability: String): number {
+        var duration;
+        var path = 'audio/announcer';
+        var fileName = '';
+        var url = '';
         if (ability == 'Liquid Ooze')
         {
-            BattleSound.playEffect('audio/announcer/liquidooze.wav');
-            // setTimeout(this.announceAbility, 10000);
+            fileName = 'liquidooze.wav';
+            url = path + '/' + fileName;
         }
-        return;
+
+        BattleSound.playEffect(url);
+        duration = AnnounceDurations[fileName];
+        console.log(duration);
+        
+        return duration ? duration*1000 : 0; // Milliseconds
     }
 
 }

@@ -4,19 +4,20 @@
 const fs = require("fs");
 const path = require('path');
 const child_process = require("child_process");
+const { log } = require("console");
 
 const rootDir = path.resolve(__dirname, '..');
 process.chdir(rootDir);
 
-if (!fs.existsSync('caches/pokemon-showdown')) {
-	child_process.execSync('git clone https://github.com/Regular-Pokemon-Trainers-League/pokemon-showdown.git', {
-		cwd: 'caches',
-	});
-}
+// if (!fs.existsSync('caches/pokemon-showdown')) {
+// 	child_process.execSync('git clone https://github.com/Regular-Pokemon-Trainers-League/pokemon-showdown.git', {
+// 		cwd: 'caches',
+// 	});
+// }
 
-process.stdout.write("Syncing data from Git repository... ");
-child_process.execSync('git pull', {cwd: 'caches/pokemon-showdown'});
-child_process.execSync('npm run build', {cwd: 'caches/pokemon-showdown'});
+// process.stdout.write("Syncing data from Git repository... ");
+// child_process.execSync('git pull', {cwd: 'caches/pokemon-showdown'});
+// child_process.execSync('npm run build', {cwd: 'caches/pokemon-showdown'});
 console.log("DONE");
 
 const Dex = require('../caches/pokemon-showdown/dist/sim/dex').Dex;
@@ -1355,6 +1356,43 @@ process.stdout.write("Building `data/moves,items,abilities,typechart,learnsets.j
 
 	const buf = 'exports.BattleText = ' + es3stringify(Text) + ';';
 	fs.writeFileSync('play.pokemonshowdown.com/data/text.js', buf);
+}
+
+/*********************************************************
+ * Build announce.js
+ *********************************************************/
+
+{
+	const mm = require('music-metadata');
+	const announcePath = 'play.pokemonshowdown.com/audio/announcer';
+	const EXTENSION = '.wav';
+
+	var durations = {};
+
+	fs.readdir(announcePath, async function(err, files) {
+		if(err) {
+			console.error('Could not read audio files from folder: ' + announcePath)
+		}
+		files.forEach(element => {
+			console.log('Files: ' + element);
+		});
+		const audioFiles = files.filter(file => {
+			return path.extname(file).toLowerCase() === EXTENSION;
+		});
+		
+		var wait = new Promise((resolve, reject) => {
+			audioFiles.forEach(async element => {
+				const metadata = await mm.parseFile(announcePath + '/' + element);
+				durations[element] = metadata.format.duration;
+				if(Object.keys(durations).length == audioFiles.length) resolve();
+			});
+		});
+
+		wait.then(() => {
+			const buf = 'exports.AnnounceDurations = ' + es3stringify(durations) + ';';
+			fs.writeFileSync('play.pokemonshowdown.com/data/announce.js', buf);
+		});
+	});
 }
 
 console.log("DONE");
