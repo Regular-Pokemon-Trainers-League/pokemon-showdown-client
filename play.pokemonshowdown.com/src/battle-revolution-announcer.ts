@@ -3,20 +3,20 @@ import AnnounceDurations from 'announce'
 
 export class Announcer {
 
-    url = "https://rptl.us"
+    path = 'audio/announcer';
+
     constructor() {
 
     }
 
     announceAbility(ability: String): number {
         var duration;
-        var path = 'audio/announcer';
         var fileName = '';
         var url = '';
         if (ability == 'Liquid Ooze')
         {
             fileName = 'liquidooze.wav';
-            url = path + '/' + fileName;
+            url = this.path + '/' + fileName;
         }
 
         BattleSound.playEffect(url);
@@ -26,4 +26,21 @@ export class Announcer {
         return duration ? duration*1000 : 0; // Milliseconds
     }
 
+    
+    announceAttack(attack: String): number {
+        var duration;
+        var fileName = '';
+        var url = '';
+        if(attack == 'woodhammer')
+        {
+            fileName = 'woodhammer.wav'
+            url = this.path + '/' + fileName;
+        }
+
+        BattleSound.playEffect(url);
+        duration = AnnounceDurations[fileName];
+        console.log(duration);
+        return duration ? duration*1000 : 0; // Milliseconds;
+    }
 }
+

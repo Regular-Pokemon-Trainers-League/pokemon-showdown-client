@@ -1518,6 +1518,7 @@ export class BattleScene implements BattleSceneStub {
 		return pokemon.sprite.beforeMove();
 	}
 	afterMove(pokemon: Pokemon) {
+		this.announcer.announceAttack(this.battle.lastMove);
 		return pokemon.sprite.afterMove();
 	}
 

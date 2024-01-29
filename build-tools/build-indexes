@@ -1373,9 +1373,7 @@ process.stdout.write("Building `data/moves,items,abilities,typechart,learnsets.j
 		if(err) {
 			console.error('Could not read audio files from folder: ' + announcePath)
 		}
-		files.forEach(element => {
-			console.log('Files: ' + element);
-		});
+
 		const audioFiles = files.filter(file => {
 			return path.extname(file).toLowerCase() === EXTENSION;
 		});
