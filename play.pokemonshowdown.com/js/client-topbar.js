@@ -998,8 +998,8 @@
 			buf += '<p><label class="label">Username: <strong><input type="text" name="name" value="' + BattleLog.escapeHTML(data.name || app.user.get('name')) + '" style="color:inherit;background:transparent;border:0;font:inherit;font-size:inherit;display:block" readonly autocomplete="username" /></strong></label></p>';
 			buf += '<p><label class="label">Password: <input class="textbox autofocus" type="password" name="password" autocomplete="new-password" /></label></p>';
 			buf += '<p><label class="label">Password (confirm): <input class="textbox" type="password" name="cpassword" autocomplete="new-password" /></label></p>';
-			buf += '<p><label class="label"><img src="' + Dex.resourcePrefix + 'sprites/gen5ani/pikachu.gif" alt="An Electric-type mouse that is the mascot of the Pok\u00E9mon franchise." /></label></p>';
-			buf += '<p><label class="label">What is this pokemon? <input class="textbox" type="text" name="captcha" value="' + BattleLog.escapeHTML(data.captcha) + '" /></label></p>';
+			buf += '<p><label class="label"><img src="' + Dex.resourcePrefix + 'sprites/gen5ani/illumise.gif" alt="Right hand of the Garden State Gastlys." /></label></p>';
+			buf += '<p><label class="label">Who is this pokemon from the Garden State Gastlys? <input class="textbox" type="text" name="captcha" value="' + BattleLog.escapeHTML(data.captcha) + '" /></label></p>';
 			buf += '<p class="buttonbar"><button type="submit" class="button"><strong>Register</strong></button> <button type="button" name="close" class="button">Cancel</button></p></form>';
 			this.$el.html(buf);
 		},
