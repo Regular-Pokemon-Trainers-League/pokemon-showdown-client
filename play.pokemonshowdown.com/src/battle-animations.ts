@@ -1557,7 +1557,7 @@ export class BattleScene implements BattleSceneStub {
 		this.preloadImage(Dex.resourcePrefix + 'sprites/ani-back/substitute.gif');
 	}
 	rollBgm() {
-		this.setBgm(1 + this.numericId % 17);
+		this.setBgm(1 + this.numericId % 19);
 	}
 	setBgm(bgmNum: number) {
 		if (this.bgmNum === bgmNum) return;
@@ -1621,10 +1621,16 @@ export class BattleScene implements BattleSceneStub {
 		case 16:
 			this.bgm = BattleSound.loadBgm('audio/smu-guzma-battle.mp3', 8906, 154121, this.bgm);
 			break;
+		case 17:
+			this.bgm = BattleSound.loadBgm('audio/sv-cassiopeia-battle.mp3', 177521, 326153, this.bgm);
+			break;
+		case 18:
+			this.bgm = BattleSound.loadBgm('audio/sv-sada-turo-battle.mp3', 157840, 319889, this.bgm);
+			break;
 		case -101:
 			this.bgm = BattleSound.loadBgm('audio/spl-elite4.mp3', 3962, 152509, this.bgm);
 			break;
-		case 17:
+		case 19:
 		default:
 			this.bgm = BattleSound.loadBgm('audio/sm-rival.mp3', 11389, 62158, this.bgm);
 			break;
