@@ -3,17 +3,17 @@
   "name": "Pokémon Showdown!",
   "icons": [
     {
-      "src": "rptl_favicon.svg",
+      "src": "rptl_favicon_steve.png",
       "type": "image/png",
       "sizes": "16x16"
     },
     {
-      "src": "rptl_favicon.svg",
+      "src": "rptl_favicon_steve.png",
       "type": "image/png",
       "sizes": "32x32"
     },
     {
-      "src": "rptl_favicon.svg",
+      "src": "rptl_favicon_steve.png",
       "type": "image/png",
       "sizes": "256x256"
     }

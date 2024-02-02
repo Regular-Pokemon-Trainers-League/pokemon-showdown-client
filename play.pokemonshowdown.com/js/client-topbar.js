@@ -15,7 +15,7 @@
 		initialize: function () {
 			// April Fool's 2016 - Digimon Showdown
 			// this.$el.html('<img class="logo" src="' + Dex.resourcePrefix + 'sprites/afd/digimonshowdown.png" alt="Digimon Showdown! (beta)" width="146" height="44" /><div class="maintabbarbottom"></div><div class="tabbar maintabbar"><div class="inner"></div></div><div class="userbar"></div>');
-			this.$el.html('<img class="logo" src="' + Dex.resourcePrefix + 'homepage_rptl.svg" srcset="' + Dex.resourcePrefix + 'homepage_rptl@2x.svg 2x" alt="Regular Pok&eacute;mon Trainers League!" width="146" height="44" /><div class="maintabbarbottom"></div><div class="tabbar maintabbar"><div class="inner"></div></div><div class="userbar"></div>');
+			this.$el.html('<img class="logo" src="' + Dex.resourcePrefix + 'rptl_home_logo_wide.svg" srcset="' + Dex.resourcePrefix + 'rptl_home_logo_wide@2x.svg 2x" alt="Regular Pok&eacute;mon Trainers League!" width="146" height="44" /><div class="maintabbarbottom"></div><div class="tabbar maintabbar"><div class="inner"></div></div><div class="userbar"></div>');
 			this.$tabbar = this.$('.maintabbar .inner');
 			// this.$sidetabbar = this.$('.sidetabbar');
 			this.$userbar = this.$('.userbar');
@@ -155,10 +155,10 @@
 				var $favicon = $('#dynamic-favicon');
 				if (!!$favicon.data('on') !== !!notificationCount) {
 					if (notificationCount) {
-						$favicon.attr('href', Dex.resourcePrefix + '/rptl_favicon_notify.svg');
+						$favicon.attr('href', Dex.resourcePrefix + '/rptl_favicon_steve_notify.png');
 						$favicon.data('on', '1');
 					} else {
-						$favicon.attr('href', Dex.resourcePrefix + '/rptl_favicon.svg');
+						$favicon.attr('href', Dex.resourcePrefix + '/rptl_favicon_steve.png');
 						$favicon.data('on', '');
 					}
 				}

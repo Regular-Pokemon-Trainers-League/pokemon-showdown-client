@@ -137,14 +137,14 @@ class RoomsPanel extends PSRoomPanel {
 				<button class="button" data-href="/users" title="Find an online user">
 					<span
 						class="pixelated usercount"
-						title="Meloetta is PS's mascot! The Aria forme is about using its voice, and represents our chatrooms."
+						title="Picaro is a well known and friendly member of the Waugatuck Wonders, and he represents our chatrooms."
 					></span>
 					<strong>{rooms.userCount || '-'}</strong> users online
 				</button> {}
 				<button class="button" data-href="/battles" title="Watch an active battle">
 					<span
 						class="pixelated battlecount"
-						title="Meloetta is PS's mascot! The Pirouette forme is Fighting-type, and represents our battles."
+						title="Big Gonzo is the original K.O. trophy winner for the San Francisco Smog! He's now retired and represents our battles."
 					></span>
 					<strong>{rooms.battleCount || '-'}</strong> active battles
 				</button>
