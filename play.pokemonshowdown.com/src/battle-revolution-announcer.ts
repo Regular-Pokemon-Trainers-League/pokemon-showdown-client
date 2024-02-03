@@ -15,7 +15,7 @@ export class Announcer {
         var url = '';
         if (ability == 'Liquid Ooze')
         {
-            fileName = 'liquidooze.wav';
+            fileName = 'liquidooze.mp3';
             url = this.path + '/' + fileName;
         }
 
@@ -33,7 +33,7 @@ export class Announcer {
         var url = '';
         if(attack == 'woodhammer')
         {
-            fileName = 'woodhammer.wav'
+            fileName = 'woodhammer.mp3'
             url = this.path + '/' + fileName;
         }
 
