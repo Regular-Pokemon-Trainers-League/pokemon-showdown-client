@@ -117,9 +117,10 @@
 			if (rooms.userCount) {
 				var userCount = Number(rooms.userCount);
 				var battleCount = Number(rooms.battleCount);
-				var leftSide = '<button class="button" name="finduser" title="Find an online user"><span class="pixelated usercount" title="Meloetta is PS\'s mascot! The Aria forme is about using its voice, and represents our chatrooms." ></span><strong>' + userCount + '</strong> ' + (userCount == 1 ? 'user' : 'users') + ' online</button> ';
-				var rightSide = '<button class="button" name="roomlist" title="Watch an active battle"><span class="pixelated battlecount" title="Meloetta is PS\'s mascot! The Pirouette forme is Fighting-type, and represents our battles." ></span><strong>' + battleCount + '</strong> active ' + (battleCount == 1 ? 'battle' : 'battles') + '</button>';
-				this.$('.roomlisttop').html('<div class="roomcounters">' + leftSide + '</td><td>' + rightSide + '</div>');
+				var leftSide = '<button class="button" name="finduser" title="Find an online user"><span class="pixelated usercount" title="Picaro is a well known and friendly member of the Waugatuck Wonders, and he represents our chatrooms." ></span><strong>' + userCount + '</strong> ' + (userCount == 1 ? 'user' : 'users') + ' online</button> ';
+				var rightSide = '<button class="button" name="roomlist" title="Watch an active battle"><span class="pixelated battlecount" title="Big Gonzo is the original K.O. trophy winner for the San Francisco Smog! He\'s now retired and represents our battles." ></span><strong>' + battleCount + '</strong> active ' + (battleCount == 1 ? 'battle' : 'battles') + '</button>';
+				var farSide = '<button class="button" name="rosters" title="View Team Rosters"><span class="pixelated rostercount" title="Mojo was the captain of the Edison Electric in Season 3 and led the team to a Little Cup victory!" ></span><strong>RPTL</strong></button>';
+				this.$('.roomlisttop').html('<div class="roomcounters">' + leftSide + '</td><td>' + rightSide + '</div>' + '<div class="league">' + farSide + '</td></div>' );
 			}
 
 			if (rooms.pspl) {
@@ -182,6 +183,9 @@
 		roomlist: function () {
 			app.joinRoom('battles');
 		},
+		rosters: function() {
+			app.joinRoom('league');
+		},
 		closeHide: function () {
 			app.sideRoom = app.curSideRoom = null;
 			clearInterval(this.chatroomInterval);
@@ -221,7 +225,7 @@
 		},
 		initialize: function () {
 			this.$el.addClass('ps-room-light').addClass('scrollable');
-			var buf = '<div class="pad"><button class="button" style="float:right;font-size:10pt;margin-top:3px" name="close"><i class="fa fa-times"></i> Close</button><div class="roomlist"><p><button class="button" name="refresh"><i class="fa fa-refresh"></i> Refresh</button> <span style="' + Dex.getPokemonIcon('meloetta-pirouette') + ';display:inline-block;vertical-align:middle" class="picon" title="Meloetta is PS\'s mascot! The Pirouette forme is Fighting-type, and represents our battles."></span></p>';
+			var buf = '<div class="pad"><button class="button" style="float:right;font-size:10pt;margin-top:3px" name="close"><i class="fa fa-times"></i> Close</button><div class="roomlist"><p><button class="button" name="refresh"><i class="fa fa-refresh"></i> Refresh</button> <span style="' + Dex.getPokemonIcon('rhyperior') + ';display:inline-block;vertical-align:middle" class="picon" title="Big Gonzo is the original K.O. trophy winner for the San Francisco Smog! He\'s now retired and represents our battles."></span></p>';
 
 			buf += '<p><label class="label">Format:</label><button class="select formatselect" name="selectFormat">(All formats)</button></p>';
 			buf += '<label>Minimum Elo: <select name="elofilter" class="button"><option value="none">None</option><option value="1100">1100</option><option value="1300">1300</option><option value="1500">1500</option><option value="1700">1700</option><option value="1900">1900</option></select></label>';
@@ -327,4 +331,243 @@
 		}
 	});
 
+	function clock(teams) {
+
+		for(var i=0; i < teams.length; i++)
+		{
+			date = new Date(Date.now()).toLocaleString('en-US', { timeZone: teams[i].timeZone });
+			document.getElementById("time" + teams[i].id).innerHTML = date;
+		}
+		setTimeout(clock, 1000, teams);
+	};
+
+	this.LeagueRoom = Room.extend({
+		minWidth: 320,
+		maxWidth: 1024,
+		type: 'league',
+		title: 'League',
+		date: new Date(),
+		isSideRoom: true,
+		events: {
+			'submit .search': 'submitSearch',
+			'click .accordion': 'expandTeam',
+		},
+		initialize: function () {
+			this.$el.addClass('ps-room-light').addClass('scrollable');
+			
+			var buf = '<div class="pad"><button class="button" style="float:right;font-size:10pt;margin-top:3px" name="close"><i class="fa fa-times"></i> Close</button><div class="roomlist"><p><strong>RPTL Rosters</strong></p>';
+       
+			for(var i = 0; i < this.teams.length; i++) {
+				this.teams[i].time = new Date(Date.now()).toLocaleString('en-US', { timeZone: this.teams[i].timeZone });
+				buf+= '<img src="sprites/logos/' + this.teams[i].name.replace(/\s/g, '').replace('\'','').toLowerCase() + '.png" width="200" style="vertical-align:middle;cursor:pointer" />'
+				buf+= '<button class="accordion" id="acc' + this.teams[i].id + '">' + this.teams[i].name + '</button>';
+				buf+= '<table border="4" id="table' + this.teams[i].id + '"><tbody>';
+				buf+= '<tr>';
+				buf+= '<td>&nbsp;Showdown Trainer&nbsp;</td>';
+				buf+= '<td>&nbsp;' + this.teams[i].zone + '&nbsp;</td>';
+				buf+= '<td>&nbsp;' + this.teams[i].coach + '&nbsp;</td>';
+				buf+= '</tr>';
+				buf+= '<tr>';
+				buf+= '<td>&nbsp;Pokémon:&nbsp;</td>';
+				buf+= '<td id="time' + this.teams[i].id + '">&nbsp;</td>';
+				buf+= '<td>&nbsp;Name:&nbsp;</td>';
+
+				var keys = Object.keys(this.teams[i].team);
+				for(var j = 0; j < keys.length; j++) {
+					buf+= '<tr>';
+					buf+= '<td>&nbsp;' + keys[j] + '</td>';
+					buf+= '<td>&nbsp;<span style="' + Dex.getPokemonIcon(keys[j]) + ';display:inline-block;vertical-align:middle" class="picon"></span></td>';
+					buf+= '<td>&nbsp;' + this.teams[i].team[keys[j]] + '</td>';
+					buf+= '</tr>';
+				}
+				buf+= '</tbody></table>';
+				buf+= '<br>';
+				buf+= '<br>';
+			}
+
+			this.$el.html(buf);
+			this.$list = this.$('.list');
+			this.$rosters = this.$('table[border=4]');
+			this.$times = this.$('td[name=time]');
+
+			for(var i = 0; i < this.teams.length; i++) {
+				this.$rosters[i].style.display = "none";
+			}
+
+			this.format = '';
+			app.on('response:roomlist', this.update, this);
+			app.send('/cmd roomlist');
+			document.body.onload = clock(this.teams);
+			
+			this.update();
+		},
+		expandTeam: function(e) {
+			// e.target.classList.toggle("active");
+			// var panel = e.target.nextElementSibling;
+			// if (panel.style.display === "block") {
+			// 	panel.style.display = "none";
+			// } else {
+			// 	panel.style.display = "block";
+			// }
+			this.$('table[id=' + e.target.getAttribute("id").replace('acc', 'table') + ']').toggle("active");
+		},
+		focus: function (e) {
+			if (e && $(e.target).is('input')) return;
+			if (e && $(e.target).closest('select, a').length) return;
+			var prevPos = this.$el.scrollTop();
+			this.$el.scrollTop(prevPos);
+		},
+		renderRoomBtn: function (id, roomData, matches) {
+			var format = (matches[1] || '');
+			var formatBuf = '';
+			if (roomData.minElo) {
+				formatBuf += '<small style="float:right">(' + (typeof roomData.minElo === 'number' ? 'rated: ' : '') + BattleLog.escapeHTML('' + roomData.minElo) + ')</small>';
+			}
+			formatBuf += (format ? '<small>[' + BattleLog.escapeFormat(format) + ']</small><br />' : '');
+			var roomDesc = formatBuf + '<em class="p1">' + BattleLog.escapeHTML(roomData.p1) + '</em> <small class="vs">vs.</small> <em class="p2">' + BattleLog.escapeHTML(roomData.p2) + '</em>';
+			if (!roomData.p1) {
+				matches = id.match(/[^0-9]([0-9]*)$/);
+				roomDesc = formatBuf + 'empty room ' + matches[1];
+			} else if (!roomData.p2) {
+				roomDesc = formatBuf + '<em class="p1">' + BattleLog.escapeHTML(roomData.p1) + '</em>';
+			}
+			return '<div><a href="' + app.root + id + '" class="blocklink">' + roomDesc + '</a></div>';
+		},
+		update: function (data) {
+			if (!data && !this.data) {
+				if (app.isDisconnected) {
+					this.$list.html('<p>You are offline.</p>');
+				} else {
+					this.$list.html('<p>Loading...</p>');
+				}
+				return;
+			}
+
+			// Synchronize stored room data with incoming data
+			if (data) this.data = data;
+			var rooms = this.data.rooms;
+
+			var buf = [];
+			for (var id in rooms) {
+				var roomData = rooms[id];
+				var matches = ChatRoom.parseBattleID(id);
+				// bogus room ID could be used to inject JavaScript
+				if (!matches || this.format && matches[1] !== this.format) {
+					continue;
+				}
+				buf.push(this.renderRoomBtn(id, roomData, matches));
+			}
+
+			if (!buf.length) return this.$list.html('<p>No ' + BattleLog.escapeFormat(this.format) + ' battles are going on right now.</p>');
+			return this.$list.html('<p>' + buf.length + (buf.length === 100 ? '+' : '') + ' ' + BattleLog.escapeFormat(this.format) + ' ' + (buf.length === 1 ? 'battle' : 'battles') + '</p>' + buf.join(""));
+		},
+		teams: [
+			{
+				'id': 0,
+				'name': 'Edison Electric Millivolts',
+				'coach': 'Automajon',
+				'zone': 'CST',
+				'timeZone': 'America/Chicago',
+				'team': {
+					'Elekid': 'Eddie'
+				}
+			},
+			{
+				'id': 1,
+				'name': 'Kakuna\'s Law Firm',
+				'coach': 'Cavern',
+				'zone': 'CET',
+				'timeZone': 'CET',
+				'team': {
+				}
+			},
+			{
+				'id': 2,
+				'name': 'KinderGarden State Gastlys',
+				'coach': 'DiegoNegro',
+				'zone': 'EST',
+				'timeZone': 'America/New_York',
+				'team': {
+					'Litleo': 'Jarrahdale',
+					'Archen': 'Crookneck',
+					'Snubbull': 'Cinderella',
+					'Yungoos': 'Goosebumps',
+					'Venonat': 'Futsu',
+					'Growlithe': 'Kakai'
+				}
+			},
+			{
+				'id': 3,
+				'name': 'Lacunosa Little League',
+				'coach': 'Silvestron',
+				'zone': 'EST',
+				'timeZone': 'America/New_York',
+				'team': {
+				}
+			},
+			{
+				'id': 4,
+				'name': 'Pittsburgh Sphealers',
+				'coach': 'Chuke',
+				'zone': 'EST',
+				'timeZone': 'America/New_York',
+				'team': {
+				}
+			},
+			{
+				'id': 5,
+				'name': 'Portland Popplios',
+				'coach': 'RandomPopplio',
+				'zone': 'GMT+8',
+				'timeZone': 'Asia/Hong_Kong',
+				'team': {
+				}
+			},
+			{
+				'id': 6,
+				'name': 'Spheal City Junior',
+				'coach': 'RyinThyme',
+				'zone': 'EST',
+				'timeZone': 'America/New_York',
+				'team': {
+				}
+			},
+			{
+				'id': 7,
+				'name': 'Team Zorua',
+				'coach': 'Milotic42',
+				'zone': 'EST',
+				'timeZone': 'America/New_York',
+				'team': {
+				}
+			},
+			{
+				'id': 8,
+				'name': 'The Goofy Goomers',
+				'coach': 'RubyFlame57',
+				'zone': 'EST',
+				'timeZone': 'America/New_York',
+				'team': {
+				}
+			},
+			{
+				'id': 9,
+				'name': 'Tinkering Tinkatons',
+				'coach': 'HeroOfZero',
+				'zone': 'EST',
+				'timeZone': 'America/New_York',
+				'team': {
+				}
+			},
+			{
+				'id': 10,
+				'name': 'Viking Veluzas',
+				'coach': 'Pygocentrus',
+				'zone': 'CST',
+				'timeZone': 'America/Chicago',
+				'team': {
+				}
+			},
+		]
+	});
 }).call(this, jQuery);

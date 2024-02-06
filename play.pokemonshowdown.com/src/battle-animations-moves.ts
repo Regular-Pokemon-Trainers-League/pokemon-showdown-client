@@ -10,6 +10,7 @@
  */
 
 import {AnimTable, BattleOtherAnims} from './battle-animations';
+import { Announcer } from './battle-revolution-announcer';
 
 export const BattleMoveAnims: AnimTable = {
 	taunt: {

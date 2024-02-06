@@ -220,9 +220,9 @@ class PSHeader extends preact.Component<{style: {}}> {
 		return <div id="header" class="header" style={this.props.style}>
 			<img
 				class="logo"
-				src={`https://${Config.routes.client}/pokemonshowdownbeta.png`}
-				srcset={`https://${Config.routes.client}/pokemonshowdownbeta@2x.png 2x`}
-				alt="Pokémon Showdown! (beta)"
+				src={`https://${Config.routes.client}/rptl_home_logo_wide.svg`}
+				srcset={`https://${Config.routes.client}/rptl_home_logo_wide@2x.svg 2x`}
+				alt="Regular Pokémon Trainers League!"
 				width="146" height="44"
 			/>
 			<div class="maintabbarbottom"></div>
