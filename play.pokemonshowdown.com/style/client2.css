@@ -980,6 +980,45 @@ p.or:after {
 	background: url(https://play.pokemonshowdown.com/sprites/gen5ani-shiny/rhyperior.gif) center no-repeat;
 }
 
+.league .rostercount {
+	display: block;
+	width: 83px;
+	height: 72px;
+	position: absolute;
+	right: -60px;
+	bottom: -10px;
+	background: url(https://play.pokemonshowdown.com/sprites/gen5/croagunk.png) center no-repeat;
+}
+.league button:hover .rostercount {
+	background: url(https://play.pokemonshowdown.com/sprites/gen5ani/croagunk.gif) center no-repeat;
+}
+
+.league {
+	max-width: 480px;
+	margin: 8px 0 15px 0;
+	text-align: center;
+}
+@media (max-width: 382px) {
+	.league {
+		margin: 38px 0 15px 0;
+	}
+}
+.league button {
+	margin: 0 auto;
+	width: 120px;
+	height: 60px;
+	padding: 3px 8px;
+	text-align: center;
+	vertical-align: middle;
+	font-size: 10pt;
+	position: relative;
+}
+.league button strong {
+	display: block;
+	font-size: 18pt;
+	font-weight: normal;
+}
+
 .roomlist {
 	max-width: 480px;
 	text-align: left;

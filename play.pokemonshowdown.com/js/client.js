@@ -1630,6 +1630,7 @@ function toId() {
 				'teambuilder': TeambuilderRoom,
 				'rooms': RoomsRoom,
 				'battles': BattlesRoom,
+				'league': LeagueRoom,
 				'ladder': LadderRoom,
 				'lobby': ChatRoom,
 				'staff': ChatRoom,
