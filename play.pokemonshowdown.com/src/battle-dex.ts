@@ -549,6 +549,7 @@ const Dex = new class implements ModdedDex {
 		let miscData = null;
 		let speciesid = species.id;
 		if (species.isTotem) speciesid = toID(name);
+		if (species.isBuff) speciesid = toID(name);
 		if (baseDir === '' && window.BattlePokemonSprites) {
 			animationData = BattlePokemonSprites[speciesid];
 		}
@@ -560,7 +561,7 @@ const Dex = new class implements ModdedDex {
 		if (!animationData) animationData = {};
 		if (!miscData) miscData = {};
 
-		if (miscData.num !== 0 && miscData.num > -5000) {
+		if (miscData.num !== 0 && (miscData.num > -5000 || miscData.num < -6000)) {
 			let baseSpeciesid = toID(species.baseSpecies);
 			spriteData.cryurl = 'audio/cries/' + baseSpeciesid;
 			let formeid = species.formeid;
@@ -635,7 +636,7 @@ const Dex = new class implements ModdedDex {
 
 			spriteData.w = animationData[facing].w;
 			spriteData.h = animationData[facing].h;
-			spriteData.url += dir + '/' + name + '.gif';
+			spriteData.url += dir + '/' + name.replace('-buff', '') + '.gif';
 		} else {
 			// There is no entry or enough data in pokedex-mini.js
 			// Handle these in case-by-case basis; either using BW sprites or matching the played gen.
@@ -647,7 +648,7 @@ const Dex = new class implements ModdedDex {
 				name += '-f';
 			}
 
-			spriteData.url += dir + '/' + name + '.png';
+			spriteData.url += dir + '/' + name.replace('-buff', '') + '.png';
 		}
 
 		if (!options.noScale) {
