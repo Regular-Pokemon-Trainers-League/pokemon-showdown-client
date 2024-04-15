@@ -469,40 +469,34 @@
 				'zone': 'CST',
 				'timeZone': 'America/Chicago',
 				'team': {
-					'Elekid': 'Eddie'
 				}
 			},
 			{
 				'id': 1,
-				'name': 'Kakuna\'s Law Firm',
-				'coach': 'Cavern',
-				'zone': 'CET',
-				'timeZone': 'CET',
+				'name': 'Waugatuck Wonders',
+				'coach': 'Stevarino',
+				'zone': 'EST',
+				'timeZone': 'America/New_York',
 				'team': {
 				}
 			},
 			{
 				'id': 2,
-				'name': 'KinderGarden State Gastlys',
-				'coach': 'DiegoNegro',
-				'zone': 'EST',
-				'timeZone': 'America/New_York',
-				'team': {
-					'Litleo': 'Jarrahdale',
-					'Archen': 'Crookneck',
-					'Snubbull': 'Cinderella',
-					'Yungoos': 'Goosebumps',
-					'Venonat': 'Futsu',
-					'Growlithe': 'Kakai'
-				}
-			},
-			{
-				'id': 3,
 				'name': 'Lacunosa Little League',
 				'coach': 'Silvestron',
 				'zone': 'EST',
 				'timeZone': 'America/New_York',
 				'team': {
+				}
+			},
+			{
+				'id': 3,
+				'name': 'KinderGarden State Gastlys',
+				'coach': 'DiegoNegro',
+				'zone': 'EST',
+				'timeZone': 'America/New_York',
+				'team': {
+					'Snom': 'Olympus Mons',
 				}
 			},
 			{
@@ -568,6 +562,88 @@
 				'team': {
 				}
 			},
+			{
+				'id': 11,
+				'name': 'Himalayan Hemorroids',
+				'coach': 'blueb4llz',
+				'zone': 'HST',
+				'timeZone': 'Pacific/Honolulu',
+				'team': {
+				}
+			},
+			{
+				'id': 12,
+				'name': 'UNNAMED BEYOND TEAM',
+				'coach': 'Beyondlx',
+				'zone': 'EST',
+				'timeZone': 'America/New_York',
+				'team': {
+				}
+			},
+			{
+				'id': 13,
+				'name': 'Beads of Ruin',
+				'coach': 'Superperson00',
+				'zone': 'AEST',
+				'timeZone': 'Australia/Brisbane',
+				'team': {
+				}
+			},
+			{
+				'id': 14,
+				'name': 'Lumiose City Larvitars',
+				'coach': 'Superperson',
+				'zone': 'AEST',
+				'timeZone': 'Australia/Brisbane',
+				'team': {
+				}
+			},
+			{
+				'id': 15,
+				'name': 'Inazuma Elekid',
+				'coach': 'Tobias',
+				'zone': 'CET',
+				'timeZone': 'CET',
+				'team': {
+				}
+			},
+			{
+				'id': 16,
+				'name': 'UNNAMED REX TEAM',
+				'coach': 'CuppaTeaRex',
+				'zone': 'EST',
+				'timeZone': 'America/New_York',
+				'team': {
+				}
+			},
+			{
+				'id': 17,
+				'name': 'Kakuna\'s Law Firm',
+				'coach': 'Cavern',
+				'zone': 'CET',
+				'timeZone': 'CET',
+				'team': {
+				}
+			},
+			{
+				'id': 18,
+				'name': 'UNNAMED SANSKAAR TEAM',
+				'coach': 'dankmaster1738',
+				'zone': 'EST',
+				'timeZone': 'America/New_York',
+				'team': {
+				}
+			},
+			{
+				'id': 19,
+				'name': 'Rocket City Trash Pandas',
+				'coach': 'PadreOfSouls',
+				'zone': 'CST',
+				'timeZone': 'America/Chicago',
+				'team': {
+				}
+			},
+			
 		]
 	});
 }).call(this, jQuery);
