@@ -1,5 +1,8 @@
+<IfModule mod_headers.c>
+    Header set Access-Control-Allow-Origin "*"
+</IfModule>
 RewriteEngine on
-RewriteRule ^api(/.*)?$ http://localhost:9000/api$1 [P,L]
+RewriteRule ^api(/.*)?$ http://localhost:8000/api$1 [P,L]
 
 RewriteRule ^search\.json$ /api/replays/search.json [L,QSA]
 RewriteRule ^recent\.json$ /api/replays/search.json [L,QSA]

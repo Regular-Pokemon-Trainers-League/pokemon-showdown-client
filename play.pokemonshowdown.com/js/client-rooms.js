@@ -359,7 +359,7 @@
        
 			for(var i = 0; i < this.teams.length; i++) {
 				this.teams[i].time = new Date(Date.now()).toLocaleString('en-US', { timeZone: this.teams[i].timeZone });
-				buf+= '<img src="sprites/logos/' + this.teams[i].name.replace(/\s/g, '').replace('\'','').toLowerCase() + '.png" width="200" style="vertical-align:middle;cursor:pointer" />'
+				buf+= '<img src="sprites/logos/' + this.teams[i].name.replace(/\s/g, '').replaceAll('\'','').toLowerCase() + '.png" width="200" style="vertical-align:middle;cursor:pointer" />'
 				buf+= '<button class="accordion" id="acc' + this.teams[i].id + '">' + this.teams[i].name + '</button>';
 				buf+= '<table border="4" id="table' + this.teams[i].id + '"><tbody>';
 				buf+= '<tr>';
@@ -464,186 +464,323 @@
 		teams: [
 			{
 				'id': 0,
-				'name': 'Edison Electric Millivolts',
-				'coach': 'Automajon',
-				'zone': 'CST',
-				'timeZone': 'America/Chicago',
-				'team': {
-				}
-			},
-			{
-				'id': 1,
-				'name': 'Waugatuck Wonders',
-				'coach': 'Stevarino',
-				'zone': 'EST',
-				'timeZone': 'America/New_York',
-				'team': {
-				}
-			},
-			{
-				'id': 2,
-				'name': 'Lacunosa Little League',
-				'coach': 'Silvestron',
-				'zone': 'EST',
-				'timeZone': 'America/New_York',
-				'team': {
-				}
-			},
-			{
-				'id': 3,
-				'name': 'KinderGarden State Gastlys',
-				'coach': 'DiegoNegro',
-				'zone': 'EST',
-				'timeZone': 'America/New_York',
-				'team': {
-					'Snom': 'Olympus Mons',
-				}
-			},
-			{
-				'id': 4,
-				'name': 'Pittsburgh Sphealers',
-				'coach': 'Chuke',
-				'zone': 'EST',
-				'timeZone': 'America/New_York',
-				'team': {
-				}
-			},
-			{
-				'id': 5,
-				'name': 'Portland Popplios',
-				'coach': 'RandomPopplio',
-				'zone': 'GMT+8',
-				'timeZone': 'Asia/Hong_Kong',
-				'team': {
-				}
-			},
-			{
-				'id': 6,
-				'name': 'Spheal City Junior',
-				'coach': 'RyinThyme',
-				'zone': 'EST',
-				'timeZone': 'America/New_York',
-				'team': {
-				}
-			},
-			{
-				'id': 7,
-				'name': 'Team Zorua',
-				'coach': 'Milotic42',
-				'zone': 'EST',
-				'timeZone': 'America/New_York',
-				'team': {
-				}
-			},
-			{
-				'id': 8,
-				'name': 'The Goofy Goomers',
-				'coach': 'RubyFlame57',
-				'zone': 'EST',
-				'timeZone': 'America/New_York',
-				'team': {
-				}
-			},
-			{
-				'id': 9,
-				'name': 'Tinkering Tinkatons',
-				'coach': 'HeroOfZero',
-				'zone': 'EST',
-				'timeZone': 'America/New_York',
-				'team': {
-				}
-			},
-			{
-				'id': 10,
-				'name': 'Viking Veluzas',
-				'coach': 'Pygocentrus',
-				'zone': 'CST',
-				'timeZone': 'America/Chicago',
-				'team': {
-				}
-			},
-			{
-				'id': 11,
-				'name': 'Himalayan Hemorroids',
-				'coach': 'blueb4llz',
-				'zone': 'HST',
-				'timeZone': 'Pacific/Honolulu',
-				'team': {
-				}
-			},
-			{
-				'id': 12,
-				'name': 'UNNAMED BEYOND TEAM',
-				'coach': 'Beyondlx',
-				'zone': 'EST',
-				'timeZone': 'America/New_York',
-				'team': {
-				}
-			},
-			{
-				'id': 13,
 				'name': 'Beads of Ruin',
 				'coach': 'Superperson00',
 				'zone': 'AEST',
 				'timeZone': 'Australia/Brisbane',
 				'team': {
+					'Skiploom': '???',
+					'Litten': '???',
+					'Grimer-Alola': '???',
+					'Mudbray': '???',
+					'Psyduck': '???',
+					'Sentret': '???',
 				}
 			},
 			{
-				'id': 14,
-				'name': 'Lumiose City Larvitars',
-				'coach': 'Superperson',
-				'zone': 'AEST',
-				'timeZone': 'Australia/Brisbane',
+				'id': 1,
+				'name': 'Edison Electric Millivolts',
+				'coach': 'Automajon',
+				'zone': 'CST',
+				'timeZone': 'America/Chicago',
 				'team': {
+					'Pignite': 'Chobb',
+					'Frigibax': 'Nippy',
+					'Fuecoco': 'Bongo',
+					'Totodile': 'Bass',
+					'Phanpy': 'Smoothie',
+					'Karrablast': 'Glue-Gun',
 				}
 			},
 			{
-				'id': 15,
+				'id': 2,
+				'name': 'The Goofy Goomers',
+				'coach': 'RubyFlame57',
+				'zone': 'EST',
+				'timeZone': 'America/New_York',
+				'team': {
+					'Fletchling': '???',
+					'Goomy': 'Goofus',
+					'Wooper': '???',
+					'Smoliv': '???',
+					'Aipom': '???',
+					'Poochyena': '???',
+					'Mareep': '???',
+					'Swirlix': '???',
+				}
+			},
+			{
+				'id': 3,
+				'name': 'Himalayan Hemorroids',
+				'coach': 'blueb4llz',
+				'zone': 'HST',
+				'timeZone': 'Pacific/Honolulu',
+				'team': {
+					'Shelgon': '???',
+					'Venipede': '???',
+					'Hatenna': '???',
+					'Treecko': '???',
+					'Nickit': '???',
+					'Beldum': '???',
+					'Ducklett': '???',
+					'Sandygast': '???',
+				}
+			},
+			{
+				'id': 4,
 				'name': 'Inazuma Elekid',
-				'coach': 'Tobias',
+				'coach': 'yveltalnl',
 				'zone': 'CET',
 				'timeZone': 'CET',
 				'team': {
+					'Grotle': '???',
+					'Squirtle': '???',
+					'Shuppet': '???',
+					'Teddiursa': '???',
+					'Cutiefly': '???',
+					'Cufant': '???',
+					'Smoochum': '???',
 				}
 			},
 			{
-				'id': 16,
-				'name': 'UNNAMED REX TEAM',
+				'id': 5,
+				'name': 'Insomnia City Wooper Troopers',
 				'coach': 'CuppaTeaRex',
 				'zone': 'EST',
 				'timeZone': 'America/New_York',
 				'team': {
+					'Linoone-Galar': '???',
+					'Igglybuff': '???',
+					'Tyrunt': '???',
+					'Gimmighoul': '???',
+					'Azurill': '???',
+					'Combee': '???',
 				}
 			},
 			{
-				'id': 17,
+				'id': 6,
 				'name': 'Kakuna\'s Law Firm',
 				'coach': 'Cavern',
 				'zone': 'CET',
 				'timeZone': 'CET',
 				'team': {
+					'Raboot': '???',
+					'Meditite': '???',
+					'Snubbull': '???',
+					'Chikorita': '???',
+					'Slakoth': '???',
+					'Staryu': '???',
 				}
 			},
 			{
-				'id': 18,
-				'name': 'UNNAMED SANSKAAR TEAM',
-				'coach': 'dankmaster1738',
+				'id': 7,
+				'name': 'KinderGarden State Gastlys',
+				'coach': 'DiegoNegro',
 				'zone': 'EST',
 				'timeZone': 'America/New_York',
 				'team': {
+					'Graveler-Alola': 'Mr. Smitty',
+					'Snom': 'Olympus Mons',
+					'Sandile': 'Liam Sternberg',
+					'Finneon': 'Wholesale Beans',
+					'Tarountula': 'Spoon Straws',
+					'Tyrogue': 'Powerman',
+					'Rockruff': 'Floppy Ears Effect',
+					'Pidove': 'General Taube',
 				}
 			},
 			{
-				'id': 19,
+				'id': 8,
+				'name': 'Lacunosa Little League',
+				'coach': 'Silvestron',
+				'zone': 'EST',
+				'timeZone': 'America/New_York',
+				'team': {
+					'Lairon': 'Atlas',
+					'Mime Jr.': '????',
+					'Wingull': '????',
+					'Slugma': '?????',
+					'Nidoran-F': '????',
+					'Rattata-Alola': '???',
+					'Skiddo': '????',
+				}
+			},
+			{
+				'id': 9,
+				'name': 'Lumiose City Larvitars',
+				'coach': 'Superperson',
+				'zone': 'AEST',
+				'timeZone': 'Australia/Brisbane',
+				'team': {
+					'Nidorino': '???',
+					'Voltorb-Hisui': '???',
+					'Cyndaquil': '???',
+					'Impidimp': '???',
+					'Surskit': '???',
+					'Diglett-Alola': '???',
+					'Quaxly': '???',
+				}
+			},
+			{
+				'id': 10,
+				'name': 'Pittsburgh Sphealers',
+				'coach': 'Chuke',
+				'zone': 'EST',
+				'timeZone': 'America/New_York',
+				'team': {
+					'Sealeo': 'Melon Salesman',
+					'Slowpoke-Galar': '????',
+					'Doduo': '????',
+					'Poltchageist': '????',
+					'Chimchar': '????',
+					'Yamper': '????',
+					'Geodude': '????',
+				}
+			},
+			{
+				'id': 11,
+				'name': 'Portland Popplios',
+				'coach': 'RandomPopplio',
+				'zone': 'GMT+8',
+				'timeZone': 'Asia/Hong_Kong',
+				'team': {
+					'Pichu': '????',
+					'Lillipup': '???',
+					'Morelull': '????',
+					'Zubat': '????',
+					'Krabby': '????',
+					'Meowth-Galar': '????'
+				}
+			},
+			{
+				'id': 12,
+				'name': 'Regular Pokemon Trainers Team',
+				'coach': 'Beyondlx',
+				'zone': 'EST',
+				'timeZone': 'America/New_York',
+				'team': {
+					'Dragonair': '???',
+					'Riolu': '???',
+					'Fennekin': '???',
+					'Sprigatito': '???',
+					'Eevee': '???',
+					'Espurr': '???',
+				}
+			},
+			{
+				'id': 13,
 				'name': 'Rocket City Trash Pandas',
 				'coach': 'PadreOfSouls',
 				'zone': 'CST',
 				'timeZone': 'America/Chicago',
 				'team': {
+					'Gible': '???',
+					'Magby': '???',
+					'Pawmi': '???',
+					'Ralts': '???',
+					'Rookidee': '???',
+					'Popplio': '???',
+					'Gulpin': '???',
+					'Pansage': '???',
 				}
 			},
-			
+			{
+				'id': 14,
+				'name': 'Spheal City Junior',
+				'coach': 'RyinThyme',
+				'zone': 'EST',
+				'timeZone': 'America/New_York',
+				'team': {
+					'Grubbin': '????',
+					'Tynamo': '???',
+					'Skitty': '???',
+					'Clobbopus': '???',
+					'Toxel': '???',
+					'Whismur': '???',
+					'Slowpoke': '???',
+				}
+			},
+			{
+				'id': 15,
+				'name': 'Team Zorua',
+				'coach': 'Milotic42',
+				'zone': 'EST',
+				'timeZone': 'America/New_York',
+				'team': {
+					'Servine': '????',
+					'Growlithe-Hisui': '???',
+					'Wattrel': '???',
+					'Milcery': '???',
+					'Golett': '???',
+					'Rattata': '???',
+					'Panpour': '???',
+					'Spoink': '???',
+					'Varoom': '???',
+				}
+			},
+			{
+				'id': 16,
+				'name': 'Tinkering Tinkatons',
+				'coach': 'HeroOfZero',
+				'zone': 'EST',
+				'timeZone': 'America/New_York',
+				'team': {
+					'Drakloak': '????',
+					'Oshawott': '???',
+					'Mankey': '???',
+					'Cleffa': '???',
+					'Pidgey': '???',
+					'Blitzle': '???',
+					'Nincada': '???',
+					'Pansear': '???',
+				}
+			},
+			{
+				'id': 17,
+				'name': 'Uncle Uncle Sanskaar\'s Noodle House\'s Noodle House',
+				'coach': 'dankmaster1738',
+				'zone': 'EST',
+				'timeZone': 'America/New_York',
+				'team': {
+					'Naclstack': '???',
+					'Cottonee': '???',
+					'Onix': '???',
+					'Flabebe': '???',
+					'Phantump': '???',
+					'Numel': '???',
+				}
+			},
+			{
+				'id': 18,
+				'name': 'Viking Veluzas',
+				'coach': 'Pygocentrus',
+				'zone': 'CST',
+				'timeZone': 'America/Chicago',
+				'team': {
+					'Hakamo-o': '???',
+					'Tinkatink': '???',
+					'Growlithe': '???',
+					'Hoothoot': '???',
+					'Wooper-Paldea': '???',
+					'Joltik': '???',
+					'Deerling': '???',
+				}
+			},
+			{
+				'id': 19,
+				'name': 'Waugatuck Wonders',
+				'coach': 'Stevarino',
+				'zone': 'EST',
+				'timeZone': 'America/New_York',
+				'team': {
+					'Haunter': 'Picaritzo',
+					'Togepi': 'Beebo',
+					'Chespin': 'Charlie',
+					'Mantyke': 'Kiki',
+					'Pancham': 'Goemon',
+					'Swinub': 'Hoobo',
+				}
+			},
 		]
 	});
 }).call(this, jQuery);

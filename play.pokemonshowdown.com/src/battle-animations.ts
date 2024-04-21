@@ -1442,8 +1442,13 @@ export class BattleScene implements BattleSceneStub {
 		pokemon.sprite.updateStatbar(pokemon);
 		if (this.acceleration < 3) this.waitFor($effect);
 
-		var duration = this.announcer.announceAbility(result)
-		this.wait(duration > 900 ? duration-900 : 0);
+		try {
+			var duration = this.announcer.announceAbility(result);
+			this.wait(duration > 900 ? duration-900 : 0);
+		}
+		catch (e){
+			console.log(e);
+		}
 	}
 	damageAnim(pokemon: Pokemon, damage: number | string) {
 		if (!this.animating) return;
@@ -1545,8 +1550,14 @@ export class BattleScene implements BattleSceneStub {
 		return pokemon.sprite.beforeMove();
 	}
 	afterMove(pokemon: Pokemon) {
-		this.announcer.announceAttack(this.battle.lastMove);
-		return pokemon.sprite.afterMove();
+		try {
+			this.announcer.announceAttack(this.battle.lastMove);
+			return pokemon.sprite.afterMove();
+		}
+		catch (e){
+			console.log(e);
+		}
+
 	}
 
 	// Misc

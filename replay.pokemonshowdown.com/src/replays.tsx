@@ -257,67 +257,13 @@ class FeaturedReplays extends preact.Component {
     return <section class="section">
       <h1>Featured replays</h1>
       <ul class="linklist">
-        <li><h2>Fun</h2></li>
-        <li><a href="oumonotype-82345404" class="blocklink">
-          <small>[gen6-oumonotype]<br /></small>
-          <strong>kdarewolf</strong> vs. <strong>Onox</strong>
-          <small><br />Protean + prediction</small>
+        <h2>RPTL S13</h2>
+        <li><a href="mundanton-gen9natdex6v6doublesdraft-689" class="blocklink">
+          <small>[gen9natdex6v6doublesdraft]<br /></small>
+          <strong>KinderGarden State Gastlys</strong> vs. <strong>Inazuma Elekid</strong>
+          <small><br />Week 1</small>
         </a></li>
-        <li><a href="anythinggoes-218380995?p2" class="blocklink">
-          <small>[gen6-anythinggoes]<br /></small>
-          <strong>Anta2</strong> vs. <strong>dscottnew</strong>
-          <small><br />Cheek Pouch</small>
-        </a></li>
-        <li><a href="uberssuspecttest-147833524" class="blocklink">
-          <small>[gen6-ubers]<br /></small>
-          <strong>Metal Brellow</strong> vs. <strong>zig100</strong>
-          <small><br />Topsy-Turvy</small>
-        </a></li>
-        {!this.moreFun && <li style={{paddingLeft: '8px'}}>
-          <button class="button" onClick={this.showMoreFun}>More <i class="fa fa-caret-right" aria-hidden></i></button>
-        </li>}
-        {this.moreFun && <li><a href="smogondoubles-75588440?p2" class="blocklink">
-          <small>[gen6-smogondoubles]<br /></small>
-          <strong>jamace6</strong> vs. <strong>DubsWelder</strong>
-          <small><br />Garchomp sweeps 11 pokemon</small>
-        </a></li>}
-        {this.moreFun && <li><a href="ou-20651579?p2" class="blocklink">
-          <small>[gen5-ou]<br /></small>
-          <strong>RainSeven07</strong> vs. <strong>my body is regi</strong>
-          <small><br />An entire team based on Assist V-create</small>
-        </a></li>}
-        {this.moreFun && <li><a href="balancedhackmons7322360?p2" class="blocklink">
-          <small>[gen5-balancedhackmons]<br /></small>
-          <strong>a ver</strong> vs. <strong>Shuckie</strong>
-          <small><br />To a ver's frustration, PP stall is viable in Balanced Hackmons</small>
-        </a></li>}
-        <h2>Competitive</h2>
-        <li><a href="doublesou-232753081" class="blocklink">
-          <small>[gen6-doublesou]<br /></small>
-          <strong>Electrolyte</strong> vs. <strong>finally</strong>
-          <small><br />finally steals Electrolyte's spot in the finals of the Doubles Winter Seasonal by outplaying Toxic Aegislash.</small>
-        </a></li>
-        <li><a href="smogtours-gen5ou-59402" class="blocklink">
-          <small>[gen5-ou]<br /></small>
-          <strong>Reymedy</strong> vs. <strong>Leftiez</strong>
-          <small><br />Reymedy's superior grasp over BW OU lead to his claim of victory over Leftiez in the No Johns Tournament.</small>
-        </a></li>
-        <li><a href="smogtours-gen3ou-56583" class="blocklink">
-          <small>[gen3-ou]<br /></small>
-          <strong>pokebasket</strong> vs. <strong>Alf'</strong>
-          <small><br />pokebasket proved Blissey isn't really one to take a Focus Punch well in his victory match over Alf' in the Fuck Trappers ADV OU tournament.</small>
-        </a></li>
-        <li><a href="smogtours-ou-55891" class="blocklink">
-          <small>[gen6-ou]<br /></small>
-          <strong>Marshall.Law</strong> vs. <strong>Malekith</strong>
-          <small><br />In a "match full of reverses", Marshall.Law takes on Malekith in the finals of It's No Use.</small>
-        </a></li>
-        <li><a href="smogtours-ubers-54583" class="blocklink">
-          <small>[gen6-custom]<br /></small>
-          <strong>hard</strong> vs. <strong>panamaxis</strong>
-          <small><br />Dark horse panamaxis proves his worth as the rightful winner of The Walkthrough Tournament in this exciting final versus hard.</small>
-        </a></li>
-        {!this.moreCompetitive && <li style={{paddingLeft: '8px'}}>
+        {/* {!this.moreCompetitive && <li style={{paddingLeft: '8px'}}>
           <button class="button" onClick={this.showMoreCompetitive}>More <i class="fa fa-caret-right" aria-hidden></i></button>
         </li>}
         {this.moreCompetitive && <li><a href="smogtours-ubers-34646" class="blocklink">
@@ -344,7 +290,7 @@ class FeaturedReplays extends preact.Component {
           <small>[gen6-randombattle]<br /></small>
           <strong>The Immortal</strong> vs. <strong>Amphinobite</strong>
           <small><br />Substitute Lugia and Rotom-Fan take advantage of Slowking's utility and large HP stat, respectively, in this high ladder match.</small>
-        </a></li>}
+        </a></li>} */}
       </ul>
     </section>;
   }

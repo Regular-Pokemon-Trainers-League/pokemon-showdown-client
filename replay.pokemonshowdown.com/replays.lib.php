@@ -33,8 +33,8 @@ class Replays {
 		} catch (PDOException $e) {
 			// this error message contains the database password for some reason :|
 			header('HTTP/1.1 503 Service Unavailable');
-			// die($e);
-			die("Database overloaded, please try again later");
+			die($e);
+			//die("Database overloaded, please try again later");
 		}
 		$this->db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 		$this->db->setAttribute(PDO::ATTR_DEFAULT_FETCH_MODE, PDO::FETCH_ASSOC);
@@ -53,19 +53,19 @@ class Replays {
 	function edit($replay) {
 		if ($replay['private'] === 3) {
 			$replay['private'] = 3;
-			$res = $this->db->prepare("UPDATE replays SET private = 3, password = NULL WHERE id = ? LIMIT 1");
+			$res = $this->db->prepare("UPDATE ntbb_replays SET private = 3, password = NULL WHERE id = ? LIMIT 1");
 			$res->execute([$replay['id']]);
 		} else if ($replay['private'] === 2) {
 			$replay['private'] = 1;
 			$replay['password'] = NULL;
-			$res = $this->db->prepare("UPDATE replays SET private = 1, password = NULL WHERE id = ? LIMIT 1");
+			$res = $this->db->prepare("UPDATE ntbb_replays SET private = 1, password = NULL WHERE id = ? LIMIT 1");
 			$res->execute([$replay['id']]);
 		} else if ($replay['private']) {
 			if (!$replay['password']) $replay['password'] = $this->genPassword();
-			$res = $this->db->prepare("UPDATE replays SET private = 1, password = ? WHERE id = ? LIMIT 1");
+			$res = $this->db->prepare("UPDATE ntbb_replays SET private = 1, password = ? WHERE id = ? LIMIT 1");
 			$res->execute([$replay['password'], $replay['id']]);
 		} else {
-			$res = $this->db->prepare("UPDATE replays SET private = 0, password = NULL WHERE id = ? LIMIT 1");
+			$res = $this->db->prepare("UPDATE ntbb_replays SET private = 0, password = NULL WHERE id = ? LIMIT 1");
 			$res->execute([$replay['id']]);
 		}
 		return;
@@ -77,7 +77,7 @@ class Replays {
 			$this->init();
 		}
 
-		$res = $this->db->prepare("SELECT * FROM replays WHERE id = ? LIMIT 1");
+		$res = $this->db->prepare("SELECT * FROM ntbb_replays WHERE id = ? LIMIT 1");
 		$res->execute([$id]);
 		if (!$res) return [];
 		$replay = $res->fetch();
@@ -87,7 +87,7 @@ class Replays {
 			if ($player[0] === '!') $player = substr($player, 1);
 		}
 
-		$res = $this->db->prepare("UPDATE replays SET views = views + 1 WHERE id = ? LIMIT 1");
+		$res = $this->db->prepare("UPDATE ntbb_replays SET views = views + 1 WHERE id = ? LIMIT 1");
 		$res->execute([$id]);
 
 		$replay['safe_inputlog'] = (
@@ -109,7 +109,7 @@ class Replays {
 			$this->init();
 		}
 
-		$res = $this->db->prepare("SELECT id, password FROM replays WHERE id = ? LIMIT 1");
+		$res = $this->db->prepare("SELECT id, password FROM ntbb_replays WHERE id = ? LIMIT 1");
 		$res->execute([$id]);
 		if (!$res) return null;
 		$replay = $res->fetch();
