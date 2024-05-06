@@ -1551,11 +1551,14 @@ export class BattleScene implements BattleSceneStub {
 	}
 	afterMove(pokemon: Pokemon) {
 		try {
-			this.announcer.announceAttack(this.battle.lastMove);
-			return pokemon.sprite.afterMove();
+			if(!this.battle.seeking) {
+				this.announcer.announceAttack(this.battle.lastMove);
+				return pokemon.sprite.afterMove();
+			}
 		}
 		catch (e){
 			console.log(e);
+			return pokemon.sprite.afterMove();
 		}
 
 	}
@@ -1996,6 +1999,17 @@ export class PokemonSprite extends Sprite {
 	}
 	behind(offset: number) {
 		return this.z + (this.isFrontSprite ? 1 : -1) * offset;
+	}
+
+	superSize() {
+		this.sp.h *= 2;
+		this.sp.w *= 2;
+		this.$el.animate(this.scene.pos({
+			x: this.x,
+			y: this.y,
+			z: this.z,
+			opacity: 1,
+		}, this.sp), 300);
 	}
 
 	removeTransform() {
