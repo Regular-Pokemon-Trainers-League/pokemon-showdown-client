@@ -12,16 +12,18 @@ export class Announcer {
     announceAbility(ability: String): number {
         var duration;
         var fileName = '';
-        var url = '';
+        var url;
         if (ability == 'Liquid Ooze')
         {
             fileName = 'liquidooze.mp3';
             url = this.path + '/' + fileName;
         }
 
-        BattleSound.playEffect(url);
-        duration = AnnounceDurations[fileName];
-        console.log(duration);
+        if(url) {
+            BattleSound.playEffect(url);
+            duration = AnnounceDurations[fileName];
+            console.log(duration);
+        }
         
         return duration ? duration*1000 : 0; // Milliseconds
     }
@@ -30,16 +32,19 @@ export class Announcer {
     announceAttack(attack: String): number {
         var duration;
         var fileName = '';
-        var url = '';
+        var url;
         if(attack == 'woodhammer')
         {
             fileName = 'woodhammer.mp3'
             url = this.path + '/' + fileName;
         }
 
-        BattleSound.playEffect(url);
-        duration = AnnounceDurations[fileName];
-        console.log(duration);
+        if(url) {
+            BattleSound.playEffect(url);
+            duration = AnnounceDurations[fileName];
+            console.log(duration);
+        }
+
         return duration ? duration*1000 : 0; // Milliseconds;
     }
 }

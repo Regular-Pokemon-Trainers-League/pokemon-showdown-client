@@ -101,28 +101,14 @@ https://replay.pokemonshowdown.com/gen7randomdoublesbattle-865046831.json
 
 Or, if you only need the log itself, add `.log` instead:
 
-https://replay.pokemonshowdown.com/gen7randomdoublesbattle-865046831.log
+https://replay.rptl.us/gen7randomdoublesbattle-865046831.log
 
 -->
 
-<link rel="stylesheet" href="//pokemonshowdown.com/style/global.css?" />
-<link rel="stylesheet" href="//play.pokemonshowdown.com/style/font-awesome.css?" />
-<link rel="stylesheet" href="//play.pokemonshowdown.com/style/battle.css?a7" />
-<link rel="stylesheet" href="//play.pokemonshowdown.com/style/utilichart.css?a7" />
-
-<!-- Global site tag (gtag.js) - Google Analytics -->
-<script async src="https://www.googletagmanager.com/gtag/js?id=UA-26211653-1"></script>
-<script>
-  window.dataLayer = window.dataLayer || [];
-  function gtag(){dataLayer.push(arguments);}
-  gtag('js', new Date());
-
-  gtag('config', 'UA-26211653-1');
-</script>
-<!-- End Google Analytics -->
-<!-- Venatus Ad Manager - Install in <HEAD> of page -->
-	<script src="https://hb.vntsm.com/v3/live/ad-manager.min.js" type="text/javascript" data-site-id="642aba63ec9a7b11c3c9c1be" data-mode="scan" async></script>
-<!-- / Venatus Ad Manager -->
+<link rel="stylesheet" href="//rptl.us/style/global.css?" />
+<link rel="stylesheet" href="//rptl.us/style/font-awesome.css?" />
+<link rel="stylesheet" href="//rptl.us/style/battle.css?a7" />
+<link rel="stylesheet" href="//rptl.us/style/utilichart.css?a7" />
 
 <style>
 	@media (max-width:820px) {
@@ -225,10 +211,10 @@ https://replay.pokemonshowdown.com/gen7randomdoublesbattle-865046831.log
 
 	<header>
 		<div class="nav-wrapper"><ul class="nav">
-			<li><a class="button nav-first" href="//pokemonshowdown.com/"><img src="//pokemonshowdown.com/images/pokemonshowdownbeta.png" srcset="//pokemonshowdown.com/images/pokemonshowdownbeta.png 1x, //pokemonshowdown.com/images/pokemonshowdownbeta@2x.png 2x" alt="Pok&eacute;mon Showdown" width="146" height="44" /> Home</a></li>
+			<li><a class="button nav-first" href="//rptl.us"><img src="//replay.rptl.us/rptl_home_logo_wide.svg" srcset="//replay.rptl.us/rptl_home_logo_wide.svg 1x, //replay.rptl.us/rptl_home_logo_wide.svg 2x" alt="Regular Pok&eacute;mon Trainers League" width="146" height="44" /> Home</a></li>
 			<li><a class="button" href="//pokemonshowdown.com/dex/">Pok&eacute;dex</a></li>
 			<li><a class="button cur" href="/">Replays</a></li>
-			<li><a class="button" href="//pokemonshowdown.com/ladder/">Ladder</a></li>
+			<li><a class="button" href="//rptl.us/ladder/">Ladder</a></li>
 			<li><a class="button nav-last" href="//pokemonshowdown.com/forums/">Forum</a></li>
 			<li><a class="button greenbutton nav-first nav-last" href="//play.pokemonshowdown.com/">Play</a></li>
 		</ul></div>
@@ -242,24 +228,25 @@ https://replay.pokemonshowdown.com/gen7randomdoublesbattle-865046831.log
 
 </div>
 
-<script defer nomodule src="//play.pokemonshowdown.com/js/lib/ps-polyfill.js"></script>
-<script defer src="//play.pokemonshowdown.com/js/lib/preact.min.js"></script>
+<script defer nomodule src="//rptl.us/js/lib/ps-polyfill.js"></script>
+<script defer src="//rptl.us/js/lib/preact.min.js"></script>
 
-<script defer src="//play.pokemonshowdown.com/config/config.js?a7"></script>
-<script defer src="//play.pokemonshowdown.com/js/lib/jquery-1.11.0.min.js"></script>
-<script defer src="//play.pokemonshowdown.com/js/lib/html-sanitizer-minified.js"></script>
-<script defer src="//play.pokemonshowdown.com/js/battle-sound.js"></script>
-<script defer src="//play.pokemonshowdown.com/js/battledata.js?a7"></script>
-<script defer src="//play.pokemonshowdown.com/data/pokedex-mini.js?a7"></script>
-<script defer src="//play.pokemonshowdown.com/data/pokedex-mini-bw.js?a7"></script>
-<script defer src="//play.pokemonshowdown.com/data/graphics.js?a7"></script>
-<script defer src="//play.pokemonshowdown.com/data/pokedex.js?a7"></script>
-<script defer src="//play.pokemonshowdown.com/data/moves.js?a7"></script>
-<script defer src="//play.pokemonshowdown.com/data/abilities.js?a7"></script>
-<script defer src="//play.pokemonshowdown.com/data/items.js?a7"></script>
-<script defer src="//play.pokemonshowdown.com/data/teambuilder-tables.js?a7"></script>
-<script defer src="//play.pokemonshowdown.com/js/battle-tooltips.js?a7"></script>
-<script defer src="//play.pokemonshowdown.com/js/battle.js?a7"></script>
+<script defer src="//rptl.us/config/config.js?a7"></script>
+<script defer src="//rptl.us/js/lib/jquery-1.11.0.min.js"></script>
+<script defer src="//rptl.us/js/lib/html-sanitizer-minified.js"></script>
+<script defer src="//rptl.us/js/battle-sound.js"></script>
+<script defer src="//rptl.us/js/battledata.js?a7"></script>
+<script defer src="//rptl.us/data/pokedex-mini.js?a7"></script>
+<script defer src="//rptl.us/data/pokedex-mini-bw.js?a7"></script>
+<script defer src="//rptl.us/data/graphics.js?a7"></script>
+<script defer src="//rptl.us/data/pokedex.js?a7"></script>
+<script defer src="//rptl.us/data/moves.js?a7"></script>
+<script defer src="//rptl.us/data/abilities.js?a7"></script>
+<script defer src="//rptl.us/data/items.js?a7"></script>
+<script defer src="//rptl.us/data/teambuilder-tables.js?a7"></script>
+<script defer src="//rptl.us/js/battle-tooltips.js?a7"></script>
+<script defer src="//rptl.us/js/battle.js?a7"></script>
+<script defer src="//rptl.us/data/graphics.js?"></script>
 
 <script defer src="js/utils.js?"></script>
 <script defer src="js/replays-battle.js?"></script>
@@ -273,7 +260,7 @@ if ($replay) {
 	echo '<script type="text/plain" class="log" id="replaylog-'.$fullid.'">'."\n";
 	echo str_replace('</', '<\\/', $replay['log'])."\n";
 	echo '</script>'."\n";
-	if ($replay['safe_inputlog'] || $manage) {
+	if (@$replay['safe_inputlog'] || $manage) {
 		if (!$replay['safe_inputlog']) echo '<!-- only available with ?manage -->'."\n";
 		echo '<script type="text/plain" class="inputlog" id="replayinputlog-'.$fullid.'">'."\n";
 		echo str_replace('</', '<\\/', $replay['inputlog'])."\n";

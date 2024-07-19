@@ -859,7 +859,7 @@ export class BattleScene implements BattleSceneStub {
 				}
 				if (textBuf) textBuf += ' / ';
 				textBuf += pokemon.speciesForme;
-				let url = spriteData.url;
+				let url = spriteData.url.replace('-buff', '');
 				// if (this.paused) url.replace('/xyani', '/xy').replace('.gif', '.png');
 				buf += '<img src="' + url + '" width="' + spriteData.w + '" height="' + spriteData.h + '" style="position:absolute;top:' + Math.floor(y - spriteData.h / 2) + 'px;left:' + Math.floor(x - spriteData.w / 2) + 'px" />';
 				buf2 += '<div style="position:absolute;top:' + (y + 45) + 'px;left:' + (x - 40) + 'px;width:80px;font-size:10px;text-align:center;color:#FFF;">';
@@ -1399,7 +1399,7 @@ export class BattleScene implements BattleSceneStub {
 
 	typeAnim(pokemon: Pokemon, types: string) {
 		const result = BattleLog.escapeHTML(types).split('/').map(type =>
-			'<img src="' + Dex.resourcePrefix + 'sprites/types/' + type + '.png" alt="' + type + '" class="pixelated" />'
+			'<img src="' + Dex.resourcePrefix + 'sprites/types/' + encodeURIComponent(type) + '.png" alt="' + type + '" class="pixelated" />'
 		).join(' ');
 		this.resultAnim(pokemon, result, 'neutral');
 	}
@@ -1442,8 +1442,13 @@ export class BattleScene implements BattleSceneStub {
 		pokemon.sprite.updateStatbar(pokemon);
 		if (this.acceleration < 3) this.waitFor($effect);
 
-		var duration = this.announcer.announceAbility(result)
-		this.wait(duration > 900 ? duration-900 : 0);
+		try {
+			var duration = this.announcer.announceAbility(result);
+			this.wait(duration > 900 ? duration-900 : 0);
+		}
+		catch (e){
+			console.log(e);
+		}
 	}
 	damageAnim(pokemon: Pokemon, damage: number | string) {
 		if (!this.animating) return;
@@ -1545,8 +1550,17 @@ export class BattleScene implements BattleSceneStub {
 		return pokemon.sprite.beforeMove();
 	}
 	afterMove(pokemon: Pokemon) {
-		this.announcer.announceAttack(this.battle.lastMove);
-		return pokemon.sprite.afterMove();
+		try {
+			if(!this.battle.seeking) {
+				this.announcer.announceAttack(this.battle.lastMove);
+				return pokemon.sprite.afterMove();
+			}
+		}
+		catch (e){
+			console.log(e);
+			return pokemon.sprite.afterMove();
+		}
+
 	}
 
 	// Misc
@@ -1584,7 +1598,7 @@ export class BattleScene implements BattleSceneStub {
 		this.preloadImage(Dex.resourcePrefix + 'sprites/ani-back/substitute.gif');
 	}
 	rollBgm() {
-		this.setBgm(1 + this.numericId % 19);
+		this.setBgm(1 + this.numericId % 20);
 	}
 	setBgm(bgmNum: number) {
 		if (this.bgmNum === bgmNum) return;
@@ -1654,10 +1668,13 @@ export class BattleScene implements BattleSceneStub {
 		case 18:
 			this.bgm = BattleSound.loadBgm('audio/sv-sada-turo-battle.mp3', 157840, 319889, this.bgm);
 			break;
+		case 19:
+			this.bgm=BattleSound.loadBgm('audio/oras-aqua-magma-leaders-battle.mp3',17405,138780,this.bgm);
+			break;
 		case -101:
 			this.bgm = BattleSound.loadBgm('audio/spl-elite4.mp3', 3962, 152509, this.bgm);
 			break;
-		case 19:
+		case 20:
 		default:
 			this.bgm = BattleSound.loadBgm('audio/sm-rival.mp3', 11389, 62158, this.bgm);
 			break;
@@ -1985,6 +2002,17 @@ export class PokemonSprite extends Sprite {
 	}
 	behind(offset: number) {
 		return this.z + (this.isFrontSprite ? 1 : -1) * offset;
+	}
+
+	superSize() {
+		this.sp.h *= 2;
+		this.sp.w *= 2;
+		this.$el.animate(this.scene.pos({
+			x: this.x,
+			y: this.y,
+			z: this.z,
+			opacity: 1,
+		}, this.sp), 300);
 	}
 
 	removeTransform() {
@@ -3182,6 +3210,10 @@ const BattleEffects: {[k: string]: SpriteData} = {
 	mist: {
 		rawHTML: '<div class="sidecondition-mist" style="display:none;position:absolute" />',
 		w: 100, h: 50,
+	},
+	silvestree: {
+		url: 'professorsilvestron.png',
+		w: 100, h: 100,
 	},
 };
 (() => {

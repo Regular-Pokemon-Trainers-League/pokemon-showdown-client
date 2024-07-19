@@ -27,6 +27,7 @@ class SearchPanel extends preact.Component<{id: string}> {
   sort = 'date';
   override componentDidMount() {
     Net('/check-login.php').get().then(result => {
+      console.log("CHECKING LOGIN");
       if (result.charAt(0) !== ']') return;
       const [userid, sysop] = result.slice(1).split(',');
       this.loggedInUser = userid;
@@ -241,110 +242,308 @@ class SearchPanel extends preact.Component<{id: string}> {
 }
 
 class FeaturedReplays extends preact.Component {
-  moreFun = false;
-  moreCompetitive = false;
-  showMoreFun = (e: Event) => {
+  week = Array(10).fill(false);
+  showWeekThree = (e: Event) => {
     e.preventDefault();
-    this.moreFun = true;
+    this.week[2] = true;
     this.forceUpdate();
   };
-  showMoreCompetitive = (e: Event) => {
+  showWeekTwo = (e: Event) => {
     e.preventDefault();
-    this.moreCompetitive = true;
+    this.week[1] = true;
+    this.forceUpdate();
+  };
+  showWeekOne = (e: Event) => {
+    e.preventDefault();
+    this.week[0] = true;
     this.forceUpdate();
   };
   override render() {
     return <section class="section">
-      <h1>Featured replays</h1>
+      <h1>RPTL S13</h1>
+      <img src="//rptl.us/sprites/sudowoodo_punching.gif" alt="" style={{imageRendering: 'pixelated'}} />
       <ul class="linklist">
-        <li><h2>Fun</h2></li>
-        <li><a href="oumonotype-82345404" class="blocklink">
-          <small>[gen6-oumonotype]<br /></small>
-          <strong>kdarewolf</strong> vs. <strong>Onox</strong>
-          <small><br />Protean + prediction</small>
+        <h2>Week 4</h2>
+        <li><a href="mundanton-gen9natdex6v6doublesdraft-1006" class="blocklink">
+          <small>[gen9natdex6v6doublesdraft]<br /></small>
+          <strong>Uncle Sanskaar's Noodle House</strong> vs. <strong>Waugatuck Wonders</strong>
+          <small><br />Week 4</small>
         </a></li>
-        <li><a href="anythinggoes-218380995?p2" class="blocklink">
-          <small>[gen6-anythinggoes]<br /></small>
-          <strong>Anta2</strong> vs. <strong>dscottnew</strong>
-          <small><br />Cheek Pouch</small>
+        <li><a href="mundanton-gen9natdex6v6doublesdraft-998" class="blocklink">
+          <small>[gen9natdex6v6doublesdraft]<br /></small>
+          <strong>Lacunosa Little League</strong> vs. <strong>Kakuna's Law Firm</strong>
+          <small><br />Week 4</small>
         </a></li>
-        <li><a href="uberssuspecttest-147833524" class="blocklink">
-          <small>[gen6-ubers]<br /></small>
-          <strong>Metal Brellow</strong> vs. <strong>zig100</strong>
-          <small><br />Topsy-Turvy</small>
+        <li><a href="mundanton-gen9natdex6v6doublesdraft-1004" class="blocklink">
+          <small>[gen9natdex6v6doublesdraft]<br /></small>
+          <strong>Regular Pokemon Trainers Team</strong> vs. <strong>Edison Electric MilliVolts</strong>
+          <small><br />Week 4</small>
         </a></li>
-        {!this.moreFun && <li style={{paddingLeft: '8px'}}>
-          <button class="button" onClick={this.showMoreFun}>More <i class="fa fa-caret-right" aria-hidden></i></button>
+        <li><a href="mundanton-gen9natdex6v6doublesdraft-1027" class="blocklink">
+          <small>[gen9natdex6v6doublesdraft]<br /></small>
+          <strong>Beads of Ruin</strong> vs. <strong>Inazuma Elekids</strong>
+          <small><br />Week 4</small>
+        </a></li>
+        <li><a href="mundanton-gen9natdex6v6doublesdraft-1010" class="blocklink">
+          <small>[gen9natdex6v6doublesdraft]<br /></small>
+          <strong>Himalayan Hemorrhoids</strong> vs. <strong>Spheal City Junior</strong>
+          <small><br />Week 4</small>
+        </a></li>
+        <li><a href="mundanton-gen9natdex6v6doublesdraft-1033" class="blocklink">
+          <small>[gen9natdex6v6doublesdraft]<br /></small>
+          <strong>Viking Veluza</strong> vs. <strong>Kakuna's Law Firm</strong>
+          <small><br />Week 4</small>
+        </a></li>
+        <li><a href="mundanton-gen9natdex6v6doublesdraft-995" class="blocklink">
+          <small>[gen9natdex6v6doublesdraft]<br /></small>
+          <strong>Uncle Sanskaar's Noodle House</strong> vs. <strong>Tinkering Tinkatons</strong>
+          <small><br />Week 4</small>
+        </a></li>
+        <li><a href="mundanton-gen9natdex6v6doublesdraft-1003" class="blocklink">
+          <small>[gen9natdex6v6doublesdraft]<br /></small>
+          <strong>Lumiose City Larvitars</strong> vs. <strong>KinderGarden State Gastlys</strong>
+          <small><br />Week 4</small>
+        </a></li>
+        <li><a href="mundanton-gen9natdex6v6doublesdraft-1005" class="blocklink">
+          <small>[gen9natdex6v6doublesdraft]<br /></small>
+          <strong>Regular Pokemon Trainers Team</strong> vs. <strong>Lacunosa Little League</strong>
+          <small><br />Week 4</small>
+        </a></li>
+        <li><a href="mundanton-gen9natdex6v6doublesdraft-994" class="blocklink">
+          <small>[gen9natdex6v6doublesdraft]<br /></small>
+          <strong>Inazuma Elekids</strong> vs. <strong>Portland Popplios</strong>
+          <small><br />Week 4</small>
+        </a></li>
+        <li><a href="mundanton-gen9natdex6v6doublesdraft-975" class="blocklink">
+          <small>[gen9natdex6v6doublesdraft]<br /></small>
+          <strong>The Goofy Goomers</strong> vs. <strong>Team Zorua</strong>
+          <small><br />Week 4</small>
+        </a></li>
+        <li><a href="mundanton-gen9natdex6v6doublesdraft-974" class="blocklink">
+          <small>[gen9natdex6v6doublesdraft]<br /></small>
+          <strong>KinderGarden State Gastlys</strong> vs. <strong>Pittsburgh Sphealers</strong>
+          <small><br />Week 4</small>
+        </a></li>
+        <li><a href="mundanton-gen9natdex6v6doublesdraft-971" class="blocklink">
+          <small>[gen9natdex6v6doublesdraft]<br /></small>
+          <strong>Team Zorua</strong> vs. <strong>Insomnia City Wooper Troopers</strong>
+          <small><br />Week 4</small>
+        </a></li>
+        <li><a href="mundanton-gen9natdex6v6doublesdraft-970" class="blocklink">
+          <small>[gen9natdex6v6doublesdraft]<br /></small>
+          <strong>Pittsburgh Sphealers</strong> vs. <strong>Insomnia City Wooper Troopers</strong>
+          <small><br />Week 4</small>
+        </a></li>
+        <li><a href="mundanton-gen9natdex6v6doublesdraft-968" class="blocklink">
+          <small>[gen9natdex6v6doublesdraft]<br /></small>
+          <strong>Edison Electric MilliVolts</strong> vs. <strong>Himalayan Hemorrhoids</strong>
+          <small><br />Week 4</small>
+        </a></li>
+        <li><a href="mundanton-gen9natdex6v6doublesdraft-967" class="blocklink">
+          <small>[gen9natdex6v6doublesdraft]<br /></small>
+          <strong>Tinkering Tinkatons</strong> vs. <strong>Viking Veluza</strong>
+          <small><br />Week 4</small>
+        </a></li>
+        {!this.week[2] && <li style={{paddingLeft: '8px'}}>
+          <button class="button" onClick={this.showWeekThree}>Week 3 <i class="fa fa-caret-right" aria-hidden></i></button>
         </li>}
-        {this.moreFun && <li><a href="smogondoubles-75588440?p2" class="blocklink">
-          <small>[gen6-smogondoubles]<br /></small>
-          <strong>jamace6</strong> vs. <strong>DubsWelder</strong>
-          <small><br />Garchomp sweeps 11 pokemon</small>
-        </a></li>}
-        {this.moreFun && <li><a href="ou-20651579?p2" class="blocklink">
-          <small>[gen5-ou]<br /></small>
-          <strong>RainSeven07</strong> vs. <strong>my body is regi</strong>
-          <small><br />An entire team based on Assist V-create</small>
-        </a></li>}
-        {this.moreFun && <li><a href="balancedhackmons7322360?p2" class="blocklink">
-          <small>[gen5-balancedhackmons]<br /></small>
-          <strong>a ver</strong> vs. <strong>Shuckie</strong>
-          <small><br />To a ver's frustration, PP stall is viable in Balanced Hackmons</small>
-        </a></li>}
-        <h2>Competitive</h2>
-        <li><a href="doublesou-232753081" class="blocklink">
-          <small>[gen6-doublesou]<br /></small>
-          <strong>Electrolyte</strong> vs. <strong>finally</strong>
-          <small><br />finally steals Electrolyte's spot in the finals of the Doubles Winter Seasonal by outplaying Toxic Aegislash.</small>
+        {this.week[2] && <h2>Week 3</h2>}
+        {this.week[2] &&  <ul class="linklist">
+        <li><a href="mundanton-gen9natdex6v6doublesdraft-976" class="blocklink">
+          <small>[gen9natdex6v6doublesdraft]<br /></small>
+          <strong>The Goofy Goomers</strong> vs. <strong>KinderGarden State Gastlys</strong>
+          <small><br />Week 3</small>
         </a></li>
-        <li><a href="smogtours-gen5ou-59402" class="blocklink">
-          <small>[gen5-ou]<br /></small>
-          <strong>Reymedy</strong> vs. <strong>Leftiez</strong>
-          <small><br />Reymedy's superior grasp over BW OU lead to his claim of victory over Leftiez in the No Johns Tournament.</small>
+        <li><a href="mundanton-gen9natdex6v6doublesdraft-965" class="blocklink">
+          <small>[gen9natdex6v6doublesdraft]<br /></small>
+          <strong>Spheal City Junior</strong> vs. <strong>Lacunosa Little League</strong>
+          <small><br />Week 3</small>
         </a></li>
-        <li><a href="smogtours-gen3ou-56583" class="blocklink">
-          <small>[gen3-ou]<br /></small>
-          <strong>pokebasket</strong> vs. <strong>Alf'</strong>
-          <small><br />pokebasket proved Blissey isn't really one to take a Focus Punch well in his victory match over Alf' in the Fuck Trappers ADV OU tournament.</small>
+        <li><a href="mundanton-gen9natdex6v6doublesdraft-951" class="blocklink">
+          <small>[gen9natdex6v6doublesdraft]<br /></small>
+          <strong>Waugatuck Wonders</strong> vs. <strong>Team Zorua</strong>
+          <small><br />Week 3</small>
         </a></li>
-        <li><a href="smogtours-ou-55891" class="blocklink">
-          <small>[gen6-ou]<br /></small>
-          <strong>Marshall.Law</strong> vs. <strong>Malekith</strong>
-          <small><br />In a "match full of reverses", Marshall.Law takes on Malekith in the finals of It's No Use.</small>
+        <li><a href="mundanton-gen9natdex6v6doublesdraft-950" class="blocklink">
+          <small>[gen9natdex6v6doublesdraft]<br /></small>
+          <strong>Lumiose City Larvitars</strong> vs. <strong>Waugatuck Wonders</strong>
+          <small><br />Week 3</small>
         </a></li>
-        <li><a href="smogtours-ubers-54583" class="blocklink">
-          <small>[gen6-custom]<br /></small>
-          <strong>hard</strong> vs. <strong>panamaxis</strong>
-          <small><br />Dark horse panamaxis proves his worth as the rightful winner of The Walkthrough Tournament in this exciting final versus hard.</small>
+        <li><a href="mundanton-gen9natdex6v6doublesdraft-949" class="blocklink">
+          <small>[gen9natdex6v6doublesdraft]<br /></small>
+          <strong>Tinkering Tinkatons</strong> vs. <strong>Pittsburgh Sphealers</strong>
+          <small><br />Week 3</small>
         </a></li>
-        {!this.moreCompetitive && <li style={{paddingLeft: '8px'}}>
-          <button class="button" onClick={this.showMoreCompetitive}>More <i class="fa fa-caret-right" aria-hidden></i></button>
+        <li><a href="mundanton-gen9natdex6v6doublesdraft-948" class="blocklink">
+          <small>[gen9natdex6v6doublesdraft]<br /></small>
+          <strong>Edison Electric MilliVolts</strong> vs. <strong>Insomnia City Wooper Troopers</strong>
+          <small><br />Week 3</small>
+        </a></li>
+        <li><a href="mundanton-gen9natdex6v6doublesdraft-947" class="blocklink">
+          <small>[gen9natdex6v6doublesdraft]<br /></small>
+          <strong>KinderGarden State Gastlys</strong> vs. <strong>Edison Electric MilliVolts</strong>
+          <small><br />Week 3</small>
+        </a></li>
+        <li><a href="mundanton-gen9natdex6v6doublesdraft-946" class="blocklink">
+          <small>[gen9natdex6v6doublesdraft]<br /></small>
+          <strong>Pittsburgh Sphealers</strong> vs. <strong>Lumiose City Larvitars</strong>
+          <small><br />Week 3</small>
+        </a></li>
+        <li><a href="mundanton-gen9natdex6v6doublesdraft-945" class="blocklink">
+          <small>[gen9natdex6v6doublesdraft]<br /></small>
+          <strong>Beads of Ruin</strong> vs. <strong>Lacunosa Little League</strong>
+          <small><br />Week 3</small>
+        </a></li>
+        <li><a href="mundanton-gen9natdex6v6doublesdraft-943" class="blocklink">
+          <small>[gen9natdex6v6doublesdraft]<br /></small>
+          <strong>Portland Popplios</strong> vs. <strong>Tinkering Tinkatons</strong>
+          <small><br />Week 3</small>
+        </a></li>
+        <li><a href="mundanton-gen9natdex6v6doublesdraft-942" class="blocklink">
+          <small>[gen9natdex6v6doublesdraft]<br /></small>
+          <strong>Beads of Ruin</strong> vs. <strong>Kakuna's Law Firm</strong>
+          <small><br />Week 3</small>
+        </a></li>
+        <li><a href="mundanton-gen9natdex6v6doublesdraft-941" class="blocklink">
+          <small>[gen9natdex6v6doublesdraft]<br /></small>
+          <strong>Team Zorua</strong> vs. <strong>Kakuna's Law Firm</strong>
+          <small><br />Week 3</small>
+        </a></li>
+        </ul>}
+        {!this.week[1] && <li style={{paddingLeft: '8px'}}>
+          <button class="button" onClick={this.showWeekTwo}>Week 2 <i class="fa fa-caret-right" aria-hidden></i></button>
         </li>}
-        {this.moreCompetitive && <li><a href="smogtours-ubers-34646" class="blocklink">
-          <small>[gen6-ubers]<br /></small>
-          <strong>steelphoenix</strong> vs. <strong>Jibaku</strong>
-          <small><br />In this SPL Week 4 battle, Jibaku's clever plays with Mega Sableye keep the momentum mostly in his favor.</small>
-        </a></li>}
-        {this.moreCompetitive && <li><a href="smogtours-uu-36860" class="blocklink">
-          <small>[gen6-uu]<br /></small>
-          <strong>IronBullet93</strong> vs. <strong>Laurel</strong>
-          <small><br />Laurel outplays IronBullet's Substitute Tyrantrum with the sly use of a Shuca Berry Cobalion, but luck was inevitably the deciding factor in this SPL Week 6 match.</small>
-        </a></li>}
-        {this.moreCompetitive && <li><a href="smogtours-gen5ou-36900" class="blocklink">
-          <small>[gen5-ou]<br /></small>
-          <strong>Lowgock</strong> vs. <strong>Meridian</strong>
-          <small><br />This SPL Week 6 match features impressive plays, from Jirachi sacrificing itself to paralysis to avoid a burn to some clever late-game switches.</small>
-        </a></li>}
-        {this.moreCompetitive && <li><a href="smogtours-gen4ou-36782" class="blocklink">
-          <small>[gen4-ou]<br /></small>
-          <strong>Heist</strong> vs. <strong>liberty32</strong>
-          <small><br />Starting out as an entry hazard-filled stallfest, this close match is eventually decided by liberty32's efficient use of Aerodactyl.</small>
-        </a></li>}
-        {this.moreCompetitive && <li><a href="randombattle-213274483" class="blocklink">
-          <small>[gen6-randombattle]<br /></small>
-          <strong>The Immortal</strong> vs. <strong>Amphinobite</strong>
-          <small><br />Substitute Lugia and Rotom-Fan take advantage of Slowking's utility and large HP stat, respectively, in this high ladder match.</small>
-        </a></li>}
+        {this.week[1] && <h2>Week 2</h2>}
+        {this.week[1] &&  <ul class="linklist">
+        <li><a href="mundanton-gen9natdex6v6doublesdraft-973" class="blocklink">
+          <small>[gen9natdex6v6doublesdraft]<br /></small>
+          <strong>Spheal City Junior</strong> vs. <strong>Viking Veluza</strong>
+          <small><br />Week 2</small>
+        </a></li>
+        <li><a href="mundanton-gen9natdex6v6doublesdraft-972" class="blocklink">
+          <small>[gen9natdex6v6doublesdraft]<br /></small>
+          <strong>Spheal City Junior</strong> vs. <strong>The Goofy Goomers</strong>
+          <small><br />Week 2</small>
+        </a></li>
+        <li><a href="mundanton-gen9natdex6v6doublesdraft-969" class="blocklink">
+          <small>[gen9natdex6v6doublesdraft]<br /></small>
+          <strong>Insomnia Wooper Troopers</strong> vs. <strong>Himalayan Hemorrhoids</strong>
+          <small><br />Week 2</small>
+        </a></li>
+        <li><a href="mundanton-gen9natdex6v6doublesdraft-932" class="blocklink">
+          <small>[gen9natdex6v6doublesdraft]<br /></small>
+          <strong>Uncle Sanskaar's Noodle House</strong> vs. <strong>Inazuma Elekids</strong>
+          <small><br />Week 2</small>
+        </a></li>
+        <li><a href="mundanton-gen9natdex6v6doublesdraft-930" class="blocklink">
+          <small>[gen9natdex6v6doublesdraft]<br /></small>
+          <strong>Rocket City Trash Pandas</strong> vs. <strong>The Goofy Goomers</strong>
+          <small><br />Week 2</small>
+        </a></li>
+        <li><a href="mundanton-gen9natdex6v6doublesdraft-911" class="blocklink">
+          <small>[gen9natdex6v6doublesdraft]<br /></small>
+          <strong>Team Zorua</strong> vs. <strong>Uncle Sanskaar's Noodle House</strong>
+          <small><br />Week 2</small>
+        </a></li>
+        <li><a href="mundanton-gen9natdex6v6doublesdraft-905" class="blocklink">
+          <small>[gen9natdex6v6doublesdraft]<br /></small>
+          <strong>Beads of Ruin</strong> vs. <strong>KinderGarden State Gastlys</strong>
+          <small><br />Week 2</small>
+        </a></li>
+        <li><a href="mundanton-gen9natdex6v6doublesdraft-903" class="blocklink">
+          <small>[gen9natdex6v6doublesdraft]<br /></small>
+          <strong>KinderGarden State Gastlys</strong> vs. <strong>Insomnia City Wooper Troopers</strong>
+          <small><br />Week 2</small>
+        </a></li>
+        <li><a href="mundanton-gen9natdex6v6doublesdraft-899" class="blocklink">
+          <small>[gen9natdex6v6doublesdraft]<br /></small>
+          <strong>Inazuma Elekids</strong> vs. <strong>Edison Electric MilliVolts</strong>
+          <small><br />Week 2</small>
+        </a></li>
+        <li><a href="mundanton-gen9natdex6v6doublesdraft-899" class="blocklink">
+          <small>[gen9natdex6v6doublesdraft]<br /></small>
+          <strong>Kakuna's Law Firm</strong> vs. <strong>Portland Popplios</strong>
+          <small><br />Week 2</small>
+        </a></li>
+        <li><a href="mundanton-gen9natdex6v6doublesdraft-877" class="blocklink">
+          <small>[gen9natdex6v6doublesdraft]<br /></small>
+          <strong>Waugatuck Wonders</strong> vs. <strong>Regular Pokemon Trainers Team</strong>
+          <small><br />Week 2</small>
+        </a></li>
+        <li><a href="mundanton-gen9natdex6v6doublesdraft-876" class="blocklink">
+          <small>[gen9natdex6v6doublesdraft]<br /></small>
+          <strong>Lumiose City Larvitars</strong> vs. <strong>Lacunosa Little League</strong>
+          <small><br />Week 2</small>
+        </a></li>
+        <li><a href="mundanton-gen9natdex6v6doublesdraft-875" class="blocklink">
+          <small>[gen9natdex6v6doublesdraft]<br /></small>
+          <strong>Viking Veluza</strong> vs. <strong>Pittsburgh Sphealers</strong>
+          <small><br />Week 2</small>
+        </a></li>
+        <li><a href="mundanton-gen9natdex6v6doublesdraft-871" class="blocklink">
+          <small>[gen9natdex6v6doublesdraft]<br /></small>
+          <strong>Tinkering Tinkatons</strong> vs. <strong>Kakuna's Law Firm</strong>
+          <small><br />Week 2</small>
+        </a></li>
+        <li><a href="mundanton-gen9natdex6v6doublesdraft-868" class="blocklink">
+          <small>[gen9natdex6v6doublesdraft]<br /></small>
+          <strong>Edison Electric MilliVolts</strong> vs. <strong>Lumiose City Larvitars</strong>
+          <small><br />Week 2</small>
+        </a></li>
+        <li><a href="mundanton-gen9natdex6v6doublesdraft-867" class="blocklink">
+          <small>[gen9natdex6v6doublesdraft]<br /></small>
+          <strong>Pittsburgh Sphealers</strong> vs. <strong>Waugatuck Wonders</strong>
+          <small><br />Week 2</small>
+        </a></li>
+        <li><a href="mundanton-gen9natdex6v6doublesdraft-852" class="blocklink">
+          <small>[gen9natdex6v6doublesdraft]<br /></small>
+          <strong>Himalayan Hemorrhoids</strong> vs. <strong>Lacunosa Little League</strong>
+          <small><br />Week 2</small>
+        </a></li>
+        <li><a href="mundanton-gen9natdex6v6doublesdraft-836" class="blocklink">
+          <small>[gen9natdex6v6doublesdraft]<br /></small>
+          <strong>Team Zorua</strong> vs. <strong>Tinkering Tinkatons</strong>
+          <small><br />Week 2</small>
+        </a></li></ul>}
+        {!this.week[0] && <li style={{paddingLeft: '8px'}}>
+          <button class="button" onClick={this.showWeekOne}>Week 1 <i class="fa fa-caret-right" aria-hidden></i></button>
+        </li>}
+        {this.week[0] && <h2>Week 1</h2>}
+        {this.week[0] && <ul class="linklist"> <li><a href="mundanton-gen9natdex6v6doublesdraft-835" class="blocklink">
+          <small>[gen9natdex6v6doublesdraft]<br /></small>
+          <strong>Uncle Sanskaar's Noodle House</strong> vs. <strong>Himalayan Hemorrhoids</strong>
+          <small><br />Week 1</small>
+        </a></li>
+        <li><a href="mundanton-gen9natdex6v6doublesdraft-829" class="blocklink">
+          <small>[gen9natdex6v6doublesdraft]<br /></small>
+          <strong>The Goofy Goomers</strong> vs. <strong>Insomnia City Wooper Troopers</strong>
+          <small><br />Week 1</small>
+        </a></li>
+        <li><a href="mundanton-gen9natdex6v6doublesdraft-828" class="blocklink">
+          <small>[gen9natdex6v6doublesdraft]<br /></small>
+          <strong>Spheal City Junior</strong> vs. <strong>Rocket City Trash Pandas</strong>
+          <small><br />Week 1</small>
+        </a></li>
+        <li><a href="mundanton-gen9natdex6v6doublesdraft-790" class="blocklink">
+          <small>[gen9natdex6v6doublesdraft]<br /></small>
+          <strong>Team Zorua</strong> vs. <strong>Regular Pokemon Trainers Team</strong>
+          <small><br />Week 1</small>
+        </a></li>
+        <li><a href="mundanton-gen9natdex6v6doublesdraft-789" class="blocklink">
+          <small>[gen9natdex6v6doublesdraft]<br /></small>
+          <strong>Tinkering Tinkatons</strong> vs. <strong>Lumiose City Larvitars</strong>
+          <small><br />Week 1</small>
+        </a></li>
+        <li><a href="mundanton-gen9natdex6v6doublesdraft-759" class="blocklink">
+          <small>[gen9natdex6v6doublesdraft]<br /></small>
+          <strong>The Pittsburgh Sphealers</strong> vs. <strong>Kakuna's Law Firm</strong>
+          <small><br />Week 1</small>
+        </a></li>
+        <li><a href="mundanton-gen9natdex6v6doublesdraft-689" class="blocklink">
+          <small>[gen9natdex6v6doublesdraft]<br /></small>
+          <strong>KinderGarden State Gastlys</strong> vs. <strong>Inazuma Elekid</strong>
+          <small><br />Week 1</small>
+        </a></li></ul>}
       </ul>
     </section>;
   }

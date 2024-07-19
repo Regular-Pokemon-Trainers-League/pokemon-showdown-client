@@ -838,6 +838,7 @@ export class Side {
 		}
 
 		this.battle.scene.animSummon(pokemon, slot);
+		this.checkRyinPower();
 	}
 	dragIn(pokemon: Pokemon, slot = pokemon.slot) {
 		let oldpokemon = this.active[slot];
@@ -955,6 +956,26 @@ export class Side {
 		if (pokemon.side.faintCounter < 100) pokemon.side.faintCounter++;
 
 		this.battle.scene.animFaint(pokemon);
+		this.checkRyinPower();
+	}
+	checkRyinPower() {
+		if (this.battle.p1.name.toLowerCase() == 'ryinthyme' || this.battle.p2.name.toLowerCase() == 'ryinthyme') {
+			if (this.battle.p1.faintCounter == this.battle.p1.totalPokemon - 1 && this.battle.p2.faintCounter == this.battle.p2.totalPokemon - 1) {
+				let ryin = this.battle.p1.name.toLowerCase() == 'ryinthyme' ? this.battle.p1 : this.battle.p2;
+				for(let i = 0; i < 2; i++) {
+					let lastmon = ryin.active[i];
+					if (lastmon) {
+						try {
+							ryin.active[i]?.sprite.superSize();
+							let logargs: Args = ['chat', 'Announcer', 'Coach RyinThyme\'s Pokémon double in size when put in a 1v1 situation!'];
+							this.battle.log(logargs)
+						} catch (error) {
+							console.log(error)
+						}
+					}
+				}
+			}
+		}
 	}
 	destroy() {
 		this.clearPokemon();
@@ -3362,6 +3383,10 @@ export class Battle {
 		case 'upkeep': {
 			this.usesUpkeep = true;
 			this.updateTurnCounters();
+			// Prevents getSwitchedPokemon from skipping over a Pokemon that switched out mid turn (e.g. U-turn)
+			for (const side of this.sides) {
+				side.lastPokemon = null;
+			}
 			break;
 		}
 		case 'turn': {
@@ -3380,6 +3405,9 @@ export class Battle {
 			}
 			if (this.tier.includes(`Let's Go`)) {
 				this.dex = Dex.mod('gen7letsgo' as ID);
+			}
+			if (this.tier.includes('Super Staff Bros')) {
+				this.dex = Dex.mod('gen9ssb' as ID);
 			}
 			this.log(args);
 			break;
@@ -3693,6 +3721,21 @@ export class Battle {
 		}
 		case 'controlshtml': {
 			this.scene.setControlsHTML(BattleLog.sanitizeHTML(args[1]));
+			break;
+		}
+		case 'custom': {
+			// Style is always |custom|-subprotocol|pokemon|additional info
+			if (args[1] === '-endterastallize') {
+				let poke = this.getPokemon(args[2])!;
+				poke.removeVolatile('terastallize' as ID);
+				poke.teraType = '';
+				poke.terastallized = '';
+				poke.details = poke.details.replace(/, tera:[a-z]+/i, '');
+				poke.searchid = poke.searchid.replace(/, tera:[a-z]+/i, '');
+				this.scene.animTransform(poke);
+				this.scene.resetStatbar(poke);
+				this.log(args, kwArgs);
+			}
 			break;
 		}
 		default: {
