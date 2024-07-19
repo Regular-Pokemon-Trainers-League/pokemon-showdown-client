@@ -474,7 +474,8 @@
 					'Grimer-Alola': 'The Hangover',
 					'Mudbray': 'Donkey',
 					'Psyduck': 'Sweet n Sour Duck',
-					'Sentret': 'End My Suffering',
+					'Frillish': 'Bad Lifeguard',
+					'Sentret': 'END MY SUFFERING',
 				}
 			},
 			{
@@ -490,23 +491,23 @@
 					'Totodile': 'Bass',
 					'Phanpy': 'Jambo',
 					'Karrablast': 'Glue-Gun',
+					'Elgyem': 'Binkmann',
 				}
 			},
 			{
 				'id': 2,
-				'name': 'The Goofy Goomers',
-				'coach': 'RubyFlame57',
+				'name': 'The Key West Skippers',
+				'coach': 'Bryguyshyguy',
 				'zone': 'EST',
 				'timeZone': 'America/New_York',
 				'team': {
-					'Fletchling': 'Tangerine Tango',
-					'Goomy': 'Goofus',
-					'Wooper': 'Pinkle Dinkle',
-					'Smoliv': '???',
-					'Aipom': 'Rosali Rouge',
-					'Poochyena': '???',
-					'Mareep': 'Meep Meep Beep',
-					'Swirlix': 'Waric Windmills',
+					'Nidorino': 'Greg',
+					'Goomy': 'Goofus, Goo Son',
+					'Cottonee': 'Greg',
+					'Munchlax': 'Greg',
+					'Carvanha': 'Greg',
+					'Charcadet': 'Greg',
+					'Bergmite': 'Greg',
 				}
 			},
 			{
@@ -521,9 +522,10 @@
 					'Hatenna': 'Rizztena',
 					'Treecko': 'Mewcko',
 					'Nickit': 'Muntit',
-					'Beldum': '???',
+					'Beldum': 'Mr. Belding',
 					'Ducklett': 'Gyatlett',
-					'Sandygast': '???',
+					'Sandygast': 'Sandygyatt',
+					'Numel': '???',
 				}
 			},
 			{
@@ -535,11 +537,12 @@
 				'team': {
 					'Grotle': 'Hoge Veluwe',
 					'Squirtle': 'Waddenzee',
-					'Shuppet': '???',
+					'Shuppet': 'Mannoneke',
 					'Teddiursa': 'Beero',
 					'Cutiefly': 'Laws of Aviation',
 					'Cufant': 'Big Yeet',
-					'Smoochum': 'M\'Inuit',
+					'Smoochum': 'GDL2 Player',
+					'Nosepass': '🗿',
 				}
 			},
 			{
@@ -555,6 +558,7 @@
 					'Gimmighoul': 'Iggy',
 					'Azurill': 'Skwunchi',
 					'Combee': 'Honeybutt',
+					'Seel': 'Bleppin',
 				}
 			},
 			{
@@ -570,6 +574,7 @@
 					'Chikorita': 'Happy Lawyer',
 					'Slakoth': 'Lazy Lawyer',
 					'Staryu': 'Star Lawyer',
+					'Swablu': 'Fluffy Lawyer',
 				}
 			},
 			{
@@ -587,6 +592,7 @@
 					'Tyrogue': 'Powerman',
 					'Rockruff': 'Floppy Ears Effect',
 					'Pidove': 'General Taube',
+					'Phantump': 'Henrietta',
 				}
 			},
 			{
@@ -603,6 +609,7 @@
 					'Nidoran-F': 'Raspberry',
 					'Rattata-Alola': 'Mr. 𝓕𝓻𝓮𝓪𝓴𝔂',
 					'Skiddo': 'VERSTAPPEN',
+					'Litwick': 'Lumine',
 				}
 			},
 			{
@@ -612,13 +619,13 @@
 				'zone': 'EST',
 				'timeZone': 'America/New_York',
 				'team': {
-					'Nidorino': 'Leander',
+					'Duosion': 'rednaeL',
 					'Voltorb-Hisui': 'Wernher von Braun',
 					'Cyndaquil': 'シロナ',
-					'Impidimp': 'SUFFER AS I HAVE',
-					'Surskit': 'ah',
-					'Diglett-Alola': '???',
+					'Scraggy': 'Saggy',
+					'Diglett-Alola': 'Weenie Man',
 					'Quaxly': 'Quincy Adams',
+					'Pikipek': 'Kallen Kozuki',
 				}
 			},
 			{
@@ -633,8 +640,9 @@
 					'Doduo': 'Brodude-o',
 					'Poltchageist': 'Spill It',
 					'Chimchar': 'Ape Escape',
-					'Yamper': 'Forest Stump',
+					'Applin': 'Hardcore',
 					'Geodude': 'Me Will Rock You',
+					'Helioptile': 'Weather Tech',
 				}
 			},
 			{
@@ -648,8 +656,9 @@
 					'Lillipup': '???',
 					'Morelull': '????',
 					'Zubat': '????',
-					'Krabby': '????',
-					'Meowth-Galar': '????'
+					'Popplio': '????',
+					'Meowth-Galar': '????',
+					'Minccino': '????',
 				}
 			},
 			{
@@ -664,24 +673,24 @@
 					'Fennekin': 'AutomaJon',
 					'Sprigatito': 'Coach Steve',
 					'Eevee': 'Lacunosa Little',
-					'Espurr': 'Jeffery Espurr',
+					'Magnemite': '???',
+					'Klink': '???',
 				}
 			},
 			{
 				'id': 13,
-				'name': 'Rocket City Trash Pandas',
-				'coach': 'PadreOfSouls',
-				'zone': 'CST',
-				'timeZone': 'America/Chicago',
+				'name': 'Macon Bacon',
+				'coach': 'bongclouddefense',
+				'zone': 'EST',
+				'timeZone': 'America/New_York',
 				'team': {
-					'Gible': 'MY SON',
-					'Magby': '???',
-					'Pawmi': 'Mighty Mouse',
-					'Ralts': 'RyinThyme',
-					'Rookidee': 'Aspiring Knight',
-					'Popplio': 'Seal the Seal',
-					'Gulpin': '???',
-					'Pansage': 'Druid',
+					'Doublade': 'Excalibur II',
+					'Mienfoo': 'Cobra Kai',
+					'Glimmet': 'Pop Rocks',
+					'Chespin': 'Nutty Buddy',
+					'Krabby': 'Bubbles',
+					'Deino': 'Littlefoot',
+					'Sizzlipede': 'The Grease',
 				}
 			},
 			{
@@ -693,11 +702,12 @@
 				'team': {
 					'Grubbin': 'Volton Jr.',
 					'Tynamo': 'Box Top III',
-					'Skitty': 'Mark Fartems',
-					'Clobbopus': '???',
+					'Slowpoke': 'Mark Fartems',
+					'Clobbopus': 'Bart',
 					'Toxel': 'Screamy',
 					'Whismur': 'Shouty',
-					'Slowpoke': 'Big Killa',
+					'Skitty': 'Big Killa',
+					'Voltorb': 'Student Housing',
 				}
 			},
 			{
@@ -716,6 +726,7 @@
 					'Panpour': 'Bartholomew',
 					'Spoink': 'Cattle Rustler',
 					'Varoom': 'Coal Roller',
+					'Spinarak': '???',
 				}
 			},
 			{
@@ -727,12 +738,13 @@
 				'team': {
 					'Drakloak': 'Baby Blaster',
 					'Oshawott': 'お前はもう死んでいる',
-					'Mankey': 'CAPTAIN GUTT',
+					'Magby': 'Hinoko',
 					'Cleffa': 'Mr. Mista',
 					'Pidgey': 'Abby',
-					'Blitzle': 'Zebruh',
+					'Electrike': 'Ike',
 					'Nincada': 'Bugsy Siegel',
-					'Pansear': 'Rooibos',
+					'Ekans': 'Dilos',
+					'Munna': 'Mukumuku',
 				}
 			},
 			{
@@ -742,12 +754,13 @@
 				'zone': 'EST',
 				'timeZone': 'America/New_York',
 				'team': {
-					'Naclstack': '???',
-					'Cottonee': '???',
-					'Onix': '???',
-					'Flabebe': '???',
-					'Phantump': '???',
-					'Numel': '???',
+					'Naclstack': 'Ἀλέξανδρος',
+					'Grookey': 'Temüjin Borjigin',
+					'Woobat': 'Jeanne d\'Arc',
+					'Flabebe': 'Victoria',
+					'Houndour': '𐎤𐎢𐎽𐎢𐏁',
+					'Trubbish': 'Ivlivs Caesar',
+					'Greavard': 'Mehmed Ebū\'l-fetḥ',
 				}
 			},
 			{
@@ -758,12 +771,13 @@
 				'timeZone': 'America/Chicago',
 				'team': {
 					'Hakamo-o': 'Dua Lipa',
-					'Tinkatink': '???',
+					'Tinkatink': 'Cherry Blossom',
 					'Growlithe': 'Reki',
 					'Hoothoot': 'Boris Johnson',
-					'Wooper-Paldea': '???',
-					'Joltik': '???',
-					'Deerling': 'Eikthyrnir',
+					'Wooper-Paldea': ':)',
+					'Joltik': 'Joe',
+					'Arrokuda': 'Nyoom',
+					'Rowlet': 'Mr. Lettuce',
 				}
 			},
 			{
@@ -778,7 +792,41 @@
 					'Litleo': 'Jellydale',
 					'Mantyke': 'Kiki',
 					'Pancham': 'Goemon',
-					'Swinub': 'Borgito',
+					'Drilbur': 'Digbeans',
+				}
+			},
+			{
+				'id': 20,
+				'name': 'The Goofy Goomers',
+				'coach': 'RubyFlame57',
+				'zone': 'EST',
+				'timeZone': 'America/New_York',
+				'team': {
+					'Fletchling': 'Tangerine Tango',
+					'Goomy': 'Goofus',
+					'Wooper': 'Pinkle Dinkle',
+					'Smoliv': '???',
+					'Aipom': 'Rosali Rouge',
+					'Poochyena': 'Poyan Goldan',
+					'Mareep': 'Meep Meep Beep',
+					'Swirlix': 'Waric Windmills',
+				}
+			},
+			{
+				'id': 21,
+				'name': 'Rocket City Trash Pandas',
+				'coach': 'PadreOfSouls',
+				'zone': 'CST',
+				'timeZone': 'America/Chicago',
+				'team': {
+					'Gible': 'MY SON',
+					'Magby': '???',
+					'Pawmi': 'Mighty Mouse',
+					'Ralts': 'RyinThyme',
+					'Rookidee': 'Aspiring Knight',
+					'Popplio': 'Seal the Seal',
+					'Gulpin': '???',
+					'Pansage': 'Druid',
 				}
 			},
 		]

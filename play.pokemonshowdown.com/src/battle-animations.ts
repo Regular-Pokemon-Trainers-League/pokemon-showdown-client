@@ -1598,7 +1598,7 @@ export class BattleScene implements BattleSceneStub {
 		this.preloadImage(Dex.resourcePrefix + 'sprites/ani-back/substitute.gif');
 	}
 	rollBgm() {
-		this.setBgm(1 + this.numericId % 19);
+		this.setBgm(1 + this.numericId % 20);
 	}
 	setBgm(bgmNum: number) {
 		if (this.bgmNum === bgmNum) return;
@@ -1668,10 +1668,13 @@ export class BattleScene implements BattleSceneStub {
 		case 18:
 			this.bgm = BattleSound.loadBgm('audio/sv-sada-turo-battle.mp3', 157840, 319889, this.bgm);
 			break;
+		case 19:
+			this.bgm=BattleSound.loadBgm('audio/oras-aqua-magma-leaders-battle.mp3',17405,138780,this.bgm);
+			break;
 		case -101:
 			this.bgm = BattleSound.loadBgm('audio/spl-elite4.mp3', 3962, 152509, this.bgm);
 			break;
-		case 19:
+		case 20:
 		default:
 			this.bgm = BattleSound.loadBgm('audio/sm-rival.mp3', 11389, 62158, this.bgm);
 			break;

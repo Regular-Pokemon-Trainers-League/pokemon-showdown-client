@@ -27,6 +27,7 @@ class SearchPanel extends preact.Component<{id: string}> {
   sort = 'date';
   override componentDidMount() {
     Net('/check-login.php').get().then(result => {
+      console.log("CHECKING LOGIN");
       if (result.charAt(0) !== ']') return;
       const [userid, sysop] = result.slice(1).split(',');
       this.loggedInUser = userid;
@@ -242,9 +243,14 @@ class SearchPanel extends preact.Component<{id: string}> {
 
 class FeaturedReplays extends preact.Component {
   week = Array(10).fill(false);
+  showWeekThree = (e: Event) => {
+    e.preventDefault();
+    this.week[2] = true;
+    this.forceUpdate();
+  };
   showWeekTwo = (e: Event) => {
     e.preventDefault();
-    this.week[1] = false;
+    this.week[1] = true;
     this.forceUpdate();
   };
   showWeekOne = (e: Event) => {
@@ -257,7 +263,183 @@ class FeaturedReplays extends preact.Component {
       <h1>RPTL S13</h1>
       <img src="//rptl.us/sprites/sudowoodo_punching.gif" alt="" style={{imageRendering: 'pixelated'}} />
       <ul class="linklist">
-        <h2>Week 2</h2>
+        <h2>Week 4</h2>
+        <li><a href="mundanton-gen9natdex6v6doublesdraft-1006" class="blocklink">
+          <small>[gen9natdex6v6doublesdraft]<br /></small>
+          <strong>Uncle Sanskaar's Noodle House</strong> vs. <strong>Waugatuck Wonders</strong>
+          <small><br />Week 4</small>
+        </a></li>
+        <li><a href="mundanton-gen9natdex6v6doublesdraft-998" class="blocklink">
+          <small>[gen9natdex6v6doublesdraft]<br /></small>
+          <strong>Lacunosa Little League</strong> vs. <strong>Kakuna's Law Firm</strong>
+          <small><br />Week 4</small>
+        </a></li>
+        <li><a href="mundanton-gen9natdex6v6doublesdraft-1004" class="blocklink">
+          <small>[gen9natdex6v6doublesdraft]<br /></small>
+          <strong>Regular Pokemon Trainers Team</strong> vs. <strong>Edison Electric MilliVolts</strong>
+          <small><br />Week 4</small>
+        </a></li>
+        <li><a href="mundanton-gen9natdex6v6doublesdraft-1027" class="blocklink">
+          <small>[gen9natdex6v6doublesdraft]<br /></small>
+          <strong>Beads of Ruin</strong> vs. <strong>Inazuma Elekids</strong>
+          <small><br />Week 4</small>
+        </a></li>
+        <li><a href="mundanton-gen9natdex6v6doublesdraft-1010" class="blocklink">
+          <small>[gen9natdex6v6doublesdraft]<br /></small>
+          <strong>Himalayan Hemorrhoids</strong> vs. <strong>Spheal City Junior</strong>
+          <small><br />Week 4</small>
+        </a></li>
+        <li><a href="mundanton-gen9natdex6v6doublesdraft-1033" class="blocklink">
+          <small>[gen9natdex6v6doublesdraft]<br /></small>
+          <strong>Viking Veluza</strong> vs. <strong>Kakuna's Law Firm</strong>
+          <small><br />Week 4</small>
+        </a></li>
+        <li><a href="mundanton-gen9natdex6v6doublesdraft-995" class="blocklink">
+          <small>[gen9natdex6v6doublesdraft]<br /></small>
+          <strong>Uncle Sanskaar's Noodle House</strong> vs. <strong>Tinkering Tinkatons</strong>
+          <small><br />Week 4</small>
+        </a></li>
+        <li><a href="mundanton-gen9natdex6v6doublesdraft-1003" class="blocklink">
+          <small>[gen9natdex6v6doublesdraft]<br /></small>
+          <strong>Lumiose City Larvitars</strong> vs. <strong>KinderGarden State Gastlys</strong>
+          <small><br />Week 4</small>
+        </a></li>
+        <li><a href="mundanton-gen9natdex6v6doublesdraft-1005" class="blocklink">
+          <small>[gen9natdex6v6doublesdraft]<br /></small>
+          <strong>Regular Pokemon Trainers Team</strong> vs. <strong>Lacunosa Little League</strong>
+          <small><br />Week 4</small>
+        </a></li>
+        <li><a href="mundanton-gen9natdex6v6doublesdraft-994" class="blocklink">
+          <small>[gen9natdex6v6doublesdraft]<br /></small>
+          <strong>Inazuma Elekids</strong> vs. <strong>Portland Popplios</strong>
+          <small><br />Week 4</small>
+        </a></li>
+        <li><a href="mundanton-gen9natdex6v6doublesdraft-975" class="blocklink">
+          <small>[gen9natdex6v6doublesdraft]<br /></small>
+          <strong>The Goofy Goomers</strong> vs. <strong>Team Zorua</strong>
+          <small><br />Week 4</small>
+        </a></li>
+        <li><a href="mundanton-gen9natdex6v6doublesdraft-974" class="blocklink">
+          <small>[gen9natdex6v6doublesdraft]<br /></small>
+          <strong>KinderGarden State Gastlys</strong> vs. <strong>Pittsburgh Sphealers</strong>
+          <small><br />Week 4</small>
+        </a></li>
+        <li><a href="mundanton-gen9natdex6v6doublesdraft-971" class="blocklink">
+          <small>[gen9natdex6v6doublesdraft]<br /></small>
+          <strong>Team Zorua</strong> vs. <strong>Insomnia City Wooper Troopers</strong>
+          <small><br />Week 4</small>
+        </a></li>
+        <li><a href="mundanton-gen9natdex6v6doublesdraft-970" class="blocklink">
+          <small>[gen9natdex6v6doublesdraft]<br /></small>
+          <strong>Pittsburgh Sphealers</strong> vs. <strong>Insomnia City Wooper Troopers</strong>
+          <small><br />Week 4</small>
+        </a></li>
+        <li><a href="mundanton-gen9natdex6v6doublesdraft-968" class="blocklink">
+          <small>[gen9natdex6v6doublesdraft]<br /></small>
+          <strong>Edison Electric MilliVolts</strong> vs. <strong>Himalayan Hemorrhoids</strong>
+          <small><br />Week 4</small>
+        </a></li>
+        <li><a href="mundanton-gen9natdex6v6doublesdraft-967" class="blocklink">
+          <small>[gen9natdex6v6doublesdraft]<br /></small>
+          <strong>Tinkering Tinkatons</strong> vs. <strong>Viking Veluza</strong>
+          <small><br />Week 4</small>
+        </a></li>
+        {!this.week[2] && <li style={{paddingLeft: '8px'}}>
+          <button class="button" onClick={this.showWeekThree}>Week 3 <i class="fa fa-caret-right" aria-hidden></i></button>
+        </li>}
+        {this.week[2] && <h2>Week 3</h2>}
+        {this.week[2] &&  <ul class="linklist">
+        <li><a href="mundanton-gen9natdex6v6doublesdraft-976" class="blocklink">
+          <small>[gen9natdex6v6doublesdraft]<br /></small>
+          <strong>The Goofy Goomers</strong> vs. <strong>KinderGarden State Gastlys</strong>
+          <small><br />Week 3</small>
+        </a></li>
+        <li><a href="mundanton-gen9natdex6v6doublesdraft-965" class="blocklink">
+          <small>[gen9natdex6v6doublesdraft]<br /></small>
+          <strong>Spheal City Junior</strong> vs. <strong>Lacunosa Little League</strong>
+          <small><br />Week 3</small>
+        </a></li>
+        <li><a href="mundanton-gen9natdex6v6doublesdraft-951" class="blocklink">
+          <small>[gen9natdex6v6doublesdraft]<br /></small>
+          <strong>Waugatuck Wonders</strong> vs. <strong>Team Zorua</strong>
+          <small><br />Week 3</small>
+        </a></li>
+        <li><a href="mundanton-gen9natdex6v6doublesdraft-950" class="blocklink">
+          <small>[gen9natdex6v6doublesdraft]<br /></small>
+          <strong>Lumiose City Larvitars</strong> vs. <strong>Waugatuck Wonders</strong>
+          <small><br />Week 3</small>
+        </a></li>
+        <li><a href="mundanton-gen9natdex6v6doublesdraft-949" class="blocklink">
+          <small>[gen9natdex6v6doublesdraft]<br /></small>
+          <strong>Tinkering Tinkatons</strong> vs. <strong>Pittsburgh Sphealers</strong>
+          <small><br />Week 3</small>
+        </a></li>
+        <li><a href="mundanton-gen9natdex6v6doublesdraft-948" class="blocklink">
+          <small>[gen9natdex6v6doublesdraft]<br /></small>
+          <strong>Edison Electric MilliVolts</strong> vs. <strong>Insomnia City Wooper Troopers</strong>
+          <small><br />Week 3</small>
+        </a></li>
+        <li><a href="mundanton-gen9natdex6v6doublesdraft-947" class="blocklink">
+          <small>[gen9natdex6v6doublesdraft]<br /></small>
+          <strong>KinderGarden State Gastlys</strong> vs. <strong>Edison Electric MilliVolts</strong>
+          <small><br />Week 3</small>
+        </a></li>
+        <li><a href="mundanton-gen9natdex6v6doublesdraft-946" class="blocklink">
+          <small>[gen9natdex6v6doublesdraft]<br /></small>
+          <strong>Pittsburgh Sphealers</strong> vs. <strong>Lumiose City Larvitars</strong>
+          <small><br />Week 3</small>
+        </a></li>
+        <li><a href="mundanton-gen9natdex6v6doublesdraft-945" class="blocklink">
+          <small>[gen9natdex6v6doublesdraft]<br /></small>
+          <strong>Beads of Ruin</strong> vs. <strong>Lacunosa Little League</strong>
+          <small><br />Week 3</small>
+        </a></li>
+        <li><a href="mundanton-gen9natdex6v6doublesdraft-943" class="blocklink">
+          <small>[gen9natdex6v6doublesdraft]<br /></small>
+          <strong>Portland Popplios</strong> vs. <strong>Tinkering Tinkatons</strong>
+          <small><br />Week 3</small>
+        </a></li>
+        <li><a href="mundanton-gen9natdex6v6doublesdraft-942" class="blocklink">
+          <small>[gen9natdex6v6doublesdraft]<br /></small>
+          <strong>Beads of Ruin</strong> vs. <strong>Kakuna's Law Firm</strong>
+          <small><br />Week 3</small>
+        </a></li>
+        <li><a href="mundanton-gen9natdex6v6doublesdraft-941" class="blocklink">
+          <small>[gen9natdex6v6doublesdraft]<br /></small>
+          <strong>Team Zorua</strong> vs. <strong>Kakuna's Law Firm</strong>
+          <small><br />Week 3</small>
+        </a></li>
+        </ul>}
+        {!this.week[1] && <li style={{paddingLeft: '8px'}}>
+          <button class="button" onClick={this.showWeekTwo}>Week 2 <i class="fa fa-caret-right" aria-hidden></i></button>
+        </li>}
+        {this.week[1] && <h2>Week 2</h2>}
+        {this.week[1] &&  <ul class="linklist">
+        <li><a href="mundanton-gen9natdex6v6doublesdraft-973" class="blocklink">
+          <small>[gen9natdex6v6doublesdraft]<br /></small>
+          <strong>Spheal City Junior</strong> vs. <strong>Viking Veluza</strong>
+          <small><br />Week 2</small>
+        </a></li>
+        <li><a href="mundanton-gen9natdex6v6doublesdraft-972" class="blocklink">
+          <small>[gen9natdex6v6doublesdraft]<br /></small>
+          <strong>Spheal City Junior</strong> vs. <strong>The Goofy Goomers</strong>
+          <small><br />Week 2</small>
+        </a></li>
+        <li><a href="mundanton-gen9natdex6v6doublesdraft-969" class="blocklink">
+          <small>[gen9natdex6v6doublesdraft]<br /></small>
+          <strong>Insomnia Wooper Troopers</strong> vs. <strong>Himalayan Hemorrhoids</strong>
+          <small><br />Week 2</small>
+        </a></li>
+        <li><a href="mundanton-gen9natdex6v6doublesdraft-932" class="blocklink">
+          <small>[gen9natdex6v6doublesdraft]<br /></small>
+          <strong>Uncle Sanskaar's Noodle House</strong> vs. <strong>Inazuma Elekids</strong>
+          <small><br />Week 2</small>
+        </a></li>
+        <li><a href="mundanton-gen9natdex6v6doublesdraft-930" class="blocklink">
+          <small>[gen9natdex6v6doublesdraft]<br /></small>
+          <strong>Rocket City Trash Pandas</strong> vs. <strong>The Goofy Goomers</strong>
+          <small><br />Week 2</small>
+        </a></li>
         <li><a href="mundanton-gen9natdex6v6doublesdraft-911" class="blocklink">
           <small>[gen9natdex6v6doublesdraft]<br /></small>
           <strong>Team Zorua</strong> vs. <strong>Uncle Sanskaar's Noodle House</strong>
@@ -322,15 +504,7 @@ class FeaturedReplays extends preact.Component {
           <small>[gen9natdex6v6doublesdraft]<br /></small>
           <strong>Team Zorua</strong> vs. <strong>Tinkering Tinkatons</strong>
           <small><br />Week 2</small>
-        </a></li>
-        {/* {!this.week[1] && <li style={{paddingLeft: '8px'}}>
-          <button class="button" onClick={this.showWeekTwo}>Week 2 <i class="fa fa-caret-right" aria-hidden></i></button>
-        </li>}
-        {this.week[1] &&  <ul class="linklist"> <li><a href="mundanton-gen9natdex6v6doublesdraft-836" class="blocklink">
-          <small>[gen9natdex6v6doublesdraft]<br /></small>
-          <strong>Team Zorua</strong> vs. <strong>Tinkering Tinkatons</strong>
-          <small><br />Week 2</small>
-        </a></li></ul>} */}
+        </a></li></ul>}
         {!this.week[0] && <li style={{paddingLeft: '8px'}}>
           <button class="button" onClick={this.showWeekOne}>Week 1 <i class="fa fa-caret-right" aria-hidden></i></button>
         </li>}

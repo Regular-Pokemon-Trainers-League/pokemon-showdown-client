@@ -635,6 +635,7 @@ const BattlePokemonIconIndexes: {[id: string]: number} = {
 	oddishbuff: 43,
 	gloombuff: 44,
 	mankeybuff: 56,
+	geodudebuff: 74,
 	geodudealolabuff: 1032 + 130,
 	graveleralolabuff: 1032 + 131,
 	slowpokebuff: 79,
