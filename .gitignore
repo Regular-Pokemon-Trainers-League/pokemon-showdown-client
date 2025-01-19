@@ -10,6 +10,7 @@ npm-debug.log
 /play.pokemonshowdown.com/audio/
 /play.pokemonshowdown.com/index.php
 /play.pokemonshowdown.com/index.html
+/play.pokemonshowdown.com/index-test.html
 /play.pokemonshowdown.com/preactalpha.html
 /play.pokemonshowdown.com/crossprotocol.html
 /play.pokemonshowdown.com/data/
@@ -22,6 +23,7 @@ npm-debug.log
 /play.pokemonshowdown.com/js/client-main.js
 /play.pokemonshowdown.com/js/client-core.js
 /play.pokemonshowdown.com/js/client-connection.js
+/play.pokemonshowdown.com/js/miniedit.js
 /play.pokemonshowdown.com/ads.txt
 
 /pokemonshowdown.com/.well-known/

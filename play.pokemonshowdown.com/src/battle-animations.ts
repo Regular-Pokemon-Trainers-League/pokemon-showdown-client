@@ -110,8 +110,8 @@ export class BattleScene implements BattleSceneStub {
 				if (pokemon) return pokemon.speciesForme;
 			}
 			if (!pokemonId.startsWith('p')) return '???pokemon:' + pokemonId + '???';
-			if (pokemonId.charAt(3) === ':') return pokemonId.slice(4).trim();
-			else if (pokemonId.charAt(2) === ':') return pokemonId.slice(3).trim();
+			if (pokemonId.charAt(3) === ':') return BattleTextParser.escapeReplace(pokemonId.slice(4).trim());
+			else if (pokemonId.charAt(2) === ':') return BattleTextParser.escapeReplace(pokemonId.slice(3).trim());
 			return '???pokemon:' + pokemonId + '???';
 		};
 
@@ -1528,8 +1528,8 @@ export class BattleScene implements BattleSceneStub {
 	updateStatbarIfExists(pokemon: Pokemon, updatePrevhp?: boolean, updateHp?: boolean) {
 		return pokemon.sprite.updateStatbarIfExists(pokemon, updatePrevhp, updateHp);
 	}
-	animTransform(pokemon: Pokemon, isCustomAnim?: boolean, isPermanent?: boolean) {
-		return pokemon.sprite.animTransform(pokemon, isCustomAnim, isPermanent);
+	animTransform(pokemon: Pokemon, useSpeciesAnim?: boolean, isPermanent?: boolean) {
+		return pokemon.sprite.animTransform(pokemon, useSpeciesAnim, isPermanent);
 	}
 	clearEffects(pokemon: Pokemon) {
 		return pokemon.sprite.clearEffects();
@@ -2548,7 +2548,12 @@ export class PokemonSprite extends Sprite {
 			});
 		}
 	}
-	animTransform(pokemon: Pokemon, isCustomAnim?: boolean, isPermanent?: boolean) {
+	/**
+	 * @param pokemon
+	 * @param useSpeciesAnim false = Transform the move or Imposter the ability
+	 * @param isPermanent false = reverts on switch-out
+	 */
+	animTransform(pokemon: Pokemon, useSpeciesAnim?: boolean, isPermanent?: boolean) {
 		if (!this.scene.animating && !isPermanent) return;
 		let sp = Dex.getSpriteData(pokemon, this.isFrontSprite, {
 			gen: this.scene.gen,
@@ -2575,8 +2580,9 @@ export class PokemonSprite extends Sprite {
 		if (!this.scene.animating) return;
 		let speciesid = toID(pokemon.getSpeciesForme());
 		let doCry = false;
+		let skipAnim = false;
 		const scene = this.scene;
-		if (isCustomAnim) {
+		if (useSpeciesAnim) {
 			if (speciesid === 'kyogreprimal') {
 				BattleOtherAnims.primalalpha.anim(scene, [this]);
 				doCry = true;
@@ -2592,8 +2598,11 @@ export class PokemonSprite extends Sprite {
 				BattleOtherAnims.schoolingin.anim(scene, [this]);
 			} else if (speciesid === 'wishiwashi') {
 				BattleOtherAnims.schoolingout.anim(scene, [this]);
-			} else if (speciesid === 'mimikyubusted' || speciesid === 'mimikyubustedtotem') {
+			} else if (speciesid === 'mimikyubusted' || speciesid === 'mimikyubustedtotem' ||
+				speciesid === 'aegislash' || speciesid === 'aegislashblade') {
 				// standard animation
+			} else if (speciesid === 'palafinhero') {
+				skipAnim = true;
 			} else {
 				BattleOtherAnims.megaevo.anim(scene, [this]);
 				doCry = true;
@@ -2609,9 +2618,10 @@ export class PokemonSprite extends Sprite {
 			xscale: 0,
 			opacity: 0,
 		}, sp));
-		if (speciesid === 'palafinhero') {
+		if (skipAnim) {
 			this.$el.replaceWith($newEl);
 			this.$el = $newEl;
+			this.animReset();
 		} else {
 			this.$el.animate(this.scene.pos({
 				x: this.x,
@@ -2897,6 +2907,8 @@ export class PokemonSprite extends Sprite {
 				label = Dex.moves.get(id).name;
 			} else if (Dex.abilities.get(id).exists) {
 				label = Dex.abilities.get(id).name;
+			} else if ((BattleNatures as any)[id.substr(0, 1).toUpperCase() + id.substr(1).toLowerCase()]) {
+				label = id.substr(0, 1).toUpperCase() + id.substr(1).toLowerCase();
 			}
 			effect = [label, 'neutral'];
 		}
@@ -2910,7 +2922,7 @@ export class PokemonSprite extends Sprite {
 		if (pokemon.maxhp === 48 || this.scene.battle.hardcoreMode && pokemon.maxhp === 100) {
 			$hptext.hide();
 			$hptextborder.hide();
-		} else if (this.scene.battle.hardcoreMode) {
+		} else if (this.scene.battle.hardcoreMode || this.scene.battle.reportExactHP) {
 			$hptext.html(pokemon.hp + '/');
 			$hptext.show();
 			$hptextborder.show();
