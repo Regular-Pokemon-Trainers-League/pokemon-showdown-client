@@ -689,6 +689,7 @@ const BattlePokemonIconIndexes: {[id: string]: number} = {
 	unownoutlawy: 1032 + 33,
 	unownoutlawz: 1032 + 34,
 	sphealoutlaw: 363,
+	shox: 1512 + 75,
 };
 
 const BattlePokemonIconIndexesLeft: {[id: string]: number} = {

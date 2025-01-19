@@ -843,7 +843,7 @@ class BattleTooltips {
 			} else if (pokemon.maxhp === 48) {
 				exacthp = ' <small>(' + pokemon.hp + '/' + pokemon.maxhp + ' pixels)</small>';
 			}
-			text += '<p><small>HP:</small> ' + Pokemon.getHPText(pokemon) + exacthp + (pokemon.status ? ' <span class="status ' + pokemon.status + '">' + pokemon.status.toUpperCase() + '</span>' : '');
+			text += '<p><small>HP:</small> ' + Pokemon.getHPText(pokemon, this.battle.reportExactHP) + exacthp + (pokemon.status ? ' <span class="status ' + pokemon.status + '">' + pokemon.status.toUpperCase() + '</span>' : '');
 			if (clientPokemon) {
 				if (pokemon.status === 'tox') {
 					if (pokemon.ability === 'Poison Heal' || pokemon.ability === 'Magic Guard') {
@@ -1645,7 +1645,8 @@ class BattleTooltips {
 		}
 
 		if (move.id === 'photongeyser' || move.id === 'lightthatburnsthesky' ||
-			move.id === 'terablast' && pokemon.terastallized) {
+			(move.id === 'terablast' && pokemon.terastallized) ||
+			(move.id === 'terastarstorm' && pokemon.getSpeciesForme() === 'Terapagos-Stellar')) {
 			const stats = this.calculateModifiedStats(pokemon, serverPokemon, true);
 			if (stats.atk > stats.spa) category = 'Physical';
 		}
@@ -2611,9 +2612,10 @@ class BattleStatGuesser {
 
 		if (set.moves.length < 1) return '?';
 		let needsFourMoves = !['unown', 'ditto'].includes(species.id);
+		let hasFourValidMoves = set.moves.length >= 4 && !set.moves.includes('');
 		let moveids = set.moves.map(toID);
 		if (moveids.includes('lastresort' as ID)) needsFourMoves = false;
-		if (set.moves.length < 4 && needsFourMoves && !this.formatid.includes('metronomebattle')) {
+		if (!hasFourValidMoves && needsFourMoves && !this.formatid.includes('metronomebattle')) {
 			return '?';
 		}
 
