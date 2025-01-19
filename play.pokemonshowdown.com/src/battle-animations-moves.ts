@@ -36080,6 +36080,9 @@ BattleMoveAnims['chatter'] = {anim: BattleMoveAnims['hypervoice'].anim};
 BattleMoveAnims['echoedvoice'] = {anim: BattleMoveAnims['hypervoice'].anim};
 BattleMoveAnims['relicsong'] = {anim: BattleMoveAnims['hypervoice'].anim};
 BattleMoveAnims['uproar'] = {anim: BattleMoveAnims['hypervoice'].anim};
+BattleMoveAnims['hoarfrosthymn'] = {anim: BattleMoveAnims['hypervoice'].anim};
+
+BattleMoveAnims['depthcharge'] = {anim: BattleMoveAnims['wavecrash'].anim};
 
 BattleMoveAnims['destinybond'] = {anim: BattleMoveAnims['painsplit'].anim};
 BattleMoveAnims['reflecttype'] = {anim: BattleMoveAnims['painsplit'].anim};

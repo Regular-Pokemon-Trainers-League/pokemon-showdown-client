@@ -213,9 +213,9 @@ const PSBackground = new class extends PSStreamModel {
 			if (location.host === 'smogtours.psim.us') {
 				bgid = 'shaymin';
 			} else if (location.host === Config.routes.client) {
-				const bgs = ['horizon', 'ocean', 'waterfall', 'shaymin', 'charizards'];
-				bgid = bgs[Math.floor(Math.random() * 5)];
-				if (bgid === this.curId) bgid = bgs[Math.floor(Math.random() * 5)];
+				const bgs = ['horizon', 'ocean', 'waterfall', 'shaymin', 'charizards', 'goomy'];
+				bgid = bgs[Math.floor(Math.random() * 6)];
+				if (bgid === this.curId) bgid = bgs[Math.floor(Math.random() * 6)];
 			}
 		}
 		this.curId = bgid;
@@ -308,6 +308,21 @@ const PSBackground = new class extends PSStreamModel {
 				artist: 'Jessica Valencia',
 			};
 			break;
+		case 'goomy':
+				menuColors = [
+					"37.159090909090914,74.57627118644066%",
+					"10.874999999999998,70.79646017699115%",
+					"179.51612903225808,52.10084033613446%",
+					"20.833333333333336,36.73469387755102%",
+					"192.3076923076923,80.41237113402063%",
+					"210,29.629629629629633%",
+				];
+				attrib = {
+					url: 'https://rptl.us/fx/client-bg-goomy.png',
+					title: 'Goofus Vs. Geometron Edo Period',
+					artist: 'Rubyflame57',
+				};
+				break;
 		case 'digimon':
 			menuColors = [
 				"170.45454545454544,27.500000000000004%",

@@ -143,7 +143,7 @@ const BattleStatNames = {
 } as const;
 
 const BattleBaseSpeciesChart = [
-	"unown", "burmy", "shellos", "gastrodon", "deerling", "sawsbuck", "vivillon", "flabebe", "floette", "florges", "furfrou", "minior", "alcremie", "tatsugiri", "pokestarufo", "pokestarbrycenman", "pokestarmt", "pokestarmt2", "pokestartransport", "pokestargiant", "pokestarhumanoid", "pokestarmonster", "pokestarf00", "pokestarf002", "pokestarspirit", "pokestarblackdoor", "pokestarwhitedoor", "pokestarblackbelt",
+	"unown", "unown-outlaw", "burmy", "shellos", "gastrodon", "deerling", "sawsbuck", "vivillon", "flabebe", "floette", "florges", "furfrou", "minior", "alcremie", "tatsugiri", "pokestarufo", "pokestarbrycenman", "pokestarmt", "pokestarmt2", "pokestartransport", "pokestargiant", "pokestarhumanoid", "pokestarmonster", "pokestarf00", "pokestarf002", "pokestarspirit", "pokestarblackdoor", "pokestarwhitedoor", "pokestarblackbelt",
 ] as ID[];
 
 const BattlePokemonIconIndexes: {[id: string]: number} = {
@@ -621,6 +621,74 @@ const BattlePokemonIconIndexes: {[id: string]: number} = {
 	scattervein: 1512 + 72,
 	cresceidon: 1512 + 73,
 	chuggalong: 1512 + 74,
+
+	// Outlaws
+	kecleonoutlaw: 352,
+	persianoutlaw: 53,
+	magcargooutlaw: 219,
+	rapidashoutlaw: 78,
+	meganiumoutlaw: 154,
+	carnivineoutlaw: 455,
+	pyukumukuoutlaw: 771,
+	wailordoutlaw: 321,
+	plusleandminun: 312,
+	emolgaoutlaw: 587,
+	glaceonoutlaw: 471,
+	laprasoutlaw: 131,
+	cameruptoutlaw: 323,
+	whiscashoutlaw: 340,
+	swalotoutlaw: 317,
+	sneaselhisuioutlaw: 1032 + 212,
+	falinksoutlaw: 870,
+	sirfetchdoutlaw: 865,
+	cramorantoutlaw: 845,
+	cramorantgulpingoutlaw: 1032 + 180,
+	cramorantgorgingoutlaw: 1032 + 181,
+	delibirdoutlaw: 225,
+	solrockoutlaw: 338,
+	wigglytuffoutlaw: 40,
+	unownoutlaw: 201,
+	klawfoutlaw: 950,
+	relicanthoutlaw: 369,
+	exeggutoralolaoutlaw: 1032 + 135,
+	druddigonoutlaw: 621,
+	mawileoutlaw: 303,
+	palossandoutlaw: 770,
+	banetteoutlaw: 354,
+	kricketuneoutlaw: 402,
+	ledianoutlaw: 166,
+	honchkrowoutlaw: 430,
+	mightyenaoutlaw: 262,
+	steelixoutlaw: 208,
+	granbulloutlaw: 210,
+	unownoutlawexclamation: 1032 + 8,
+	unownoutlawquestion: 1032 + 9,
+	unownoutlawb: 1032 + 10,
+	unownoutlawc: 1032 + 11,
+	unownoutlawd: 1032 + 12,
+	unownoutlawe: 1032 + 13,
+	unownoutlawf: 1032 + 14,
+	unownoutlawg: 1032 + 15,
+	unownoutlawh: 1032 + 16,
+	unownoutlawi: 1032 + 17,
+	unownoutlawj: 1032 + 18,
+	unownoutlawk: 1032 + 19,
+	unownoutlawl: 1032 + 20,
+	unownoutlawm: 1032 + 21,
+	unownoutlawn: 1032 + 22,
+	unownoutlawo: 1032 + 23,
+	unownoutlawp: 1032 + 24,
+	unownoutlawq: 1032 + 25,
+	unownoutlawr: 1032 + 26,
+	unownoutlaws: 1032 + 27,
+	unownoutlawt: 1032 + 28,
+	unownoutlawu: 1032 + 29,
+	unownoutlawv: 1032 + 30,
+	unownoutlaww: 1032 + 31,
+	unownoutlawx: 1032 + 32,
+	unownoutlawy: 1032 + 33,
+	unownoutlawz: 1032 + 34,
+	sphealoutlaw: 363,
 };
 
 const BattlePokemonIconIndexesLeft: {[id: string]: number} = {
@@ -659,6 +727,26 @@ const BattlePokemonIconIndexesLeft: {[id: string]: number} = {
 	unownt: 1404 + 32,
 	unownv: 1404 + 33,
 	unownz: 1404 + 34,
+	unownoutlawb: 1404 + 15,
+	unownoutlawc: 1404 + 16,
+	unownoutlawd: 1404 + 17,
+	unownoutlawe: 1404 + 18,
+	unownoutlawf: 1404 + 19,
+	unownoutlawg: 1404 + 20,
+	unownoutlawh: 1404 + 21,
+	unownoutlawj: 1404 + 22,
+	unownoutlawk: 1404 + 23,
+	unownoutlawl: 1404 + 24,
+	unownoutlawm: 1404 + 25,
+	unownoutlawn: 1404 + 26,
+	unownoutlawp: 1404 + 27,
+	unownoutlawq: 1404 + 28,
+	unownoutlawquestion: 1404 + 29,
+	unownoutlawr: 1404 + 30,
+	unownoutlaws: 1404 + 31,
+	unownoutlawt: 1404 + 32,
+	unownoutlawv: 1404 + 33,
+	unownoutlawz: 1404 + 34,
 	sneasel: 1404 + 35,
 	teddiursa: 1404 + 36,
 	roselia: 1404 + 37,
@@ -1517,7 +1605,7 @@ class Species implements Effect {
 		const baseId = toID(this.baseSpecies);
 		this.formeid = (baseId === this.id ? '' : '-' + toID(this.forme));
 		this.spriteid = baseId + this.formeid;
-		if (this.spriteid.slice(-4) === 'buff') this.spriteid = this.spriteid.slice(0, -4);
+		if (this.spriteid.slice(-6) === 'outlaw') this.spriteid = this.spriteid.slice(0, -6);
 		if (this.spriteid.slice(-5) === 'totem') this.spriteid = this.spriteid.slice(0, -5);
 		if (this.spriteid === 'greninja-bond') this.spriteid = 'greninja';
 		if (this.spriteid.slice(-1) === '-') this.spriteid = this.spriteid.slice(0, -1);
@@ -1589,7 +1677,7 @@ class Species implements Effect {
 				this.gen = 1;
 			}
 		}
-		if (this.formeid === '-buff' || this.formeid === '-alolabuff' || this.formeid === '-galarbuff' ||this.formeid === '-paldeabuff'){
+		if (this.formeid === '-outlaw' || this.formeid === '-alolaoutlaw' || this.formeid === '-galaroutlaw' || this.formeid === '-hisuioutlaw' || this.formeid === '-paldeaoutlaw'){
 			this.isBuff = true;
 		}
 	}

@@ -1742,10 +1742,32 @@ class BattleMoveSearch extends BattleTypedSearch<'move'> {
 		}
 		for (const id of sketchMoves) {
 			const isUsable = this.moveIsNotUseless(id as ID, species, sketchMoves, this.set);
-			if (isUsable) {
-				usableMoves.push(['move', id as ID]);
-			} else {
-				uselessMoves.push(['move', id as ID]);
+			if (toID(species.baseSpecies) == 'unownoutlaw')
+			{
+				if (species.id == 'unownoutlaw')
+				{
+					var firstLetter = 'a';
+				}
+				else
+				{
+					var firstLetter = species.id.charAt(11);
+				}
+				if (id.charAt(0) == firstLetter)
+				{
+					if (isUsable) {
+						usableMoves.push(['move', id as ID]);
+					} else {
+						uselessMoves.push(['move', id as ID]);
+					}
+				}
+			}
+			else
+			{
+				if (isUsable) {
+					usableMoves.push(['move', id as ID]);
+				} else {
+					uselessMoves.push(['move', id as ID]);
+				}
 			}
 		}
 		return [...usableMoves, ...uselessMoves];

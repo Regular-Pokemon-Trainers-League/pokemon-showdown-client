@@ -190,7 +190,7 @@ class BattleTextParser {
 
 		case '-heal': {
 			const id = BattleTextParser.effectId(kwArgs.from);
-			if (['dryskin', 'eartheater', 'voltabsorb', 'waterabsorb'].includes(id)) kwArgs.of = '';
+			if (['dryskin', 'eartheater', 'voltabsorb', 'waterabsorb', 'supercapacitor'].includes(id)) kwArgs.of = '';
 			break;
 		}
 

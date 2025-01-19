@@ -549,9 +549,18 @@ const Dex = new class implements ModdedDex {
 		let miscData = null;
 		let speciesid = species.id;
 		if (species.isTotem) speciesid = toID(name);
-		if (species.isBuff) speciesid = toID(name);
+		if (species.isBuff && speciesid != 'sphealoutlaw') {
+			speciesid = toID(name);
+		}
 		if (baseDir === '' && window.BattlePokemonSprites) {
-			animationData = BattlePokemonSprites[speciesid];
+			if (speciesid.startsWith('unownoutlaw'))
+			{
+				animationData = BattlePokemonSprites[speciesid.replace('outlaw', '')];
+			}
+			else
+			{
+				animationData = BattlePokemonSprites[speciesid];
+			}
 		}
 		if (baseDir === 'gen5' && window.BattlePokemonSpritesBW) {
 			animationData = BattlePokemonSpritesBW[speciesid];
@@ -583,6 +592,7 @@ const Dex = new class implements ModdedDex {
 				formeid === '-super' ||
 				formeid === '-therian' ||
 				formeid === '-unbound' ||
+				speciesid === 'sphealoutlaw' ||
 				baseSpeciesid === 'calyrex' ||
 				baseSpeciesid === 'kyurem' ||
 				baseSpeciesid === 'cramorant' ||
@@ -636,7 +646,25 @@ const Dex = new class implements ModdedDex {
 
 			spriteData.w = animationData[facing].w;
 			spriteData.h = animationData[facing].h;
-			spriteData.url += dir + '/' + name.replace('-buff', '') + '.gif';
+			if (spriteData.shiny && speciesid === 'sphealoutlaw')
+			{
+				if (facing == 'front') {
+					spriteData.w = 92;
+					spriteData.h = 104;
+				}
+				else {
+					spriteData.w = 170;
+					spriteData.h = 106;
+				}
+			}
+			if (speciesid === 'sphealoutlaw')
+			{
+				spriteData.url += dir + '/' + name + '-outlaw' + '.gif';
+			}
+			else
+			{
+				spriteData.url += dir + '/' + name.replace('-outlaw', '').replace('unownoutlaw', 'unown') + '.gif';
+			}
 		} else {
 			// There is no entry or enough data in pokedex-mini.js
 			// Handle these in case-by-case basis; either using BW sprites or matching the played gen.
@@ -648,7 +676,7 @@ const Dex = new class implements ModdedDex {
 				name += '-f';
 			}
 
-			spriteData.url += dir + '/' + name.replace('-buff', '') + '.png';
+			spriteData.url += dir + '/' + name.replace('-outlaw', '') + '.png';
 		}
 
 		if (!options.noScale) {
@@ -796,7 +824,7 @@ const Dex = new class implements ModdedDex {
 		if (!pokemon) return '';
 		const data = this.getTeambuilderSpriteData(pokemon, gen);
 		const shiny = (data.shiny ? '-shiny' : '');
-		return 'background-image:url(' + Dex.resourcePrefix + data.spriteDir + shiny + '/' + data.spriteid + '.png);background-position:' + data.x + 'px ' + data.y + 'px;background-repeat:no-repeat';
+		return 'background-image:url(' + Dex.resourcePrefix + data.spriteDir + shiny + '/' + data.spriteid.replace('outlaw', '') + '.png);background-position:' + data.x + 'px ' + data.y + 'px;background-repeat:no-repeat';
 	}
 
 	getItemIcon(item: any) {

@@ -3711,7 +3711,7 @@
 				var formid = forms[i].substring(baseid.length);
 				var form = (formid ? formid[0].toUpperCase() + formid.slice(1) : '');
 				buf += '<button name="setForm" value="' + form + '" style="';
-				buf += 'background-image: url(' + spriteDir + '/' + baseid + (form ? '-' + formid : '') + '.png); ' + spriteDim + '" class="option';
+				buf += 'background-image: url(' + spriteDir + '/' + baseid.replace('outlaw', '') + (form ? '-' + formid : '') + '.png); ' + spriteDim + '" class="option';
 				buf += (form === (species.forme || '') ? ' cur' : '') + '"></button>';
 			}
 			buf += '<div style="clear:both"></div>';

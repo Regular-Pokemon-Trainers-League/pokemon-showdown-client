@@ -1018,8 +1018,8 @@
 			if (!noChoice) {
 				this.curFormat = formatid;
 				if (!this.curFormat) {
-					if (BattleFormats['gen9randombattle']) {
-						this.curFormat = 'gen9randombattle';
+					if (BattleFormats['gen9natdex6v6doublesdraft']) {
+						this.curFormat = 'gen9natdex6v6doublesdraft';
 					} else for (var i in BattleFormats) {
 						if (!BattleFormats[i].searchShow || !BattleFormats[i].challengeShow) continue;
 						this.curFormat = i;

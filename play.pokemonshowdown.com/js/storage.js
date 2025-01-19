@@ -56,7 +56,7 @@ Storage.bg = {
 			if (location.host === 'smogtours.psim.us') {
 				bgid = 'shaymin';
 			} else if (location.host === Config.routes.client) {
-				bgid = ['horizon', 'ocean', 'waterfall', 'shaymin', 'charizards', 'psday'][Math.floor(Math.random() * 6)];
+				bgid = ['horizon', 'ocean', 'waterfall', 'shaymin', 'charizards', 'goomy', 'psday'][Math.floor(Math.random() * 7)];
 			} else {
 				$(document.body).css({
 					background: '',

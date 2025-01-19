@@ -512,6 +512,9 @@ export class Pokemon implements PokemonDetails, PokemonHealth {
 		if (ability === 'levitate') {
 			return false;
 		}
+		if (ability === 'syzygy') {
+			return false;
+		}
 		if (this.volatiles['magnetrise'] || this.volatiles['telekinesis']) {
 			return false;
 		}
