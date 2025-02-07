@@ -25,7 +25,8 @@
     "google-auth-library": "^3.1.2",
     "image-size": "^0.7.5",
     "music-metadata": "^7.14.0",
-    "music-metadata-browser": "^2.5.10"
+    "music-metadata-browser": "^2.5.10",
+    "ts-chacha20": "^1.2.0"
   },
   "devDependencies": {
     "@types/jquery": "^3.5.3",

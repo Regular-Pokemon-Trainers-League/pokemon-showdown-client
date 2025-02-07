@@ -373,7 +373,7 @@ Storage.initPrefs = function () {
 	} else {
 		Config.server = Config.server || Config.defaultserver;
 		$(
-			'<iframe src="https://' + Config.routes.client + '/crossprotocol.html?v1.2" style="display: none;"></iframe>'
+			'<iframe src="http://' + Config.routes.client + '/crossprotocol.html?v1.2" style="display: none;"></iframe>'
 		).appendTo('body');
 		setTimeout(function () {
 			// HTTPS may be blocked

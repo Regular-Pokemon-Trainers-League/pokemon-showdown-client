@@ -1646,6 +1646,7 @@ function toId() {
 			var roomTable = {
 				'': MainMenuRoom,
 				'teambuilder': TeambuilderRoom,
+				'cinnabarlab': CinnabarlabRoom,
 				'rooms': RoomsRoom,
 				'battles': BattlesRoom,
 				'league': LeagueRoom,

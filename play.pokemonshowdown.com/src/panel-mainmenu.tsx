@@ -375,6 +375,7 @@ class MainMenuPanel extends PSRoomPanel<MainMenuRoom> {
 						<div class="menugroup">
 							<p><button class={"mainmenu4" + onlineButton} name="joinRoom" value="battles">Watch a battle</button></p>
 							<p><button class={"mainmenu5" + onlineButton} name="finduser">Find a user</button></p>
+							<p><button class="mainmenu7 button" name="joinRoom" value="cinnabarlab">Cinnabar Lab</button></p>
 						</div>
 					</div>
 				</div>

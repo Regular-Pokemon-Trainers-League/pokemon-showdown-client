@@ -90,6 +90,8 @@
 				return buf + '><i class="fa fa-caret-square-o-right"></i> <span>Battles</span></a><button class="closebutton" name="closeRoom" value="' + 'battles" aria-label="Close"><i class="fa fa-times-circle"></i></button></li>';
 			case 'rooms':
 				return buf + ' aria-label="Join chatroom"><i class="fa fa-plus" style="margin:7px auto -6px auto"></i> <span>&nbsp;</span></a></li>';
+			case 'cinnabarlab':
+				return buf + '><i class="fa fa-pencil-square-o"></i> <span>Cinnabar Lab</span></a><button class="closebutton" name="closeRoom" value="' + 'cinnabarlab" aria-label="Close"><i class="fa fa-times-circle"></i></button></li>';
 			case 'battle':
 				var name = BattleLog.escapeHTML(room.title);
 				var offset = id.startsWith('game-') ? 5 : 7;

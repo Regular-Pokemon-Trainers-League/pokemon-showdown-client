@@ -133,6 +133,7 @@ class PSHeader extends preact.Component<{style: {}}> {
 		case 'mainmenu':
 			icon = <i class="fa fa-home"></i>;
 			break;
+		case 'cinnabarlab':
 		case 'teambuilder':
 			icon = <i class="fa fa-pencil-square-o"></i>;
 			break;

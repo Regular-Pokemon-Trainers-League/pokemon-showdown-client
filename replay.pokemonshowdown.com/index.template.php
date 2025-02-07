@@ -101,14 +101,14 @@ https://replay.pokemonshowdown.com/gen7randomdoublesbattle-865046831.json
 
 Or, if you only need the log itself, add `.log` instead:
 
-https://replay.rptl.us/gen7randomdoublesbattle-865046831.log
+https://replay.localhost/gen7randomdoublesbattle-865046831.log
 
 -->
 
-<link rel="stylesheet" href="//rptl.us/style/global.css?" />
-<link rel="stylesheet" href="//rptl.us/style/font-awesome.css?" />
-<link rel="stylesheet" href="//rptl.us/style/battle.css?a7" />
-<link rel="stylesheet" href="//rptl.us/style/utilichart.css?a7" />
+<link rel="stylesheet" href="//localhost/style/global.css?" />
+<link rel="stylesheet" href="//localhost/style/font-awesome.css?" />
+<link rel="stylesheet" href="//localhost/style/battle.css?a7" />
+<link rel="stylesheet" href="//localhost/style/utilichart.css?a7" />
 
 <style>
 	@media (max-width:820px) {
@@ -211,10 +211,10 @@ https://replay.rptl.us/gen7randomdoublesbattle-865046831.log
 
 	<header>
 		<div class="nav-wrapper"><ul class="nav">
-			<li><a class="button nav-first" href="//rptl.us"><img src="//replay.rptl.us/rptl_home_logo_wide.svg" srcset="//replay.rptl.us/rptl_home_logo_wide.svg 1x, //replay.rptl.us/rptl_home_logo_wide.svg 2x" alt="Regular Pok&eacute;mon Trainers League" width="146" height="44" /> Home</a></li>
+			<li><a class="button nav-first" href="//localhost"><img src="//replay.localhost/rptl_home_logo_wide.svg" srcset="//replay.localhost/rptl_home_logo_wide.svg 1x, //replay.localhost/rptl_home_logo_wide.svg 2x" alt="Regular Pok&eacute;mon Trainers League" width="146" height="44" /> Home</a></li>
 			<li><a class="button" href="//pokemonshowdown.com/dex/">Pok&eacute;dex</a></li>
 			<li><a class="button cur" href="/">Replays</a></li>
-			<li><a class="button" href="//rptl.us/ladder/">Ladder</a></li>
+			<li><a class="button" href="//localhost/ladder/">Ladder</a></li>
 			<li><a class="button nav-last" href="//pokemonshowdown.com/forums/">Forum</a></li>
 			<li><a class="button greenbutton nav-first nav-last" href="//play.pokemonshowdown.com/">Play</a></li>
 		</ul></div>
@@ -228,25 +228,25 @@ https://replay.rptl.us/gen7randomdoublesbattle-865046831.log
 
 </div>
 
-<script defer nomodule src="//rptl.us/js/lib/ps-polyfill.js"></script>
-<script defer src="//rptl.us/js/lib/preact.min.js"></script>
+<script defer nomodule src="//localhost/js/lib/ps-polyfill.js"></script>
+<script defer src="//localhost/js/lib/preact.min.js"></script>
 
-<script defer src="//rptl.us/config/config.js?a7"></script>
-<script defer src="//rptl.us/js/lib/jquery-1.11.0.min.js"></script>
-<script defer src="//rptl.us/js/lib/html-sanitizer-minified.js"></script>
-<script defer src="//rptl.us/js/battle-sound.js"></script>
-<script defer src="//rptl.us/js/battledata.js?a7"></script>
-<script defer src="//rptl.us/data/pokedex-mini.js?a7"></script>
-<script defer src="//rptl.us/data/pokedex-mini-bw.js?a7"></script>
-<script defer src="//rptl.us/data/graphics.js?a7"></script>
-<script defer src="//rptl.us/data/pokedex.js?a7"></script>
-<script defer src="//rptl.us/data/moves.js?a7"></script>
-<script defer src="//rptl.us/data/abilities.js?a7"></script>
-<script defer src="//rptl.us/data/items.js?a7"></script>
-<script defer src="//rptl.us/data/teambuilder-tables.js?a7"></script>
-<script defer src="//rptl.us/js/battle-tooltips.js?a7"></script>
-<script defer src="//rptl.us/js/battle.js?a7"></script>
-<script defer src="//rptl.us/data/graphics.js?"></script>
+<script defer src="//localhost/config/config.js?a7"></script>
+<script defer src="//localhost/js/lib/jquery-1.11.0.min.js"></script>
+<script defer src="//localhost/js/lib/html-sanitizer-minified.js"></script>
+<script defer src="//localhost/js/battle-sound.js"></script>
+<script defer src="//localhost/js/battledata.js?a7"></script>
+<script defer src="//localhost/data/pokedex-mini.js?a7"></script>
+<script defer src="//localhost/data/pokedex-mini-bw.js?a7"></script>
+<script defer src="//localhost/data/graphics.js?a7"></script>
+<script defer src="//localhost/data/pokedex.js?a7"></script>
+<script defer src="//localhost/data/moves.js?a7"></script>
+<script defer src="//localhost/data/abilities.js?a7"></script>
+<script defer src="//localhost/data/items.js?a7"></script>
+<script defer src="//localhost/data/teambuilder-tables.js?a7"></script>
+<script defer src="//localhost/js/battle-tooltips.js?a7"></script>
+<script defer src="//localhost/js/battle.js?a7"></script>
+<script defer src="//localhost/data/graphics.js?"></script>
 
 <script defer src="js/utils.js?"></script>
 <script defer src="js/replays-battle.js?"></script>
