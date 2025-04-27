@@ -372,6 +372,11 @@ class PSServer {
 			name: "Player (\u2606)",
 			order: 110,
 		},
+		'⏔': {
+			name: "Scientist (⏔)",
+			type: 'staff',
+			order: 111
+		},
 		'+': {
 			name: "Voice (+)",
 			order: 200,
