@@ -22,14 +22,14 @@ RewriteEngine on
 RewriteCond %{HTTP:X-Forwarded-Proto} ^http$
 RewriteCond %{HTTP_HOST} ^rptl\.us$ [NC]
 RewriteCond %{QUERY_STRING} !^insecure [NC]
-RewriteRule ^([A-Za-z0-9-]*)$ https://rptl.us/$1 [R=307,NE,L]
+RewriteRule ^([A-Za-z0-9-]*)$ https://test.rptl.us/$1 [R=307,NE,L]
 
 # redirects
 RewriteCond %{HTTP_HOST} ^rptl\.us$ [NC]
-RewriteRule ^appeals?\/?$ https://rptl.us/view-help-request--appeal [R=302,L]
+RewriteRule ^appeals?\/?$ https://test.rptl.us/view-help-request--appeal [R=302,L]
 RewriteCond %{HTTP_HOST} ^rptl\.us$ [NC]
-RewriteRule ^report\/?$ https://rptl.us/view-help-request--report [R=302,L]
-RewriteRule ^requesthelp\/?$ https://rptl.us/view-help-request--other [R=302,L]
+RewriteRule ^report\/?$ https://test.rptl.us/view-help-request--report [R=302,L]
+RewriteRule ^requesthelp\/?$ https://test.rptl.us/view-help-request--other [R=302,L]
 RewriteCond %{HTTP_HOST} ^rptl\.us$ [NC]
 RewriteRule ^rooms?suggestions?\/?$ https://www.smogon.com/forums/threads/room-suggestions-are-no-longer-being-taken.3522130/ [R=302,L]
 RewriteCond %{HTTP_HOST} ^rptl\.us$ [NC]
@@ -55,7 +55,7 @@ RewriteRule ^contact\/?$ https://pokemonshowdown.com/contact [R=302,L]
 RewriteCond %{HTTP_HOST} ^rptl\.us$ [NC]
 RewriteRule ^dex\/?$ https://dex.pokemonshowdown.com/ [R=302,L]
 RewriteCond %{HTTP_HOST} ^rptl\.us$ [NC]
-RewriteRule ^insecure\/?$ http://rptl.us/?insecure [R=302,L]
+RewriteRule ^insecure\/?$ http://test.rptl.us/?insecure [R=302,L]
 # RewriteCond %{HTTP_HOST} ^rptl\.us$ [NC]
 # RewriteRule ^devdiscord\/?$ https://discord.com/invite/D8QwhsH [R=302,L]
 RewriteCond %{HTTP_HOST} ^rptl\.us$ [NC]
@@ -93,7 +93,7 @@ RewriteRule ^sprites\/gen3frlg(.*)?$ sprites/gen3$1 [L,QSA]
 RewriteRule ^replays?\/?$ https://replay.rptl.us/ [R=302,L]
 
 RewriteCond %{HTTP_HOST} ^www\.rptl\.us$ [NC]
-RewriteRule ^(.*) https://rptl.us/$1 [R=301,L]
+RewriteRule ^(.*) https://test.rptl.us/$1 [R=301,L]
 
 RewriteRule ^style/fonts?/.*?\.(eot|svg|ttf|woff|woff2)$ - [E=SAFE_RESOURCE:1]
 RewriteRule ^data\/.*\.js(?:on)?$ - [E=SAFE_RESOURCE:1]
@@ -124,7 +124,7 @@ RewriteRule ^(preactalpha|dev|development|login|users|(dm|challenge|user|viewuse
 RewriteRule ^([A-Za-z0-9][A-Za-z0-9-]*)$ ./ [L,E=INDEX_PAGE:1]
 
 # RewriteRule ^crossprotocol\.html$ - [E=CROSSPROTOCOL:1]
-# Header set X-Frame-Options "ALLOW-FROM http://rptl.us" env=CROSSPROTOCOL
+# Header set X-Frame-Options "ALLOW-FROM http://test.rptl.us" env=CROSSPROTOCOL
 
 # Headers for the index page.
 Header set Cache-Control "no-cache, no-store, must-revalidate" env=INDEX_PAGE
@@ -149,7 +149,7 @@ RewriteRule ^replay/battle-([A-Za-z0-9-]+)$ https://replay.rptl.us/$1 [R=302,L]
 RewriteRule ^replay/turn_(.+)\.png$ replay/turn-image.php?data=$1 [L,QSA]
 
 RewriteCond %{QUERY_STRING} !output=html
-RewriteRule ^ladder\.php$ https://rptl.us/ladder/ [R=301,L]
+RewriteRule ^ladder\.php$ https://test.rptl.us/ladder/ [R=301,L]
 
 RewriteRule ^~~([^:/]*)(:[0-9]*)?/action\.php$ action.php?serverid=$1 [L,QSA]
 RewriteRule ^~~([^:/]*)(/.*)?$ http://rptl.us:8000$2 [R=301,L]

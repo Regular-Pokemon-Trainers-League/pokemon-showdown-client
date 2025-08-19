@@ -1686,6 +1686,7 @@ function toId() {
 			var roomTable = {
 				'': MainMenuRoom,
 				'teambuilder': TeambuilderRoom,
+				'leaguedraft': LeaguedraftRoom,
 				'rooms': RoomsRoom,
 				'battles': BattlesRoom,
 				'league': LeagueRoom,
@@ -1728,7 +1729,7 @@ function toId() {
 				if (this.curSideRoom === oldRoom) this.curSideRoom = room;
 				if (this.sideRoom === oldRoom) this.sideRoom = room;
 			}
-			if (['', 'teambuilder', 'ladder', 'rooms'].indexOf(room.id) < 0) {
+			if (['', 'teambuilder', 'leaguedraft', 'ladder', 'rooms'].indexOf(room.id) < 0) {
 				if (room.isSideRoom) {
 					this.sideRoomList.push(room);
 				} else {

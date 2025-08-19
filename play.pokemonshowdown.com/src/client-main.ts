@@ -1659,6 +1659,7 @@ export const PS = new class extends PSModel {
 		// to update:
 		// console.log('\t\t' + JSON.stringify(Object.fromEntries(Object.entries(PS.routes).filter(([k, v]) => k !== 'dm-*').map(([k, v]) => [k, '*' + (PS.roomTypes[v].location || '')]))).replaceAll(',', ',\n\t\t').replaceAll('":"', '": "').slice(1, -1) + ',')
 		"teambuilder": "*",
+		"leaguedraft": "*",
 		"news": "*mini-window",
 		"": "*",
 		"rooms": "*right",
