@@ -22,14 +22,14 @@ RewriteEngine on
 RewriteCond %{HTTP:X-Forwarded-Proto} ^http$
 RewriteCond %{HTTP_HOST} ^rptl\.us$ [NC]
 RewriteCond %{QUERY_STRING} !^insecure [NC]
-RewriteRule ^([A-Za-z0-9-]*)$ http://localhost/$1 [R=307,NE,L]
+RewriteRule ^([A-Za-z0-9-]*)$ https://test.rptl.us/$1 [R=307,NE,L]
 
 # redirects
 RewriteCond %{HTTP_HOST} ^rptl\.us$ [NC]
-RewriteRule ^appeals?\/?$ http://localhost/view-help-request--appeal [R=302,L]
+RewriteRule ^appeals?\/?$ https://test.rptl.us/view-help-request--appeal [R=302,L]
 RewriteCond %{HTTP_HOST} ^rptl\.us$ [NC]
-RewriteRule ^report\/?$ http://localhost/view-help-request--report [R=302,L]
-RewriteRule ^requesthelp\/?$ http://localhost/view-help-request--other [R=302,L]
+RewriteRule ^report\/?$ https://test.rptl.us/view-help-request--report [R=302,L]
+RewriteRule ^requesthelp\/?$ https://test.rptl.us/view-help-request--other [R=302,L]
 RewriteCond %{HTTP_HOST} ^rptl\.us$ [NC]
 RewriteRule ^rooms?suggestions?\/?$ http://www.smogon.com/forums/threads/room-suggestions-are-no-longer-being-taken.3522130/ [R=302,L]
 RewriteCond %{HTTP_HOST} ^rptl\.us$ [NC]
@@ -55,7 +55,7 @@ RewriteRule ^contact\/?$ http://pokemonshowdown.com/contact [R=302,L]
 RewriteCond %{HTTP_HOST} ^rptl\.us$ [NC]
 RewriteRule ^dex\/?$ http://dex.pokemonshowdown.com/ [R=302,L]
 RewriteCond %{HTTP_HOST} ^rptl\.us$ [NC]
-RewriteRule ^insecure\/?$ http://localhost/?insecure [R=302,L]
+RewriteRule ^insecure\/?$ http://test.rptl.us/?insecure [R=302,L]
 # RewriteCond %{HTTP_HOST} ^rptl\.us$ [NC]
 # RewriteRule ^devdiscord\/?$ http://discord.com/invite/D8QwhsH [R=302,L]
 RewriteCond %{HTTP_HOST} ^rptl\.us$ [NC]
@@ -65,6 +65,8 @@ RewriteRule ^formatsuggestions/?$ http://pokemonshowdown.com/pages/formatsuggest
 RewriteRule ^sprites\/xyani(.*)?$ sprites/ani$1 [L,QSA]
 RewriteRule ^sprites\/xydex(.*)?$ sprites/dex$1 [L,QSA]
 RewriteRule ^sprites\/smicons(.*)?$ sprites/pokemonicons$1 [L,QSA]
+RewriteRule ^sprites\/trainers\/latest\/?$ /sprites/trainers/?filter=recent [R=302,L,QSA]
+RewriteRule ^sprites\/trainers\/credits\/?$ /sprites/trainers/?filter=credited [R=302,L,QSA]
 
 RewriteRule ^sprites\/rby(.*)?$ sprites/gen1$1 [L,QSA]
 RewriteRule ^sprites\/gsc(.*)?$ sprites/gen2$1 [L,QSA]
@@ -91,7 +93,7 @@ RewriteRule ^sprites\/gen3frlg(.*)?$ sprites/gen3$1 [L,QSA]
 RewriteRule ^replays?\/?$ http://replay.localhost/ [R=302,L]
 
 RewriteCond %{HTTP_HOST} ^www\.rptl\.us$ [NC]
-RewriteRule ^(.*) http://localhost/$1 [R=301,L]
+RewriteRule ^(.*) https://test.rptl.us/$1 [R=301,L]
 
 RewriteRule ^style/fonts?/.*?\.(eot|svg|ttf|woff|woff2)$ - [E=SAFE_RESOURCE:1]
 RewriteRule ^data\/.*\.js(?:on)?$ - [E=SAFE_RESOURCE:1]
@@ -115,12 +117,14 @@ RewriteCond %{DOCUMENT_ROOT}/$1 !-d
 RewriteRule ^([A-Za-z0-9][A-Za-z0-9-]*)/$ /$1 [R=301,L]
 
 # Anything that looks like a roomid: connect to the server
+RewriteCond %{HTTP_COOKIE} ^.*preactalpha=1.*$
+RewriteRule ^(|[A-Za-z0-9][A-Za-z0-9-]*)$ ./preactalpha.html [L,E=INDEX_PAGE:1]
 RewriteRule ^$ - [E=INDEX_PAGE:1]
-RewriteRule ^preactalpha$ ./preactalpha.html [L,E=INDEX_PAGE:1]
+RewriteRule ^(preactalpha|dev|development|login|users|(dm|challenge|user|viewuser|ladder)-[a-z0-9-]*)$ ./preactalpha.html [L,E=INDEX_PAGE:1]
 RewriteRule ^([A-Za-z0-9][A-Za-z0-9-]*)$ ./ [L,E=INDEX_PAGE:1]
 
 # RewriteRule ^crossprotocol\.html$ - [E=CROSSPROTOCOL:1]
-# Header set X-Frame-Options "ALLOW-FROM http://localhost" env=CROSSPROTOCOL
+# Header set X-Frame-Options "ALLOW-FROM http://test.rptl.us" env=CROSSPROTOCOL
 
 # Headers for the index page.
 Header set Cache-Control "no-cache, no-store, must-revalidate" env=INDEX_PAGE
@@ -145,7 +149,7 @@ RewriteRule ^replay/battle-([A-Za-z0-9-]+)$ http://replay.localhost/$1 [R=302,L]
 RewriteRule ^replay/turn_(.+)\.png$ replay/turn-image.php?data=$1 [L,QSA]
 
 RewriteCond %{QUERY_STRING} !output=html
-RewriteRule ^ladder\.php$ http://localhost/ladder/ [R=301,L]
+RewriteRule ^ladder\.php$ https://test.rptl.us/ladder/ [R=301,L]
 
 RewriteRule ^~~([^:/]*)(:[0-9]*)?/action\.php$ action.php?serverid=$1 [L,QSA]
 RewriteRule ^~~([^:/]*)(/.*)?$ http://rptl.us:8000$2 [R=301,L]
@@ -153,12 +157,8 @@ RewriteRule ^~~([^:/]*):([0-9]*)(/.*)?$ http://rptl.us:8000$3 [R=301,L]
 
 RewriteRule ^backup/ - [F]
 RewriteRule ^\.git/ - [F]
-RewriteRule ^data/Pokemon-Showdown/ - [F]
 RewriteRule ^lib/ - [F]
-RewriteRule ^githooks/ - [F]
 
-RewriteRule ^\.gitignore$ - [F]
-RewriteRule ^README\.md$ - [F]
 RewriteRule ^index\.template\.html$ - [F]
 RewriteRule ^preactalpha\.template\.html$ - [F]
 RewriteRule ^testclient\.html$ - [F]
@@ -168,3 +168,6 @@ RewriteCond %{REQUEST_FILENAME} !-f
 RewriteRule ^(apple-touch-icon-precomposed\.png)$ - [R=404,L]
 
 </IfModule>
+
+DirectoryIndex index.php index.html /dirindex/dirindex.php
+ErrorDocument 404 /dirindex/404.html

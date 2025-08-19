@@ -56,7 +56,7 @@
 			e.preventDefault();
 			e.stopPropagation();
 			var name = $(e.currentTarget).data('name');
-			app.addPopup(UserPopup, {name: name, sourceEl: e.currentTarget});
+			app.addPopup(UserPopup, { name: name, sourceEl: e.currentTarget });
 		},
 		toggleMute: function () {
 			var muted = !Dex.prefs('mute');
@@ -84,6 +84,8 @@
 				return buf + '><i class="fa fa-home"></i> <span>Home</span></a></li>';
 			case 'teambuilder':
 				return buf + '><i class="fa fa-pencil-square-o"></i> <span>Teambuilder</span></a><button class="closebutton" name="closeRoom" value="' + 'teambuilder" aria-label="Close"><i class="fa fa-times-circle"></i></button></li>';
+			case 'leaguedraft':
+				return buf + '><i class="fa fa-group"></i> <span>League Draft</span></a><button class="closebutton" name="closeRoom" value="' + 'leaguedraft" aria-label="Close"><i class="fa fa-times-circle"></i></button></li>';
 			case 'ladder':
 				return buf + '><i class="fa fa-list-ol"></i> <span>Ladder</span></a><button class="closebutton" name="closeRoom" value="' + 'ladder" aria-label="Close"><i class="fa fa-times-circle"></i></button></li>';
 			case 'battles':
@@ -121,7 +123,7 @@
 				if (room.title && room.title.charAt(0) === '[') {
 					var closeBracketIndex = room.title.indexOf(']');
 					if (closeBracketIndex > 0) {
-						return buf + ' draggable="true"><i class="text">' + BattleLog.escapeFormat(room.title.slice(1, closeBracketIndex)) + '</i><span>' + BattleLog.escapeHTML(room.title.slice(closeBracketIndex + 1)) + '</span></a><button class="closebutton" name="closeRoom" value="' + id + '" aria-label="Close"><i class="fa fa-times-circle"></i></a></li>';
+						return buf + ' draggable="true"><i class="text">' + BattleLog.escapeHTML(room.title.slice(1, closeBracketIndex)) + '</i><span>' + BattleLog.escapeHTML(room.title.slice(closeBracketIndex + 1)) + '</span></a><button class="closebutton" name="closeRoom" value="' + id + '" aria-label="Close"><i class="fa fa-times-circle"></i></a></li>';
 					}
 				}
 				return buf + ' draggable="true"><i class="fa fa-file-text-o"></i> <span>' + (BattleLog.escapeHTML(room.title) || id) + '</span></a><button class="closebutton" name="closeRoom" value="' + id + '" aria-label="Close"><i class="fa fa-times-circle"></i></a></li>';
@@ -132,7 +134,7 @@
 			this.$('.logo').show();
 			this.$('.maintabbar').removeClass('minitabbar');
 
-			var buf = '<ul>' + this.renderRoomTab(app.rooms['']) + this.renderRoomTab(app.rooms['teambuilder']) + this.renderRoomTab(app.rooms['ladder']) + '</ul>';
+			var buf = '<ul>' + this.renderRoomTab(app.rooms['']) + this.renderRoomTab(app.rooms['teambuilder']) + this.renderRoomTab(app.rooms['leaguedraft']) + this.renderRoomTab(app.rooms['ladder']) + '</ul>';
 			var sideBuf = '';
 
 			var notificationCount = app.rooms[''].notifications ? 1 : 0;
@@ -226,7 +228,7 @@
 			e.preventDefault();
 			var $target = $(e.currentTarget);
 			if ($target.hasClass('minilogo')) {
-				app.addPopup(TabListPopup, {sourceEl: e.currentTarget});
+				app.addPopup(TabListPopup, { sourceEl: e.currentTarget });
 				return;
 			}
 			var id = $target.attr('href');
@@ -545,7 +547,7 @@
 				"हिंदी": 'hindi',
 				"日本語": 'japanese',
 				"简体中文": 'simplifiedchinese',
-				"中文": 'traditionalchinese',
+				"中文": 'traditionalchinese'
 			};
 			buf += '<p><label class="optlabel">Language: <select name="language" class="button">';
 			for (var name in possibleLanguages) {
@@ -782,7 +784,7 @@
 			var curId = (app.curRoom ? app.curRoom.id : '');
 			var curSideId = (app.curSideRoom ? app.curSideRoom.id : '');
 
-			var buf = '<ul>' + this.renderRooms([app.rooms[''], app.rooms['teambuilder'], app.rooms['ladder']]) + '</ul>';
+			var buf = '<ul>' + this.renderRooms([app.rooms[''], app.rooms['teambuilder'], app.rooms['leaguedraft'], app.rooms['ladder']]) + '</ul>';
 			if (app.roomList.length) buf += this.renderRooms(app.roomList);
 			var sideBuf = this.renderRooms(app.sideRoomList);
 			sideBuf += '<li><a class="button' + (curId === 'rooms' || curSideId === 'rooms' ? ' cur' : '') + '" href="' + app.root + 'rooms"><i class="fa fa-plus"></i> <span>&nbsp;</span></a></li>';
@@ -880,7 +882,7 @@
 				popup.$('.cur').removeClass('cur');
 				Storage.bg.set(e.target.result, 'custom');
 			} else {
-				app.addPopup(ConfirmBackgroundPopup, {bgUrl: e.target.result});
+				app.addPopup(ConfirmBackgroundPopup, { bgUrl: e.target.result });
 			}
 		};
 		reader.readAsDataURL(file);

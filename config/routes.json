@@ -1,7 +1,8 @@
 {
-    "root": "localhost",
-    "client": "localhost",
+    "root": "test.rptl.us",
+    "client": "test.rptl.us",
     "dex": "dex.pokemonshowdown.com",
     "replays": "replay.rptl.us",
-    "users": "pokemonshowdown.com/users"
+    "users": "pokemonshowdown.com/users",
+    "teams": "teams.pokemonshowdown.com"
 }
