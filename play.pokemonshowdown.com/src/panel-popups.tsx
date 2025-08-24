@@ -4,7 +4,9 @@ import type { ID } from "./battle-dex-data";
 import { BattleLog } from "./battle-log";
 import { PSLoginServer } from "./client-connection";
 import { PSBackground } from "./client-core";
-import { PSRoom, type RoomOptions, PS, type PSLoginState, type RoomID, type TimestampOptions } from "./client-main";
+import {
+	PS, PSRoom, Config, type RoomOptions, type PSLoginState, type RoomID, type TimestampOptions,
+} from "./client-main";
 import { type BattleRoom } from "./panel-battle";
 import { ChatUserList, type ChatRoom } from "./panel-chat";
 import { PSRoomPanel, PSPanelWrapper, PSView } from "./panels";
@@ -30,7 +32,7 @@ export class UserRoom extends PSRoom {
 		this.isSelf = (this.userid === PS.user.userid);
 		if (/[a-zA-Z0-9]/.test(this.name.charAt(0))) this.name = ' ' + this.name;
 		this.update(null);
-		if (this.userid) PS.send(`|/cmd userdetails ${this.userid}`);
+		if (this.userid) PS.send(`/cmd userdetails ${this.userid}`);
 	}
 }
 
@@ -619,13 +621,11 @@ class OptionsPanel extends PSRoomPanel {
 		}
 		case 'language': {
 			PS.prefs.set(setting, elem.value);
-			PS.send('/language ' + elem.value);
+			PS.send(`/language ${elem.value}`);
 			break;
 		}
 		case 'tournaments': {
-			if (elem.value === "hide") PS.prefs.set(setting, elem.value);
-			if (elem.value === "notify") PS.prefs.set(setting, elem.value);
-			if (!elem.value) PS.prefs.set(setting, null);
+			PS.prefs.set(setting, !elem.value ? null : elem.value as 'hide' | 'notify');
 			break;
 		}
 		case 'refreshprompt':
@@ -641,7 +641,7 @@ class OptionsPanel extends PSRoomPanel {
 
 	editStatus = (ev: Event) => {
 		const statusInput = this.base!.querySelector<HTMLInputElement>('input[name=statustext]');
-		PS.send(statusInput?.value?.length ? `|/status ${statusInput.value}` : `|/clearstatus`);
+		PS.send(statusInput?.value?.length ? `/status ${statusInput.value}` : `/clearstatus`);
 		this.setState({ showStatusUpdated: true, showStatusInput: false });
 		ev.preventDefault();
 		ev.stopImmediatePropagation();
@@ -769,8 +769,8 @@ class OptionsPanel extends PSRoomPanel {
 			<p>
 				<label class="optlabel">
 					Tournaments: <select name="tournaments" class="button" onChange={this.handleOnChange}>
-						<option value="" selected={!PS.prefs.tournaments}>No notifications</option>
-						<option value="notify" selected={PS.prefs.tournaments === "notify"}>Notifications</option>
+						<option value="" selected={!PS.prefs.tournaments}>Notify when joined</option>
+						<option value="notify" selected={PS.prefs.tournaments === "notify"}>Always notify</option>
 						<option value="hide" selected={PS.prefs.tournaments === "hide"}>Hide</option>
 					</select>
 				</label>
@@ -1234,44 +1234,101 @@ class BackgroundListPanel extends PSRoomPanel {
 	static readonly routes = ['changebackground'];
 	static readonly location = 'semimodal-popup';
 	static readonly noURL = true;
+	static handleDrop(ev: DragEvent) {
+		const files = ev.dataTransfer?.files;
+		if (files?.[0]?.type?.startsWith('image/')) {
+			// It's an image file, try to set it as a background
+			BackgroundListPanel.handleUploadedFiles(files);
+			return true;
+		}
+	}
 
-	declare state: { status?: string };
+	declare state: { status?: string, bgUrl?: string };
 
 	setBg = (ev: Event) => {
 		let curtarget = ev.currentTarget as HTMLButtonElement;
 		let bg = curtarget.value;
-		PSBackground.set('', bg);
+		if (bg === 'custom') {
+			PSBackground.set(this.props.room.args?.bgUrl as string || '', 'custom');
+			this.close();
+		} else {
+			PSBackground.set('', bg);
+		}
 		ev.preventDefault();
 		ev.stopImmediatePropagation();
 		this.forceUpdate();
 	};
 
-	uploadBg = (ev: Event) => {
-		this.setState({ status: undefined });
-		const input = this.base?.querySelector<HTMLInputElement>('input[name=bgfile]');
-		if (!input?.files?.[0]) return;
+	static handleUploadedFiles(files: FileList | null | undefined, skipConfirm?: boolean) {
+		if (!files?.[0]) return;
 
-		const file = input.files[0];
+		const file = files[0];
 		const reader = new FileReader();
 
 		reader.onload = () => {
-			const base64Image = reader.result as string;
-			PSBackground.set(base64Image, 'custom');
-			this.forceUpdate();
+			const bgUrl = reader.result as string;
+			if (bgUrl.length > 4200000) {
+				PS.join('changebackground' as RoomID, {
+					args: { error: `Image is too large and can't be saved. It should be under 3.5MB or so.` },
+				});
+				return;
+			}
+			if (skipConfirm) {
+				PSBackground.set(bgUrl, 'custom');
+			} else {
+				PS.join('changebackground' as RoomID, {
+					args: { bgUrl },
+				});
+			}
+			PS.rooms['changebackground']?.update(null);
 		};
 
 		reader.onerror = () => {
-			this.setState({ status: "Failed to load background image." });
+			PS.join('changebackground' as RoomID, {
+				args: { error: "Failed to load background image." },
+			});
 		};
 		reader.readAsDataURL(file);
+	}
+
+	uploadBg = (ev: Event) => {
+		this.setState({ status: undefined });
+		const input = this.base?.querySelector<HTMLInputElement>('input[name=bgfile]');
+		BackgroundListPanel.handleUploadedFiles(input?.files, true);
 		ev.preventDefault();
 		ev.stopImmediatePropagation();
 	};
 
+	renderUpload() {
+		const room = this.props.room;
+		if (room.args?.error) {
+			return <PSPanelWrapper room={room} width={480}><div class="pad">
+				<p class="error">{room.args.error}</p>
+				<p class="buttonbar">
+					<button data-cmd="/close" class="button"><strong>Done</strong></button>
+				</p>
+			</div></PSPanelWrapper>;
+		}
+
+		if (room.args?.bgUrl) {
+			return <PSPanelWrapper room={room} width={480}><div class="pad">
+				<p>
+					<img src={room.args.bgUrl as string} style="display:block;margin:auto;max-width:90%;max-height:500px" />
+				</p>
+				<p class="buttonbar">
+					<button onClick={this.setBg} value="custom" class="button"><strong>Set as background</strong></button> {}
+					<button data-cmd="/close" class="button">Cancel</button>
+				</p>
+			</div></PSPanelWrapper>;
+		}
+
+		return null;
+	}
+
 	override render() {
 		const room = this.props.room;
 		const option = (val: string) => val === PSBackground.id ? 'option cur' : 'option';
-		return <PSPanelWrapper room={room} width={480}><div class="pad">
+		return this.renderUpload() || <PSPanelWrapper room={room} width={480}><div class="pad">
 			<p><strong>Default</strong></p>
 			<div class="bglist">
 				<button onClick={this.setBg} value="" class={option('')}>
@@ -1321,7 +1378,7 @@ class BackgroundListPanel extends PSRoomPanel {
 			</p>
 			<p><input type="file" accept="image/*" name="bgfile" onChange={this.uploadBg} /></p>
 			{!!this.state.status && <p class="error">{this.state.status}</p>}
-			<p>
+			<p class="buttonbar">
 				<button data-cmd="/close" class="button"><strong>Done</strong></button>
 			</p>
 		</div>
@@ -1421,15 +1478,16 @@ class LeaveRoomPanel extends PSRoomPanel {
 
 	override render() {
 		const room = this.props.room;
-		const parentRoomId = (this.props.room.parentElem as HTMLInputElement).value;
+		const parentRoomid = room.parentRoomid!;
+
 		return <PSPanelWrapper room={room} width={480}><div class="pad">
-			<p>Are you sure you want to exit this room?</p>
+			<p>Close <code>{parentRoomid || "ERROR"}</code>?</p>
 			<p class="buttonbar">
-				<button data-cmd={`/closeand /close ${parentRoomId}`} class="button autofocus">
+				<button data-cmd={`/closeand /close ${parentRoomid}`} class="button autofocus">
 					<strong>Close Room</strong>
 				</button> {}
 				<button data-cmd="/close" class="button">
-					<strong>Cancel</strong>
+					Cancel
 				</button>
 			</p>
 		</div></PSPanelWrapper>;
@@ -1443,8 +1501,9 @@ class BattleOptionsPanel extends PSRoomPanel {
 
 	handleHardcoreMode = (ev: Event) => {
 		const mode = (ev.currentTarget as HTMLInputElement).checked;
-		const room = this.props.room.getParent() as BattleRoom;
-		if (!room?.battle) return this.close();
+		const room = this.getBattleRoom();
+		if (!room) return this.close();
+
 		room.battle.setHardcoreMode(mode);
 		if (mode) {
 			room.add(`||Hardcore mode ON: Information not available in-game is now hidden.`);
@@ -1457,8 +1516,9 @@ class BattleOptionsPanel extends PSRoomPanel {
 		const value = typeof ev === "object" ?
 			(ev.currentTarget as HTMLInputElement).checked :
 			ev;
-		const room = this.props.room.getParent() as BattleRoom;
-		if (!room?.battle) return this.close();
+		const room = this.getBattleRoom();
+		if (!room) return this.close();
+
 		room.battle.ignoreSpects = value;
 		room.add(`||Spectators ${room.battle.ignoreSpects ? '' : 'no longer '}ignored.`);
 		const chats = document.querySelectorAll<HTMLElement>('.battle-log .chat');
@@ -1478,8 +1538,9 @@ class BattleOptionsPanel extends PSRoomPanel {
 		const value = typeof ev === "object" ?
 			(ev.currentTarget as HTMLInputElement).checked :
 			ev;
-		const room = this.props.room.getParent() as BattleRoom;
-		if (!room?.battle) return this.close();
+		const room = this.getBattleRoom();
+		if (!room) return this.close();
+
 		room.battle.ignoreOpponent = value;
 		room.battle.resetToCurrentTurn();
 	};
@@ -1487,21 +1548,22 @@ class BattleOptionsPanel extends PSRoomPanel {
 		const value = typeof ev === "object" ?
 			(ev.currentTarget as HTMLInputElement).checked :
 			ev;
-		const room = this.props.room.getParent() as BattleRoom;
-		if (!room?.battle) return this.close();
+		const room = this.getBattleRoom();
+		if (!room) return this.close();
+
 		room.battle.ignoreNicks = value;
 		room.battle.resetToCurrentTurn();
 	};
 	handleAllSettings = (ev: Event) => {
 		const setting = (ev.currentTarget as HTMLInputElement).name;
 		const value = (ev.currentTarget as HTMLInputElement).checked;
-		const room = this.props.room.getParent() as BattleRoom;
-		if (!room?.battle) return this.close();
+		const room = this.getBattleRoom();
+
 		switch (setting) {
 		case 'autotimer': {
 			PS.prefs.set('autotimer', value);
 			if (value) {
-				room.send('/timer on');
+				room?.send('/timer on');
 			}
 			break;
 		}
@@ -1522,55 +1584,76 @@ class BattleOptionsPanel extends PSRoomPanel {
 		}
 		case 'rightpanel': {
 			PS.prefs.set('rightpanelbattles', value);
+			break;
+		}
+		case 'disallowspectators': {
+			PS.prefs.set('disallowspectators', value);
+			PS.mainmenu.disallowSpectators = value;
+			break;
 		}
 		}
 	};
+	getBattleRoom() {
+		const battleRoom = this.props.room.getParent() as BattleRoom | null;
+		return battleRoom?.battle ? battleRoom : null;
+	}
 
 	override render() {
 		const room = this.props.room;
-		const battleRoom = this.props.room.getParent() as BattleRoom;
-
+		const battleRoom = this.getBattleRoom();
+		const isPlayer = !!battleRoom?.battle.myPokemon;
+		const canOfferTie = battleRoom && ((battleRoom.battle.turn >= 100 && isPlayer) || PS.user.group === '~');
 		return <PSPanelWrapper room={room} width={380}><div class="pad">
-			<p><strong>In this battle</strong></p>
-			<p>
-				<label class="checkbox">
-					<input
-						checked={battleRoom?.battle?.hardcoreMode}
-						type="checkbox" onChange={this.handleHardcoreMode}
-					/> Hardcore mode (hide info not shown in-game)
-				</label>
-			</p>
-			<p>
-				<label class="checkbox">
-					<input
-						checked={battleRoom?.battle?.ignoreSpects}
-						type="checkbox" onChange={this.handleIgnoreSpectators}
-					/> Ignore spectators
-				</label>
-			</p>
-			<p>
-				<label class="checkbox">
-					<input
-						checked={battleRoom?.battle?.ignoreOpponent}
-						type="checkbox" onChange={this.handleIgnoreOpponent}
-					/> Ignore opponent
-				</label>
-			</p>
-			<p>
-				<label class="checkbox">
-					<input
-						checked={battleRoom?.battle?.ignoreNicks}
-						type="checkbox" onChange={this.handleIgnoreNicks}
-					/> Ignore nicknames
-				</label>
-			</p>
+			{battleRoom && <>
+				<p><strong>In this battle</strong></p>
+				<p>
+					<label class="checkbox">
+						<input
+							checked={battleRoom.battle.hardcoreMode}
+							type="checkbox" onChange={this.handleHardcoreMode}
+						/> Hardcore mode (hide info not shown in-game)
+					</label>
+				</p>
+				<p>
+					<label class="checkbox">
+						<input
+							checked={battleRoom.battle.ignoreSpects}
+							type="checkbox" onChange={this.handleIgnoreSpectators}
+						/> Ignore spectators
+					</label>
+				</p>
+				<p>
+					<label class="checkbox">
+						<input
+							checked={battleRoom.battle.ignoreOpponent}
+							type="checkbox" onChange={this.handleIgnoreOpponent}
+						/> Ignore opponent
+					</label>
+				</p>
+				<p>
+					<label class="checkbox">
+						<input
+							checked={battleRoom.battle?.ignoreNicks}
+							type="checkbox" onChange={this.handleIgnoreNicks}
+						/> Ignore nicknames
+					</label>
+				</p>
+			</>}
 			<p><strong>All battles</strong></p>
+			<p>
+				<label class="checkbox">
+					<input
+						name="disallowspectators" checked={PS.prefs.disallowspectators || false}
+						type="checkbox" onChange={this.handleAllSettings}
+					/> <abbr title="You can still invite spectators by giving them the URL or using the /invite command">Invite only (hide from Battles list)</abbr>
+				</label>
+			</p>
 			<p>
 				<label class="checkbox">
 					<input
 						name="ignorenicks" checked={PS.prefs.ignorenicks || false}
 						type="checkbox" onChange={this.handleAllSettings}
-					/> Ignore nicknames
+					/> Ignore Pok&eacute;mon nicknames
 				</label>
 			</p>
 			<p>
@@ -1597,15 +1680,20 @@ class BattleOptionsPanel extends PSRoomPanel {
 					/> Automatically start timer
 				</label>
 			</p>
-			<p>
+			{!PS.prefs.onepanel && document.body.offsetWidth >= 800 && <p>
 				<label class="checkbox">
 					<input
 						name="rightpanel" checked={PS.prefs.rightpanelbattles || false}
 						type="checkbox" onChange={this.handleAllSettings}
-					/> Open new battles on the right side
+					/> Open new battles in the right-side panel
 				</label>
+			</p>}
+			<p class="buttonbar">
+				<button data-cmd="/close" class="button">Done</button> {}
+				{battleRoom && <button data-cmd="/closeand /inopener /offertie" class="button" disabled={!canOfferTie}>
+					Offer Tie
+				</button>}
 			</p>
-			<p><button data-cmd="/close" class="button">Done</button></p>
 		</div>
 		</PSPanelWrapper>;
 	}
@@ -1658,22 +1746,24 @@ class PopupPanel extends PSRoomPanel<PopupRoom> {
 		const value = room.args?.value as string | undefined;
 		const type = (room.args?.type || (typeof value === 'string' ? 'text' : null)) as string | null;
 		const message = room.args?.message;
-		return <PSPanelWrapper room={room} width={480}><form class="pad" onSubmit={this.handleSubmit}>
-			{message && <p
-				style="white-space:pre-wrap;word-wrap:break-word"
-				dangerouslySetInnerHTML={{ __html: this.parseMessage(message as string || '') }}
-			></p>}
-			{!!type && <p><input name="value" type={type} class="textbox autofocus" style="width:100%;box-sizing:border-box" /></p>}
-			<p class="buttonbar">
-				<button class={`button${!type ? ' autofocus' : ''}`} type="submit" style="min-width:50px">
-					<strong>{okButton}</strong>
-				</button> {}
-				{otherButtons} {}
-				{!!cancelButton && <button class="button" data-cmd="/close" type="button">
-					{cancelButton}
-				</button>}
-			</p>
-		</form></PSPanelWrapper>;
+		return <PSPanelWrapper room={room} width={room.args?.width as number || 480}>
+			<form class="pad" onSubmit={this.handleSubmit}>
+				{message && <p
+					style="white-space:pre-wrap;word-wrap:break-word"
+					dangerouslySetInnerHTML={{ __html: this.parseMessage(message as string || '') }}
+				></p>}
+				{!!type && <p><input name="value" type={type} class="textbox autofocus" style="width:100%;box-sizing:border-box" /></p>}
+				<p class="buttonbar">
+					<button class={`button${!type ? ' autofocus' : ''}`} type="submit" style="min-width:50px">
+						<strong>{okButton}</strong>
+					</button> {}
+					{otherButtons} {}
+					{!!cancelButton && <button class="button" data-cmd="/close" type="button">
+						{cancelButton}
+					</button>}
+				</p>
+			</form>
+		</PSPanelWrapper>;
 	}
 }
 
@@ -1723,6 +1813,104 @@ class BattleTimerPanel extends PSRoomPanel {
 	}
 }
 
+class RulesPanel extends PSRoomPanel<PopupRoom> {
+	static readonly id = 'rules';
+	static readonly routes = ['rules-*'];
+	static readonly location = 'modal-popup';
+	static readonly noURL = true;
+	static readonly Model = PopupRoom;
+	declare state: { canClose?: boolean | null, timeLeft?: number | null, timerRef?: any };
+
+	override componentDidMount() {
+		super.componentDidMount();
+		const args = this.props.room.args;
+		const isWarn = args?.type === 'warn';
+		if (isWarn && args) {
+			const timerRef = setInterval(() => {
+				const timeLeft = this.state.timeLeft || 5;
+				const canClose = timeLeft === 1;
+				this.setState({ canClose, timeLeft: timeLeft - 1 });
+				if (canClose) {
+					clearInterval(this.state.timerRef);
+					this.setState({ timerRef: null });
+				}
+			}, 1000);
+			if (!this.state.timerRef) this.setState({ timerRef });
+		}
+	}
+
+	override render() {
+		const room = this.props.room;
+		const type = room.args?.type;
+		const isWarn = type === 'warn';
+		const message = room.args?.message as string || '';
+		return <PSPanelWrapper room={room} width={room.args?.width as number || 780}>
+			<div class="pad">
+				{
+					isWarn &&
+					<p><strong style="color:red">{(BattleLog.escapeHTML(message) || 'You have been warned for breaking the rules.')}
+					</strong></p>
+				}
+				<h2>Pok&eacute;mon Showdown Rules</h2>
+				<p><b>1.</b> Be nice to people. Respect people. Don't be rude or mean to people.</p>
+				<p><b>2.</b> {' '}
+					Follow US laws (PS is based in the US). No porn (minors use PS), don't distribute pirated material, {' '}
+					and don't slander others.</p>
+				<p><b>3.</b> {' '}
+					&nbsp;No sex. Don't discuss anything sexually explicit, not even in private messages, {' '}
+					not even if you're both adults.</p>
+				<p><b>4.</b> {' '}
+					&nbsp;No cheating. Don't exploit bugs to gain an unfair advantage. {' '}
+					Don't game the system (by intentionally losing against yourself or a friend in a ladder match, by timerstalling, etc). {' '}
+					Don't impersonate staff if you're not.</p>
+				<p><b>5.</b> {' '}
+					Moderators have discretion to punish any behaviour they deem inappropriate, whether or not it's on this list. {' '}
+					If you disagree with a moderator ruling, appeal to an administrator (a user with ~ next to their name) or {' '}
+					<a href="https://pokemonshowdown.com/appeal">Discipline Appeals</a>.</p>
+				<p>(Note: The First Amendment does not apply to PS, since PS is not a government organization.)</p>
+				<p><b>Chat</b></p>
+				<p><b>1.</b> {' '}
+					Do not spam, flame, or troll. This includes advertising, raiding, {' '}
+					asking questions with one-word answers in the lobby, {' '}
+					and flooding the chat such as by copy/pasting logs in the lobby.</p>
+				<p><b>2.</b> {' '}
+					Don't call unnecessary attention to yourself. Don't be obnoxious. ALL CAPS and <i>formatting</i> {' '}
+					are acceptable to emphasize things, but should be used sparingly, not all the time.</p>
+				<p><b>3.</b> {' '}
+					No minimodding: don't mod if it's not your job. Don't tell people they'll be muted, {' '}
+					don't ask for people to be muted, {' '}
+					and don't talk about whether or not people should be muted ('inb4 mute\, etc). {' '}
+					This applies to bans and other punishments, too.</p>
+				<p><b>4.</b> {' '}
+					We reserve the right to tell you to stop discussing moderator decisions if you become unreasonable or belligerent</p>
+				<p><b>5.</b> English only, unless specified otherwise.</p>
+				<p>(Note: You can opt out of chat rules in private chat rooms and battle rooms, {' '}
+					but only if all ROs or players agree to it.)</p>
+				{
+					!isWarn && <>
+						<p><b>Usernames</b></p>
+						<p>Your username can be chosen and changed at any time. Keep in mind:</p>
+						<p><b>1.</b> Usernames may not impersonate a recognized user (a user with %, @, #, or ~ next to their name) {' '}
+							or a famous person/organization that uses PS or is associated with Pokémon.</p>
+						<p><b>2.</b> Usernames may not be derogatory or insulting in nature, to an individual or group {' '}
+							(insulting yourself is okay as long as it's not too serious).</p>
+						<p><b>3.</b> Usernames may not directly reference sexual activity, or be excessively disgusting.</p>
+						<p>This policy is less restrictive than that of many places, so you might see some "borderline" nicknames {' '}
+							that might not be accepted elsewhere. You might consider it unfair that they are allowed to keep their {' '}
+							nickname. The fact remains that their nickname follows the above rules, and {' '}
+							if you were asked to choose a new name, yours does not.</p>
+					</>
+				}
+				<p class="buttonbar"><button
+					name="close"
+					data-cmd="/close" class="button autofocus"
+					disabled={!this.state.canClose}
+				> Close {this.state.timerRef && <>({this.state.timeLeft} sec)</>}</button></p>
+			</div>
+		</PSPanelWrapper>;
+	}
+}
+
 PS.addRoomType(
 	UserPanel,
 	UserOptionsPanel,
@@ -1741,5 +1929,6 @@ PS.addRoomType(
 	PopupPanel,
 	RoomTabListPanel,
 	BattleOptionsPanel,
-	BattleTimerPanel
+	BattleTimerPanel,
+	RulesPanel
 );

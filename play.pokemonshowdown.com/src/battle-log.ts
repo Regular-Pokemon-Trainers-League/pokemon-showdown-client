@@ -15,9 +15,11 @@
 
 import type { Battle } from './battle';
 import type { BattleScene } from './battle-animations';
-import { Dex, Teams, toID, toRoomid, toUserid, type ID } from './battle-dex';
+import { Dex, toID, toRoomid, toUserid, type ID } from './battle-dex';
+import { Teams } from './battle-teams';
 import { BattleTextParser, type Args, type KWArgs } from './battle-text-parser';
 import { Net } from './client-connection'; // optional
+import { Config } from './client-main';
 
 // Caja
 declare const html4: any;
@@ -141,7 +143,6 @@ export class BattleLog {
 		let divClass = 'chat';
 		let divHTML = '';
 		let noNotify: boolean | undefined;
-		if (!['join', 'j', 'leave', 'l'].includes(args[0])) this.joinLeave = null;
 		if (!['name', 'n'].includes(args[0])) this.lastRename = null;
 		switch (args[0]) {
 		case 'chat': case 'c': case 'c:':
@@ -297,7 +298,7 @@ export class BattleLog {
 			const body = args[2];
 			const roomid = this.scene?.battle.roomid;
 			if (!roomid) break;
-			app.rooms[roomid].notifyOnce(title, body, 'highlight');
+			window.app?.rooms[roomid].notifyOnce(title, body, 'highlight');
 			break;
 
 		case 'showteam': {
@@ -306,7 +307,7 @@ export class BattleLog {
 			if (!team.length) return;
 			const side = battle.getSide(args[1]);
 			const exportedTeam = team.map(set => {
-				let buf = Teams.export([set], battle.gen).replace(/\n/g, '<br />');
+				let buf = Teams.export([set], battle.dex).replace(/\n/g, '<br />');
 				if (set.name && set.name !== set.species) {
 					buf = buf.replace(set.name, BattleLog.sanitizeHTML(
 						`<span class="picon" style="${Dex.getPokemonIcon(set.species)}"></span><br />${set.name}`));
@@ -330,9 +331,13 @@ export class BattleLog {
 
 		default:
 			this.addBattleMessage(args, kwArgs);
+			this.joinLeave = null;
 			return;
 		}
-		if (divHTML) this.addDiv(divClass, divHTML, preempt);
+		if (divHTML) {
+			this.addDiv(divClass, divHTML, preempt);
+			this.joinLeave = null;
+		}
 	}
 	addBattleMessage(args: Args, kwArgs?: KWArgs) {
 		switch (args[0]) {
@@ -1139,9 +1144,7 @@ export class BattleLog {
 		return str.replace(/&quot;/g, '"').replace(/&gt;/g, '>').replace(/&lt;/g, '<').replace(/&amp;/g, '&');
 	}
 
-	static colorCache: { [userid: string]: string } = {
-		hecate: "black; text-shadow: 0 0 6px white",
-	};
+	static colorCache: { [userid: string]: string } = {};
 
 	/** @deprecated */
 	static hashColor(name: ID) {
@@ -1209,7 +1212,7 @@ export class BattleLog {
 	static prefs(name: string) {
 		// @ts-expect-error optional, for old client
 		if (window.Storage?.prefs) return Storage.prefs(name);
-		// @ts-expect-error optional, for Preact client
+		// @ts-expect-error optional, for client rewrite
 		if (window.PS) return PS.prefs[name];
 		// may be neither, for e.g. Replays
 		return undefined;
@@ -1227,9 +1230,9 @@ export class BattleLog {
 		}
 		const colorStyle = ` style="color:${BattleLog.usernameColor(toID(name))}"`;
 		const clickableName = `<small class="groupsymbol">${BattleLog.escapeHTML(group)}</small><span class="username">${BattleLog.escapeHTML(name)}</span>`;
-		let hlClass = isHighlighted ? ' highlighted' : '';
-		let isMine = (window.app?.user?.get('name') === name) || (window.PS?.user.name === name);
-		let mineClass = isMine ? ' mine' : '';
+		const isMine = (window.app?.user?.get('name') === name) || (window.PS?.user.name === name);
+		const hlClass = isHighlighted ? ' highlighted' : '';
+		const mineClass = isMine ? ' mine' : '';
 
 		let cmd = '';
 		let target = '';
@@ -1302,7 +1305,7 @@ export class BattleLog {
 			this.changeUhtml(parts[0], htmlSrc, cmd === 'uhtml');
 			return ['', ''];
 		case 'raw':
-			return ['chat', BattleLog.sanitizeHTML(target)];
+			return ['chat', BattleLog.sanitizeHTML(target), true];
 		case 'nonotify':
 			return ['chat', BattleLog.sanitizeHTML(target), true];
 		default:
@@ -1343,7 +1346,7 @@ export class BattleLog {
 	}
 
 	static interstice = (() => {
-		const whitelist: string[] = Config.whitelist;
+		const whitelist = Config.whitelist || [];
 		const patterns = whitelist.map(entry => new RegExp(
 			`^(https?:)?//([A-Za-z0-9-]*\\.)?${entry.replace(/\./g, '\\.')}(/.*)?`, 'i'
 		));

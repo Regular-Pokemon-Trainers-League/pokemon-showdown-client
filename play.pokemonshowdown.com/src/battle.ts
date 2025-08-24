@@ -31,8 +31,9 @@
 import { BattleSceneStub } from './battle-scene-stub';
 import { BattleLog } from './battle-log';
 import { BattleScene, type PokemonSprite, BattleStatusAnims } from './battle-animations';
-import { Dex, Teams, toID, toUserid, type ID, type ModdedDex } from './battle-dex';
+import { Dex, toID, toUserid, type ID, type ModdedDex } from './battle-dex';
 import { BattleTextParser, type Args, type KWArgs, type SideID } from './battle-text-parser';
+import { Teams } from './battle-teams';
 declare const app: { user: AnyObject, rooms: AnyObject, ignore?: AnyObject } | undefined;
 
 /** [id, element?, ...misc] */
@@ -152,18 +153,20 @@ export class Pokemon implements PokemonDetails, PokemonHealth {
 
 		if (pixels === 0) return [0, 0];
 		if (pixels === 1) return [0 + epsilon, 2 / 48 - epsilon];
-		if (pixels === 9) {
-			if (color === 'y') { // ratio is > 0.2
-				return [0.2 + epsilon, 10 / 48 - epsilon];
-			} else { // ratio is <= 0.2
-				return [9 / 48, 0.2];
+		if (color) {
+			if (pixels === 9) {
+				if (color === 'y') { // ratio is > 0.2
+					return [0.2 + epsilon, 10 / 48 - epsilon];
+				} else if (color === 'r') { // ratio is <= 0.2
+					return [9 / 48, 0.2];
+				}
 			}
-		}
-		if (pixels === 24) {
-			if (color === 'g') { // ratio is > 0.5
-				return [0.5 + epsilon, 25 / 48 - epsilon];
-			} else { // ratio is exactly 0.5
-				return [0.5, 0.5];
+			if (pixels === 24) {
+				if (color === 'g') { // ratio is > 0.5
+					return [0.5 + epsilon, 25 / 48 - epsilon];
+				} else if (color === 'y') { // ratio is exactly 0.5
+					return [0.5, 0.5];
+				}
 			}
 		}
 		if (pixels === 48) return [1, 1];
@@ -1019,6 +1022,7 @@ export interface ServerPokemon extends PokemonDetails, PokemonHealth {
 	details: string;
 	condition: string;
 	active: boolean;
+	reviving: boolean;
 	/** unboosted stats */
 	stats: {
 		atk: number,
@@ -1037,8 +1041,6 @@ export interface ServerPokemon extends PokemonDetails, PokemonHealth {
 	item: string;
 	/** currently an ID, will revise to name */
 	pokeball: string;
-	/** false if the pokemon cannot gigantamax, otherwise a string containing the full name of its G-max move */
-	gigantamax: string | false;
 	/** always the Tera Type of the Pokemon, regardless of whether it is terastallized or not */
 	teraType: string;
 	/** falsy if the pokemon is not terastallized, otherwise it is the Tera Type of the Pokemon */
@@ -1693,7 +1695,7 @@ export class Battle {
 			if (args[0] === '-heal' && nextArgs[0] === '-heal' && kwArgs.from && kwArgs.from === nextKwargs.from) {
 				kwArgs.then = '.';
 			}
-			if (args[0] === '-ability' && (args[2] === 'Intimidate' || args[3] === 'boost')) {
+			if (args[0] === '-ability' && (args[2] === 'Intimidate' || args[4] === 'boost')) {
 				kwArgs.then = '.';
 			}
 			if (args[0] === '-unboost' && nextArgs[0] === '-unboost') {
@@ -2412,31 +2414,20 @@ export class Battle {
 		case '-ability': {
 			let poke = this.getPokemon(args[1])!;
 			let ability = Dex.abilities.get(args[2]);
+			let oldAbility = Dex.abilities.get(args[3]);
 			let effect = Dex.getEffect(kwArgs.from);
 			let ofpoke = this.getPokemon(kwArgs.of);
 			poke.rememberAbility(ability.name, effect.id && !kwArgs.fail);
 
 			if (kwArgs.silent) {
 				// do nothing
+			} else if (oldAbility.id) {
+				this.activateAbility(poke, oldAbility.name);
+				this.scene.wait(500);
+				this.activateAbility(poke, ability.name, true);
+				ofpoke!.rememberAbility(ability.name);
 			} else if (effect.id) {
 				switch (effect.id) {
-				case 'trace':
-					this.activateAbility(poke, "Trace");
-					this.scene.wait(500);
-					this.activateAbility(poke, ability.name, true);
-					ofpoke!.rememberAbility(ability.name);
-					break;
-				case 'powerofalchemy':
-				case 'receiver':
-					this.activateAbility(poke, effect.name);
-					this.scene.wait(500);
-					this.activateAbility(poke, ability.name, true);
-					ofpoke!.rememberAbility(ability.name);
-					break;
-				case 'roleplay':
-					this.activateAbility(poke, ability.name, true);
-					ofpoke!.rememberAbility(ability.name);
-					break;
 				case 'desolateland':
 				case 'primordialsea':
 				case 'deltastream':
@@ -2497,7 +2488,7 @@ export class Battle {
 			poke.ability = poke.baseAbility = (species.abilities ? species.abilities['0'] : '');
 
 			poke.details = args[2];
-			poke.searchid = args[1].substr(0, 2) + args[1].substr(3) + '|' + args[2];
+			poke.searchid = args[1].substr(0, 2) + args[1].substr(args[1].indexOf(':')) + '|' + args[2];
 
 			this.scene.animTransform(poke, true, true);
 			this.log(args, kwArgs);
@@ -3265,7 +3256,7 @@ export class Battle {
 			output.maxhp = parseFloat(maxhp);
 			if (output.hp > output.maxhp) output.hp = output.maxhp;
 			const colorchar = maxhp.slice(-1);
-			if (colorchar === 'y' || colorchar === 'g') {
+			if (colorchar === 'r' || colorchar === 'y' || colorchar === 'g') {
 				output.hpcolor = colorchar;
 			}
 		} else if (!isNaN(parseFloat(hp))) {

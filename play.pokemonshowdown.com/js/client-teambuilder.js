@@ -1169,7 +1169,7 @@
 						if (format && format.slice(0, 3) !== 'gen') format = 'gen6' + format;
 						if (format && format.endsWith('-box')) {
 							format = format.slice(0, -4);
-							capacity = 24;
+							capacity = 50;
 						}
 						name = $.trim(name.substr(bracketIndex + 1));
 					}
@@ -1297,7 +1297,7 @@
 			buf += '<div class="setchart-nickname">';
 			buf += '<label>Nickname</label><input type="text" name="nickname" class="textbox" value="' + BattleLog.escapeHTML(set.name || '') + '" placeholder="' + BattleLog.escapeHTML(species.baseSpecies) + '" />';
 			buf += '</div>';
-			buf += '<div class="setchart" style="' + Dex.getTeambuilderSprite(set, this.curTeam.gen) + ';">';
+			buf += '<div class="setchart" style="' + Dex.getTeambuilderSprite(set, this.curTeam.dex) + ';">';
 
 			// icon
 			buf += '<div class="setcol setcol-icon">';
@@ -1345,7 +1345,7 @@
 					}
 				}
 				if (this.curTeam.gen === 9) {
-					buf += '<span class="detailcell"><label>Tera Type</label>' + (species.forceTeraType || set.teraType || species.types[0]) + '</span>';
+					buf += '<span class="detailcell"><label>Tera Type</label>' + (set.teraType || species.requiredTeraType || species.types[0]) + '</span>';
 				}
 			}
 			buf += '</button></div></div>';
@@ -1422,7 +1422,6 @@
 					url: url,
 					success: function (data) {
 						if (/^https?:\/\/pokepast\.es\/.*\/json\s*$/.test(url)) {
-
 							var notes = data.notes.split('\n');
 							if (notes[0].startsWith('Format: ')) {
 								var formatid = toID(notes[0].slice(8));
@@ -1882,7 +1881,7 @@
 
 			// never preserve current set tera, even if smogon set used default
 			if (this.curSet.gen === 9) {
-				curSet.teraType = species.forceTeraType || sampleSet.teraType || species.types[0];
+				curSet.teraType = sampleSet.teraType || species.requiredTeraType || species.types[0];
 			}
 
 			var text = Storage.exportTeam([curSet], this.curTeam.gen);
@@ -2031,7 +2030,7 @@
 			var set = this.curSet;
 			if (!set) return;
 
-			this.$('.setchart').attr('style', Dex.getTeambuilderSprite(set, this.curTeam.gen));
+			this.$('.setchart').attr('style', Dex.getTeambuilderSprite(set, this.curTeam.dex));
 
 			this.$('.pokemonicon-' + this.curSetLoc).css('background', Dex.getPokemonIcon(set).substr(11));
 
@@ -2913,18 +2912,13 @@
 
 			if (this.curTeam.gen === 9) {
 				buf += '<div class="formrow"><label class="formlabel" title="Tera Type">Tera Type:</label><div>';
-				if (species.forceTeraType) {
-					buf += species.forceTeraType;
-				} else {
-					buf += '<select name="teratype" class="button">';
-					var types = Dex.types.all();
-					var teraType = set.teraType || species.types[0];
-					for (var i = 0; i < types.length; i++) {
-						buf += '<option value="' + types[i].name + '"' + (teraType === types[i].name ? ' selected="selected"' : '') + '>' + types[i].name + '</option>';
-					}
-					buf += '</select>';
+				buf += '<select name="teratype" class="button">';
+				var types = Dex.types.all();
+				var teraType = set.teraType || species.requiredTeraType || species.types[0];
+				for (var i = 0; i < types.length; i++) {
+					buf += '<option value="' + types[i].name + '"' + (teraType === types[i].name ? ' selected="selected"' : '') + '>' + types[i].name + '</option>';
 				}
-				buf += '</div></div>';
+				buf += '</select></div></div>';
 			}
 
 			buf += '</form>';
@@ -3035,7 +3029,7 @@
 					}
 				}
 				if (this.curTeam.gen === 9) {
-					buf += '<span class="detailcell"><label>Tera Type</label>' + (species.forceTeraType || set.teraType || species.types[0]) + '</span>';
+					buf += '<span class="detailcell"><label>Tera Type</label>' + (set.teraType || species.requiredTeraType || species.types[0]) + '</span>';
 				}
 			}
 			this.$('button[name=details]').html(buf);
@@ -3701,22 +3695,11 @@
 			this.room = data.room;
 			this.curSet = data.curSet;
 			this.chartIndex = data.index;
-			var species = this.room.curTeam.dex.species.get(this.curSet.species);
+			var dex = this.room.curTeam.dex;
+			var species = dex.species.get(this.curSet.species);
 			var baseid = toID(species.baseSpecies);
 			var forms = [baseid].concat(species.cosmeticFormes.map(toID));
-			var spriteDir = Dex.resourcePrefix + 'sprites/';
-			var spriteSize = 96;
-			var spriteDim = 'width: 96px; height: 96px;';
-
-			var gen = Math.max(this.room.curTeam.gen, species.gen);
-			var dir = gen > 5 ? 'dex' : 'gen' + gen;
-			if (Dex.prefs('nopastgens')) dir = 'dex';
-			if ((Dex.prefs('bwgfx') && dir === 'dex') || species.gen >= 8) dir = 'gen5';
-			spriteDir += dir;
-			if (dir === 'dex') {
-				spriteSize = 120;
-				spriteDim = 'width: 120px; height: 120px;';
-			}
+			var maxSpriteSize = 96;
 
 			var buf = '';
 			buf += '<p>Pick a variant or <button name="close" class="button">Cancel</button></p>';
@@ -3726,14 +3709,20 @@
 			for (var i = 0; i < formCount; i++) {
 				var formid = forms[i].substring(baseid.length);
 				var form = (formid ? formid[0].toUpperCase() + formid.slice(1) : '');
+				var spriteid = baseid + (form ? '-' + formid : '');
+				var data = Dex.getTeambuilderSpriteData(spriteid, dex);
+				var spriteSize = data.spriteDir === 'sprites/dex' ? 120 : 96;
+				maxSpriteSize = Math.max(maxSpriteSize, spriteSize);
+				var spriteDim = 'width: ' + spriteSize + 'px; height: ' + spriteSize + 'px;';
+				var resize = (data.h ? 'background-size:' + data.h + 'px;' : '');
 				buf += '<button name="setForm" value="' + form + '" style="';
-				buf += 'background-image: url(' + spriteDir + '/' + baseid.replace('outlaw', '') + (form ? '-' + formid : '') + '.png); ' + spriteDim + '" class="option';
+				buf += 'background-image: url(' + Dex.resourcePrefix + data.spriteDir + '/' + spriteid + '.png); ' + spriteDim + resize + '" class="option';
 				buf += (form === (species.forme || '') ? ' cur' : '') + '"></button>';
 			}
 			buf += '<div style="clear:both"></div>';
 			buf += '</div>';
 
-			this.$el.html(buf).css({ 'max-width': (4 + spriteSize) * 7 });
+			this.$el.html(buf).css({ 'max-width': (4 + maxSpriteSize) * 7 });
 		},
 		setForm: function (form) {
 			var species = Dex.species.get(this.curSet.species);

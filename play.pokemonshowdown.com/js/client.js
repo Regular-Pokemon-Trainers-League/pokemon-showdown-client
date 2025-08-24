@@ -951,7 +951,7 @@ function toId() {
 		},
 		submitSend: function (e) {
 			// Most of the code relating to this is nightmarish because of some dumb choices
-			// made when writing the original Backbone code. At least in the Preact client, event
+			// made when writing the original Backbone code. At least in the client rewrite, event
 			// handling is a lot more straightforward because it doesn't rely on Backbone's event
 			// dispatch system.
 			var target = e.currentTarget;
@@ -988,6 +988,7 @@ function toId() {
 					team.team = data.team;
 					team.loaded = true;
 					callback(team);
+					Storage.saveTeams();
 					var entry = app.loadingTeamQueue.shift();
 					if (entry) {
 						app.loadTeam(entry[0], entry[1]);
@@ -1693,6 +1694,7 @@ function toId() {
 				'ladder': LadderRoom,
 				'lobby': ChatRoom,
 				'staff': ChatRoom,
+				'resources': ResourceRoom,
 				'constructor': ChatRoom
 			};
 			var typeTable = {
@@ -1729,7 +1731,7 @@ function toId() {
 				if (this.curSideRoom === oldRoom) this.curSideRoom = room;
 				if (this.sideRoom === oldRoom) this.sideRoom = room;
 			}
-			if (['', 'teambuilder', 'leaguedraft', 'ladder', 'rooms'].indexOf(room.id) < 0) {
+			if (['', 'teambuilder', 'leaguedraft', 'ladder', 'rooms', 'resources'].indexOf(room.id) < 0) {
 				if (room.isSideRoom) {
 					this.sideRoomList.push(room);
 				} else {
