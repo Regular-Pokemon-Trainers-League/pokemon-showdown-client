@@ -663,7 +663,7 @@ class MainMenuPanel extends PSRoomPanel<MainMenuRoom> {
 					</div>
 
 					<div class="menugroup">
-						<p><a class={"mainmenu7 mainmenu" + onlineButton} href="leaguedraft">Enter Draft Page</a></p>
+						<p><a class={"mainmenu8 mainmenu" + onlineButton} href="leaguedraft">Enter Draft Page</a></p>
 					</div>
 				</div>
 				<div class="mainmenu-right" style={{ display: PS.leftPanelWidth ? 'none' : 'block' }}>

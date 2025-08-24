@@ -63,7 +63,7 @@
 			buf += '<p><button class="button mainmenu6 onlineonly disabled" name="send" value="/friends">Friends</button></p>';
 			buf += '<p><button class="button mainmenu7" name="joinRoom" value="resources">Info & Resources</button></p></div>';
 
-			buf += '<div class="menugroup"><p><button class="button mainmenu7" name="joinRoom" value="leaguedraft">Enter Draft Page</button></p></div>';
+			buf += '<div class="menugroup"><p><button class="button mainmenu8" name="joinRoom" value="leaguedraft">Enter Draft Page</button></p></div>';
 			this.$('.mainmenu').html(buf);
 
 			// right menu
