@@ -32,8 +32,11 @@ type Challenge = {
 
 export class ChatRoom extends PSRoom {
 	override readonly classType: 'chat' | 'battle' = 'chat';
+	/** note: includes offline users! use onlineUsers if you need onlineUsers */
 	users: { [userid: string]: string } = {};
+	/** not equal to onlineUsers.length because guests exist */
 	userCount = 0;
+	onlineUsers: [ID, string][] = [];
 	override readonly canConnect = true;
 
 	// PM-only properties
@@ -51,7 +54,7 @@ export class ChatRoom extends PSRoom {
 
 	joinLeave: { join: string[], leave: string[], messageId: string } | null = null;
 	/** in order from least to most recent */
-	userActivity: string[] = [];
+	userActivity: ID[] = [];
 	timeOffset = 0;
 	static highlightRegExp: Record<string, RegExp | null> | null = null;
 
@@ -64,8 +67,8 @@ export class ChatRoom extends PSRoom {
 		this.connect();
 	}
 	override connect() {
-		if (!this.connected) {
-			if (this.pmTarget === null) PS.send(`|/join ${this.id}`);
+		if (!this.connected || this.connected === 'autoreconnect') {
+			if (this.pmTarget === null) PS.send(`/join ${this.id}`);
 			this.connected = true;
 			this.connectWhenLoggedIn = false;
 		}
@@ -97,9 +100,32 @@ export class ChatRoom extends PSRoom {
 			this.tour.receiveLine(args);
 			return;
 
+		case 'noinit':
+			if (this.battle) {
+				// check the Replays database
+				(this as any as BattleRoom).loadReplay();
+			} else {
+				this.receiveLine(['bigerror', 'Room does not exist']);
+			}
+			return;
+		case 'expire':
+			this.connected = 'expired';
+			this.receiveLine(['', `This room has expired (you can't chat in it anymore)`]);
+			return;
+
 		case 'chat': case 'c':
 			if (`${args[2]} `.startsWith('/challenge ')) {
 				this.updateChallenge(args[1], args[2].slice(11));
+				return;
+			} else if (args[2].startsWith('/warn ')) {
+				const reason = args[2].replace('/warn ', '');
+				PS.join(`rules-warn` as RoomID, {
+					args: {
+						type: 'warn',
+						message: reason?.trim() || undefined,
+					},
+					parentElem: null,
+				});
 				return;
 			}
 			// falls through
@@ -107,9 +133,19 @@ export class ChatRoom extends PSRoom {
 			if (args[0] === 'c:') PS.lastMessageTime = args[1];
 			this.lastMessage = args;
 			this.joinLeave = null;
-			this.markUserActive(args[2]);
+			this.markUserActive(args[args[0] === 'c:' ? 2 : 1]);
 			if (this.tour) this.tour.joinLeave = null;
-			this.subtleNotify();
+			if (this.id.startsWith("dm-")) {
+				const fromUser = args[args[0] === 'c:' ? 2 : 1];
+				if (toID(fromUser) === PS.user.userid) break;
+				const message = args[args[0] === 'c:' ? 3 : 2];
+				this.notify({
+					title: `${this.title}`,
+					body: message,
+				});
+			} else {
+				this.subtleNotify();
+			}
 			break;
 		case ':':
 			this.timeOffset = Math.trunc(Date.now() / 1000) - (parseInt(args[1], 10) || 0);
@@ -224,31 +260,36 @@ export class ChatRoom extends PSRoom {
 	handleHighlight = (args: Args) => {
 		let name;
 		let message;
-		let msgTime = 0;
+		let serverTime = 0;
 		if (args[0] === 'c:') {
-			msgTime = parseInt(args[1]);
+			serverTime = parseInt(args[1]);
 			name = args[2];
 			message = args[3];
 		} else {
 			name = args[1];
 			message = args[2];
 		}
-		let lastMessageDates = Dex.prefs('logtimes') || (PS.prefs.set('logtimes', {}), Dex.prefs('logtimes'));
+		if (toID(name) === PS.user.userid) return false;
+		if (message.startsWith(`/raw `) || message.startsWith(`/uhtml`) || message.startsWith(`/uhtmlchange`)) {
+			return false;
+		}
+
+		const lastMessageDates = Dex.prefs('logtimes') || (PS.prefs.set('logtimes', {}), Dex.prefs('logtimes'));
 		if (!lastMessageDates[PS.server.id]) lastMessageDates[PS.server.id] = {};
-		let lastMessageDate = lastMessageDates[PS.server.id][this.id] || 0;
+		const lastMessageDate = lastMessageDates[PS.server.id][this.id] || 0;
 		// because the time offset to the server can vary slightly, subtract it to not have it affect comparisons between dates
-		let serverMsgTime = msgTime - (this.timeOffset || 0);
-		let mayNotify = serverMsgTime > lastMessageDate && name !== PS.user.userid;
+		const time = serverTime - (this.timeOffset || 0);
 		if (PS.isVisible(this)) {
 			this.lastMessageTime = null;
-			lastMessageDates[PS.server.id][this.id] = serverMsgTime;
+			lastMessageDates[PS.server.id][this.id] = time;
 			PS.prefs.set('logtimes', lastMessageDates);
 		} else {
 			// To be saved on focus
-			let lastMessageTime = this.lastMessageTime || 0;
-			if (lastMessageTime < serverMsgTime) this.lastMessageTime = serverMsgTime;
+			const lastMessageTime = this.lastMessageTime || 0;
+			if (lastMessageTime < time) this.lastMessageTime = time;
 		}
 		if (ChatRoom.getHighlight(message, this.id)) {
+			const mayNotify = time > lastMessageDate;
 			if (mayNotify) this.notify({
 				title: `Mentioned by ${name} in ${this.id}`,
 				body: `"${message}"`,
@@ -273,6 +314,7 @@ export class ChatRoom extends PSRoom {
 		'reject'(target) {
 			this.challenged = null;
 			this.update(null);
+			this.sendDirect(`/reject ${target}`);
 		},
 		'clear'() {
 			this.log?.reset();
@@ -397,6 +439,7 @@ export class ChatRoom extends PSRoom {
 		'play'() {
 			if (!this.battle) return this.add('|error|You are not in a battle');
 			if (this.battle.atQueueEnd) {
+				if (this.battle.ended) this.battle.isReplay = true;
 				this.battle.reset();
 			}
 			this.battle.play();
@@ -533,6 +576,7 @@ export class ChatRoom extends PSRoom {
 	markUserActive(name: string) {
 		const userid = toID(name);
 		const idx = this.userActivity.indexOf(userid);
+		this.users[userid] = name;
 		if (idx !== -1) {
 			this.userActivity.splice(idx, 1);
 		}
@@ -545,35 +589,50 @@ export class ChatRoom extends PSRoom {
 	override sendDirect(line: string) {
 		if (this.pmTarget) {
 			line = line.split('\n').filter(Boolean).map(row => `/pm ${this.pmTarget!}, ${row}`).join('\n');
-			PS.send(`|${line}`);
+			PS.send(line);
 			return;
 		}
 		super.sendDirect(line);
 	}
 	setUsers(count: number, usernames: string[]) {
 		this.userCount = count;
-		this.users = {};
+		this.onlineUsers = [];
 		for (const username of usernames) {
 			const userid = toID(username);
 			this.users[userid] = username;
+			this.onlineUsers.push([userid, username]);
 		}
+		this.sortOnlineUsers();
 		this.update(null);
+	}
+	sortOnlineUsers() {
+		PSUtils.sortBy(this.onlineUsers, ([id, name]) => (
+			[PS.server.getGroup(name.charAt(0)).order, !name.endsWith('@!'), id]
+		));
 	}
 	addUser(username: string) {
 		if (!username) return;
 
 		const userid = toID(username);
-		if (!(userid in this.users)) this.userCount++;
 		this.users[userid] = username;
+		const index = this.onlineUsers.findIndex(([curUserid]) => curUserid === userid);
+		if (index >= 0) {
+			this.onlineUsers[index] = [userid, username];
+		} else {
+			this.userCount++;
+			this.onlineUsers.push([userid, username]);
+			this.sortOnlineUsers();
+		}
 		this.update(null);
 	}
 	removeUser(username: string, noUpdate?: boolean) {
 		if (!username) return;
 
 		const userid = toID(username);
-		if (userid in this.users) {
+		const index = this.onlineUsers.findIndex(([curUserid]) => curUserid === userid);
+		if (index >= 0) {
 			this.userCount--;
-			delete this.users[userid];
+			this.onlineUsers.splice(index, 1);
 			if (!noUpdate) this.update(null);
 		}
 	}
@@ -597,12 +656,14 @@ export class ChatRoom extends PSRoom {
 			leave: [],
 			messageId: `joinleave-${Date.now()}`,
 		};
-		if (action === 'join' && this.joinLeave['leave'].includes(name)) {
-			this.joinLeave['leave'].splice(this.joinLeave['leave'].indexOf(name), 1);
-		} else if (action === 'leave' && this.joinLeave['join'].includes(name)) {
-			this.joinLeave['join'].splice(this.joinLeave['join'].indexOf(name), 1);
+		const user = BattleTextParser.parseNameParts(name);
+		const formattedName = user.group + user.name;
+		if (action === 'join' && this.joinLeave['leave'].includes(formattedName)) {
+			this.joinLeave['leave'].splice(this.joinLeave['leave'].indexOf(formattedName), 1);
+		} else if (action === 'leave' && this.joinLeave['join'].includes(formattedName)) {
+			this.joinLeave['join'].splice(this.joinLeave['join'].indexOf(formattedName), 1);
 		} else {
-			this.joinLeave[action].push(name);
+			this.joinLeave[action].push(formattedName);
 		}
 
 		let message = this.formatJoinLeave(this.joinLeave['join'], 'joined');
@@ -650,6 +711,26 @@ export class ChatRoom extends PSRoom {
 			this.log?.destroy();
 		}
 		super.destroy();
+	}
+}
+
+export class CopyableURLBox extends preact.Component<{ url: string }> {
+	copy = () => {
+		const input = this.base!.children[0] as HTMLInputElement;
+		input.select();
+		document.execCommand('copy');
+	};
+	override render() {
+		return <div>
+			<input
+				type="text" class="textbox" readOnly size={45} value={this.props.url}
+				style="field-sizing:content"
+			/> {}
+			<button class="button" onClick={this.copy}>Copy</button> {}
+			<a href={this.props.url} target="_blank" class="no-panel-intercept">
+				<button class="button">Visit</button>
+			</a>
+		</div>;
 	}
 }
 
@@ -896,8 +977,8 @@ export class ChatTextEntry extends preact.Component<{
 					// shorter prefix length comes first
 					return a.prefixIndex - b.prefixIndex;
 				}
-				const aIndex = userActivity?.indexOf(a.userid) ?? -1;
-				const bIndex = userActivity?.indexOf(b.userid) ?? -1;
+				const aIndex = userActivity?.indexOf(a.userid as ID) ?? -1;
+				const bIndex = userActivity?.indexOf(b.userid as ID) ?? -1;
 				if (aIndex !== bIndex) {
 					return bIndex - aIndex; // -1 is fortunately already in the correct order
 				}
@@ -976,24 +1057,30 @@ export class ChatTextEntry extends preact.Component<{
 		return true;
 	}
 	override render() {
+		const { room } = this.props;
 		const OLD_TEXTBOX = false;
-		const canTalk = PS.user.named || this.props.room.id === 'dm-';
+		const canTalk = PS.user.named || room.id === 'dm-';
+		if (room.connected === 'client-only' && room.id.startsWith('battle-')) {
+			return <div
+				class="chat-log-add hasuserlist" onClick={this.focusIfNoSelection} style={{ left: this.props.left || 0 }}
+			><CopyableURLBox url={`https://psim.us/r/${room.id.slice(7)}`} /></div>;
+		}
 		return <div
 			class="chat-log-add hasuserlist" onClick={this.focusIfNoSelection} style={{ left: this.props.left || 0 }}
 		>
 			<form class={`chatbox${this.props.tinyLayout ? ' nolabel' : ''}`} style={canTalk ? {} : { display: 'none' }}>
 				<label style={`color:${BattleLog.usernameColor(PS.user.userid)}`}>{PS.user.name}:</label>
 				{OLD_TEXTBOX ? <textarea
-					class={this.props.room.connected && canTalk ? 'textbox autofocus' : 'textbox disabled'}
+					class={room.connected === true && canTalk ? 'textbox autofocus' : 'textbox disabled'}
 					autofocus
 					rows={1}
 					onInput={this.update}
 					onKeyDown={this.onKeyDown}
 					style={{ resize: 'none', width: '100%', height: '16px', padding: '2px 3px 1px 3px' }}
-					placeholder={PSView.focusPreview(this.props.room)}
+					placeholder={PSView.focusPreview(room)}
 				/> : <ChatTextBox
-					disabled={!this.props.room.connected || !canTalk}
-					placeholder={PSView.focusPreview(this.props.room)}
+					disabled={room.connected !== true || !canTalk}
+					placeholder={PSView.focusPreview(room)}
 				/>}
 			</form>
 			{!canTalk && <button data-href="login" class="button autofocus">
@@ -1052,27 +1139,41 @@ class ChatPanel extends PSRoomPanel<ChatRoom> {
 		return false;
 	};
 	makeChallenge = (e: Event, format: string, team?: Team) => {
+		const elem = e.target as HTMLElement;
+		const now = Date.now();
+		const lastChallenged = PS.mainmenu.lastChallenged || 0;
+		if (now - lastChallenged < 5_000) {
+			PS.alert(`Please wait 5 seconds before challenging again.`, {
+				parentElem: elem,
+			});
+			return;
+		}
+
+		PS.requestNotifications();
 		const room = this.props.room;
 		const packedTeam = team ? team.packedTeam : '';
+		const privacy = PS.mainmenu.adjustPrivacy();
 		if (!room.pmTarget) throw new Error("Not a PM room");
-		PS.send(`|/utm ${packedTeam}`);
-		PS.send(`|/challenge ${room.pmTarget}, ${format}`);
+		PS.send(`/utm ${packedTeam}`);
+		PS.send(`${privacy}/challenge ${room.pmTarget}, ${format}`);
 		room.challengeMenuOpen = false;
 		room.challenging = {
 			formatName: format,
 			teamFormat: format,
 		};
+		PS.mainmenu.lastChallenged = now;
 		room.update(null);
 	};
 	acceptChallenge = (e: Event, format: string, team?: Team) => {
 		const room = this.props.room;
 		const packedTeam = team ? team.packedTeam : '';
 		if (!room.pmTarget) throw new Error("Not a PM room");
-		PS.send(`|/utm ${packedTeam}`);
+		PS.send(`/utm ${packedTeam}`);
 		this.props.room.send(`/accept`);
 		room.challenged = null;
 		room.update(null);
 	};
+
 	override render() {
 		const room = this.props.room;
 		const tinyLayout = room.width < 450;
@@ -1084,7 +1185,11 @@ class ChatPanel extends PSRoomPanel<ChatRoom> {
 			</TeamForm>
 		</div> : room.challengeMenuOpen ? <div class="challenge">
 			<TeamForm onSubmit={this.makeChallenge}>
-				<button type="submit" class="button"><strong>Challenge</strong></button> {}
+				<button type="submit" class="button button-first">
+					<strong>Challenge</strong>
+				</button><button data-href="battleoptions" class="button button-last" aria-label="Battle options">
+					<i class="fa fa-caret-down" aria-hidden></i>
+				</button> {}
 				<button data-cmd="/cancelchallenge" class="button">Cancel</button>
 			</TeamForm>
 		</div> : null;
@@ -1092,15 +1197,23 @@ class ChatPanel extends PSRoomPanel<ChatRoom> {
 		const challengeFrom = room.challenged ? <div class="challenge">
 			{!!room.challenged.message && <p>{room.challenged.message}</p>}
 			<TeamForm format={room.challenged.formatName} teamFormat={room.challenged.teamFormat} onSubmit={this.acceptChallenge}>
-				<button type="submit" class="button"><strong>{room.challenged.acceptButtonLabel || 'Accept'}</strong></button> {}
+				<button type="submit" class={room.challenged.formatName ? `button button-first` : `button`}>
+					<strong>{room.challenged.acceptButtonLabel || 'Accept'}</strong>
+				</button>
+				{room.challenged.formatName && <button data-href="battleoptions" class="button button-last" aria-label="Battle options">
+					<i class="fa fa-caret-down" aria-hidden></i>
+				</button>} {}
 				<button data-cmd="/reject" class="button">{room.challenged.rejectButtonLabel || 'Reject'}</button>
 			</TeamForm>
 		</div> : null;
 
-		return <PSPanelWrapper room={room} focusClick>
+		return <PSPanelWrapper room={room} focusClick fullSize>
 			<ChatLog class="chat-log" room={this.props.room} left={tinyLayout ? 0 : 146} top={room.tour?.info.isActive ? 30 : 0}>
 				{challengeTo}{challengeFrom}{PS.isOffline && <p class="buttonbar">
-					<button class="button" data-cmd="/reconnect"><i class="fa fa-plug" aria-hidden></i> <strong>Reconnect</strong></button>
+					<button class="button" data-cmd="/reconnect">
+						<i class="fa fa-plug" aria-hidden></i> <strong>Reconnect</strong>
+					</button> {}
+					{PS.connection?.reconnectTimer && <small>(Autoreconnect in {Math.round(PS.connection.reconnectDelay / 1000)}s)</small>}
 				</p>}
 			</ChatLog>
 			{room.tour && <TournamentBox tour={room.tour} left={tinyLayout ? 0 : 146} />}
@@ -1117,10 +1230,6 @@ export class ChatUserList extends preact.Component<{
 }> {
 	render() {
 		const room = this.props.room;
-		let userList = Object.entries(room.users) as [ID, string][];
-		PSUtils.sortBy(userList, ([id, name]) => (
-			[PS.server.getGroup(name.charAt(0)).order, !name.endsWith('@!'), id]
-		));
 		const pmTargetid = room.pmTarget ? toID(room.pmTarget) : null;
 		return <div
 			class={'userlist' + (this.props.minimized ? ' userlist-hidden' : this.props.static ? ' userlist-static' : '')}
@@ -1141,7 +1250,7 @@ export class ChatUserList extends preact.Component<{
 				<button data-href="userlist" class="button button-middle">{room.userCount} users</button>
 			)}
 			<ul>
-				{userList.map(([userid, name]) => {
+				{room.onlineUsers.map(([userid, name]) => {
 					const groupSymbol = name.charAt(0);
 					const group = PS.server.groups[groupSymbol] || { type: 'user', order: 0 };
 					let color;
@@ -1221,7 +1330,7 @@ export class ChatLog extends preact.Component<{
 		if (controlsElem && controlsElem.className !== 'controls') controlsElem = undefined;
 		if (!jsx) {
 			if (!controlsElem) return;
-			preact.render(null, elem, controlsElem);
+			elem.removeChild(controlsElem);
 			this.updateScroll();
 			return;
 		}
@@ -1230,7 +1339,9 @@ export class ChatLog extends preact.Component<{
 			controlsElem.className = 'controls';
 			elem.appendChild(controlsElem);
 		}
-		preact.render(<div class="controls">{jsx}</div>, elem, controlsElem);
+		// for some reason, the replaceNode feature isn't working?
+		if (controlsElem.children[0]) controlsElem.removeChild(controlsElem.children[0]);
+		preact.render(<div>{jsx}</div>, controlsElem);
 		this.updateScroll();
 	}
 	updateScroll() {

@@ -7,6 +7,11 @@
 	padding: 0;
 	height: 100%;
 	overflow: visible;
+	overscroll-behavior-x: contain;
+}
+html {
+	scrollbar-width: none;
+	position: relative;
 }
 body {
 	color: white;
@@ -96,7 +101,7 @@ li::marker {
 	scroll-snap-align: start;
 }
 .scroll-snap-enabled .mini-header {
-	scroll-snap-align: end;
+	scroll-snap-align: start;
 }
 
 .header {
@@ -117,7 +122,7 @@ li::marker {
 	top: 0;
 	left: 0;
 	bottom: 0;
-	width: 193px;
+	width: 243px;
 	padding-right: 7px;
 	background: rgba(255,255,255,.3);
 }
@@ -135,7 +140,7 @@ li::marker {
 	top: auto;
 	left: 12px;
 	bottom: 12px;
-	width: 170px;
+	right: 17px;
 	word-wrap: break-word;
 }
 .userbar .username {
@@ -191,12 +196,12 @@ li::marker {
 }
 .mini-header {
 	position: absolute;
-	left: 199px;
+	left: 249px;
 	right: 0;
 	top: 0;
 	padding: 0;
-	height: 24px;
-	line-height: 24px;
+	height: 29px;
+	line-height: 29px;
 	border-left: 0;
 	border-right: 0;
 	border-top: 0;
@@ -229,7 +234,7 @@ li::marker {
 	border: 0;
 	border: 1px solid #777;
 	border-width: 0 0 0 1px;
-	padding: 0 6px;
+	padding: 0 9px;
 }
 .mini-header-left {
 	float: left;
@@ -296,7 +301,7 @@ li::marker {
 	content: "";
 	display: block;
 	height: 6px;
-	margin: -1px 0 -1px 0;
+	margin: -1px 0 0 0;
 	-webkit-box-shadow: 0 1px 2px rgba(0,0,0,.2);
 	-moz-box-shadow: 0 1px 2px rgba(0,0,0,.2);
 	box-shadow: 0 1px 2px rgba(0,0,0,.2);
@@ -561,6 +566,9 @@ summary:hover .expandbutton,
 	border-left: 1px solid #AAAAAA;
 	margin-left: -1px;
 }
+.dark .ps-room {
+	border-color: #34373b;
+}
 .scrollable {
 	overflow: auto;
 	-webkit-overflow-scrolling: touch;
@@ -641,15 +649,28 @@ p.or:after {
 
 .options {
 	margin: -2px 0 -1px 0;
-	padding: 0;
+	padding: 0 2px;
 	list-style: none;
 	font-size: 8pt;
 	float: left;
 }
 .options .option {
 	display: block;
-	width: 224px;
+	width: 220px;
 	box-sizing: border-box;
+}
+.options .star {
+	float: right;
+}
+.options .star {
+	color: #888;
+}
+.options .star:hover {
+	color: #1ea1c8;
+}
+.options .star.cur {
+	color: #FFD700;
+	text-shadow: 0 0 1px #000;
 }
 .options h3 {
 	margin: 5px 0 0 -2px;
@@ -821,11 +842,14 @@ p.or:after {
 }
 .mini-window .mini-window-contents {
 	position: relative;
-	height: 300px;
+	height: 500px;
 	border: 1px solid #AAAAAA;
 	border-top: 0;
 	border-bottom-left-radius: 5px;
 	border-bottom-right-radius: 5px;
+}
+.mini-window .mini-window-contents.mini-window-flex {
+	height: auto;
 }
 .mini-window-body {
 	min-height: 100px;
@@ -918,6 +942,11 @@ p.or:after {
 form.menugroup {
 	max-width: 270px;
 }
+.menugroup .label {
+	text-align: left;
+	width: 246px;
+	margin: 0 auto;
+}
 
 .mainmessage p,
 .menugroup p {
@@ -1002,35 +1031,6 @@ form.menugroup {
 .button.mainmenu6 { background: linear-gradient(to bottom,  hsl(270,40%,72%),  hsl(270,40%,52%)); border-color: hsl(270,40%,40%); }
 .button.mainmenu6:hover { background: linear-gradient(to bottom,  hsl(270,40%,62%),  hsl(270,40%,42%)); }
 .button.mainmenu6:active { background: linear-gradient(to bottom,  hsl(270,40%,42%),  hsl(300,40%,58%)); }
-
-/*********************************************************
- * Ladder
- *********************************************************/
-
-.table-header {
-	position: relative;
-	position: sticky;
-	top: 0;
-}
-.ladder table, .ladder td, .ladder th,
-.table, .table td, .table th {
-	border-collapse: collapse;
-	border: 1px solid #BBBBBB;
-}
-.ladder td, .ladder th,
-.table td, .table th {
-	padding: 3px 5px;
-}
-.ladder th, .table th {
-	text-align: left;
-	font-size: 9pt;
-	background: #EEEEEE;
-	color: #111111;
-}
-
-.hidden {
-	display: none;
-}
 
 /*********************************************************
  * Room list
@@ -1177,6 +1177,13 @@ form.menugroup {
 	min-height: 36px;
 	padding: 3px 4px 0 4px;
 	border-top: 1px solid #AAAAAA;
+}
+.mini-window-flex .chat-log, .mini-window-flex .chat-log-add {
+	position: static;
+}
+.mini-window-flex .chat-log {
+	min-height: 80px;
+	max-height: 300px;
 }
 .debug {
 	display: none;
@@ -1500,7 +1507,7 @@ pre.textbox.textbox-empty[placeholder]:before {
 }
 .userlist-hidden {
 	width: auto;
-	border-right: 0; 
+	border-right: 0;
 	bottom: auto;
 	overflow: visible;
 }
@@ -2032,6 +2039,7 @@ pre.textbox.textbox-empty[placeholder]:before {
 
 .switchmenu button.disabled,
 .switchmenu button:disabled,
+.movebutton.disabled,
 .movebutton:disabled {
 	cursor: default;
 	background: #F3F3F3 !important;
@@ -2039,7 +2047,8 @@ pre.textbox.textbox-empty[placeholder]:before {
 	-webkit-box-shadow: none !important;
 	-moz-box-shadow: none !important;
 	box-shadow: none !important;
-	color: #777777 !important;
+	color: #707070 !important;
+	opacity: 0.75;
 }
 
 /*********************************************************
@@ -2119,6 +2128,7 @@ pre.textbox.textbox-empty[placeholder]:before {
 	text-align: center;
 	/* individual pokemon in a team have margin-right -4px so this compensates */
 	margin: 0 -1px 0 -5px;
+	white-space: normal;
 }
 .team small span {
 	margin-right: -4px;
@@ -2453,4 +2463,19 @@ pre.textbox.textbox-empty[placeholder]:before {
 }
 .dark .chat.mine {
 	background: rgba(255,255,255,0.05);
+}
+
+.notification-badge {
+	position: absolute;
+	top: 2px;
+	left: 13px;
+	width: 15px;
+	height: 15px;
+	background: #e9790d;
+	color: white;
+	font-size: 9px;
+	font-weight: bold;
+	line-height: 14px;
+	text-align: center;
+	border-radius: 50%;
 }

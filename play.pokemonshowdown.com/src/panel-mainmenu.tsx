@@ -7,7 +7,7 @@
 
 import preact from "../js/lib/preact";
 import { PSLoginServer } from "./client-connection";
-import { PS, PSRoom, type RoomID, type RoomOptions, type Team } from "./client-main";
+import { Config, PS, PSRoom, type RoomID, type RoomOptions, type Team } from "./client-main";
 import { PSIcon, PSPanelWrapper, PSRoomPanel } from "./panels";
 import type { BattlesRoom } from "./panel-battle";
 import type { ChatRoom } from "./panel-chat";
@@ -46,6 +46,8 @@ export class MainMenuRoom extends PSRoom {
 	/** used to track the moment between "search sent" and "server acknowledged search sent" */
 	searchSent = false;
 	search: { searching: string[], games: Record<RoomID, string> | null } = { searching: [], games: null };
+	disallowSpectators: boolean | null = PS.prefs.disallowspectators;
+	lastChallenged: number | null = null;
 	constructor(options: RoomOptions) {
 		super(options);
 		if (this.backlog) {
@@ -58,7 +60,13 @@ export class MainMenuRoom extends PSRoom {
 			this.backlog = null;
 		}
 	}
+	adjustPrivacy() {
+		PS.prefs.set('disallowspectators', this.disallowSpectators);
+		if (this.disallowSpectators) return '/noreply /hidenext \n';
+		return '';
+	}
 	startSearch = (format: string, team?: Team) => {
+		PS.requestNotifications();
 		if (this.searchCountdown) {
 			PS.alert("Wait for this countdown to finish first...");
 			return;
@@ -78,9 +86,9 @@ export class MainMenuRoom extends PSRoom {
 			this.update(null);
 			return true;
 		}
-		if (this.searchSent) {
+		if (this.searchSent || this.search.searching?.length) {
 			this.searchSent = false;
-			PS.send('|/cancelsearch');
+			PS.send(`/cancelsearch`);
 			this.update(null);
 			return true;
 		}
@@ -99,8 +107,9 @@ export class MainMenuRoom extends PSRoom {
 	};
 	doSearch = (search: NonNullable<typeof this.searchCountdown>) => {
 		this.searchSent = true;
-		PS.send(`|/utm ${search.packedTeam}`);
-		PS.send(`|/search ${search.format}`);
+		const privacy = this.adjustPrivacy();
+		PS.send(`/utm ${search.packedTeam}`);
+		PS.send(`${privacy}/search ${search.format}`);
 	};
 	override receiveLine(args: Args) {
 		const [cmd] = args;
@@ -332,7 +341,8 @@ export class MainMenuRoom extends PSRoom {
 			PS.addRoom({
 				id: roomid,
 				args: { pmTarget },
-			}, true);
+				autofocus: false,
+			});
 			room = PS.rooms[roomid] as ChatRoom;
 		} else {
 			room.updateTarget(pmTarget);
@@ -391,12 +401,32 @@ export class MainMenuRoom extends PSRoom {
 			break;
 		case 'teamupload':
 			if (PS.teams.uploading) {
-				PS.teams.uploading.uploaded = {
+				const team = PS.teams.uploading;
+				team.uploaded = {
 					teamid: response.teamid,
 					notLoaded: false,
 					private: response.private,
 				};
+				PS.rooms[`team-${team.key}`]?.update(null);
+				PS.rooms.teambuilder?.update(null);
+				PS.teams.uploading = null;
 			}
+			break;
+		case 'teamupdate':
+			for (const team of PS.teams.list) {
+				if (team.teamid === response.teamid) {
+					team.uploaded = {
+						teamid: response.teamid,
+						notLoaded: false,
+						private: response.private,
+					};
+					PS.rooms[`team-${team.key}`]?.update(null);
+					PS.rooms.teambuilder?.update(null);
+					PS.teams.uploading = null;
+					break;
+				}
+			}
+			break;
 		}
 	}
 }
@@ -409,7 +439,7 @@ class NewsPanel extends PSRoomPanel {
 	change = (ev: Event) => {
 		const target = ev.currentTarget as HTMLInputElement;
 		if (target.value === '1') {
-			document.cookie = "preactalpha=1; expires=Thu, 1 Jun 2025 12:00:00 UTC; path=/";
+			document.cookie = "preactalpha=1; expires=Thu, 1 Sep 2025 12:00:00 UTC; path=/";
 		} else {
 			document.cookie = "preactalpha=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
 		}
@@ -421,21 +451,22 @@ class NewsPanel extends PSRoomPanel {
 		const cookieSet = document.cookie.includes('preactalpha=1');
 		return <PSPanelWrapper room={this.props.room} fullSize scrollable>
 			<div class="construction">
-				This is the Preact client alpha test.
+				This is the client rewrite beta test.
 				<form>
 					<label class="checkbox">
 						<input type="radio" name="preactalpha" value="1" onChange={this.change} checked={cookieSet} /> {}
-						Use Preact always
+						Use Rewrite always
 					</label>
 					<label class="checkbox">
 						<input type="radio" name="preactalpha" value="0" onChange={this.change} checked={!cookieSet} /> {}
-						Use Preact with URL
+						Use Rewrite with URL
 					</label>
 					<label class="checkbox">
 						<input type="radio" name="preactalpha" value="leave" onChange={this.change} /> {}
 						Back to the old client
 					</label>
 				</form>
+				Provide feedback in <a href="development" style="color:black">the Dev chatroom</a>.
 			</div>
 			<div class="readable-bg" dangerouslySetInnerHTML={{ __html: PS.newsHTML }}></div>
 		</PSPanelWrapper>;
@@ -560,7 +591,7 @@ class MainMenuPanel extends PSRoomPanel<MainMenuRoom> {
 		}
 
 		if (!PS.user.userid || PS.isOffline) {
-			return <TeamForm class="menugroup" onSubmit={this.submitSearch}>
+			return <TeamForm class="menugroup" onSubmit={this.submitSearch} selectType="search">
 				<button class="mainmenu1 mainmenu big button disabled" disabled name="search">
 					<em>{PS.isOffline ? [<span class="fa-stack fa-lg">
 						<i class="fa fa-plug fa-flip-horizontal fa-stack-1x" aria-hidden></i>
@@ -568,12 +599,21 @@ class MainMenuPanel extends PSRoomPanel<MainMenuRoom> {
 					</span>, " Disconnected"] : "Connecting..."}</em>
 				</button>
 				{PS.isOffline && <p class="buttonbar">
-					<button class="button" data-cmd="/reconnect"><i class="fa fa-plug" aria-hidden></i> <strong>Reconnect</strong></button>
+					<button class="button" data-cmd="/reconnect">
+						<i class="fa fa-plug" aria-hidden></i> <strong>Reconnect</strong>
+					</button> {}
+					{PS.connection?.reconnectTimer && <small>(Autoreconnect in {Math.round(PS.connection.reconnectDelay / 1000)}s)</small>}
 				</p>}
 			</TeamForm>;
 		}
 
-		return <TeamForm class="menugroup" onSubmit={this.submitSearch}>
+		return <TeamForm
+			class="menugroup" format={PS.mainmenu.searchCountdown?.format} selectType="search" onSubmit={this.submitSearch}
+		>
+			<p>
+				<button class="button small" data-href="battleoptions" title="Options" aria-label="Options">
+					Battle options <i class="fa fa-caret-down"></i>
+				</button></p>
 			{PS.mainmenu.searchCountdown ? (
 				<>
 					<button class="mainmenu1 mainmenu big button disabled" type="submit"><strong>
@@ -619,6 +659,7 @@ class MainMenuPanel extends PSRoomPanel<MainMenuRoom> {
 						<p><a class={"mainmenu4 mainmenu" + onlineButton} href="battles">Watch a battle</a></p>
 						<p><a class={"mainmenu5 mainmenu" + onlineButton} href="users">Find a user</a></p>
 						<p><a class={"mainmenu6 mainmenu" + onlineButton} href="view-friends-all">Friends</a></p>
+						<p><a class={"mainmenu7 mainmenu" + onlineButton} href="resources">Info & Resources</a></p>
 					</div>
 				</div>
 				<div class="mainmenu-right" style={{ display: PS.leftPanelWidth ? 'none' : 'block' }}>
@@ -645,10 +686,11 @@ class MainMenuPanel extends PSRoomPanel<MainMenuRoom> {
 }
 
 export class FormatDropdown extends preact.Component<{
-	format?: string, onChange?: JSX.EventHandler<Event>, placeholder?: string, selectType?: SelectType,
+	selectType?: SelectType, format?: string, defaultFormat?: string, placeholder?: string,
+	onChange?: JSX.EventHandler<Event>,
 }> {
 	declare base?: HTMLButtonElement;
-	format = `[Gen ${Dex.gen}] Random Battle`;
+	format = '';
 	change = (e: Event) => {
 		if (!this.base) return;
 		this.format = this.base.value;
@@ -661,9 +703,10 @@ export class FormatDropdown extends preact.Component<{
 		}
 	}
 	render() {
+		this.format ||= this.props.format || this.props.defaultFormat || '';
 		let [formatName, customRules] = this.format.split('@@@');
 		if (window.BattleLog) formatName = BattleLog.formatName(formatName);
-		if (this.props.format && !this.props.onChange) {
+		if (this.props.format || PS.mainmenu.searchSent) {
 			return <button
 				name="format" value={this.format} class="select formatselect preselected" disabled
 			>
@@ -728,19 +771,27 @@ class TeamDropdown extends preact.Component<{ format: string }> {
 }
 
 export class TeamForm extends preact.Component<{
-	children: preact.ComponentChildren, class?: string, format?: string, teamFormat?: string, hideFormat?: boolean,
+	children: preact.ComponentChildren,
+	class?: string, format?: string, teamFormat?: string, hideFormat?: boolean, selectType?: SelectType,
 	onSubmit: ((e: Event, format: string, team?: Team) => void) | null,
 	onValidate?: ((e: Event, format: string, team?: Team) => void) | null,
 }> {
-	override state = { format: `[Gen ${Dex.gen}] Random Battle` };
+	format = '';
 	changeFormat = (ev: Event) => {
-		this.setState({ format: (ev.target as HTMLButtonElement).value });
+		this.format = (ev.target as HTMLButtonElement).value;
 	};
 	submit = (ev: Event, validate?: 'validate') => {
 		ev.preventDefault();
-		const format = this.state.format;
-		const teamKey = this.base!.querySelector<HTMLButtonElement>('button[name=team]')!.value;
+		const format = this.format;
+		const teamElement = this.base!.querySelector<HTMLButtonElement>('button[name=team]');
+		const teamKey = teamElement!.value;
 		const team = teamKey ? PS.teams.byKey[teamKey] : undefined;
+		if (!window.BattleFormats[toID(format)]?.team && !team) {
+			PS.alert('You need to go into the Teambuilder and build a team for this format.', {
+				parentElem: teamElement!,
+			});
+			return;
+		}
 		PS.teams.loadTeam(team).then(() => {
 			(validate === 'validate' ? this.props.onValidate : this.props.onSubmit)?.(ev, format, team);
 		});
@@ -756,17 +807,37 @@ export class TeamForm extends preact.Component<{
 		}
 	};
 	render() {
+		if (window.BattleFormats) {
+			const starredPrefs = PS.prefs.starredformats || {};
+			// .reverse() because the newest starred format should be the default one
+			const starred = Object.keys(starredPrefs).filter(id => starredPrefs[id] === true).reverse();
+			if (!this.format) {
+				this.format = `gen${Dex.gen}randombattle`;
+				for (let id of starred) {
+					let format = window.BattleFormats[id];
+					if (!format) continue;
+					if (this.props.selectType === 'challenge' && format?.challengeShow === false) continue;
+					if (this.props.selectType === 'search' && format?.searchShow === false) continue;
+					if (this.props.selectType === 'teambuilder' && format?.team) continue;
+					this.format = id;
+					break;
+				}
+			}
+		}
 		return <form class={this.props.class} onSubmit={this.submit} onClick={this.handleClick}>
 			{!this.props.hideFormat && <p>
 				<label class="label">
 					Format:<br />
-					<FormatDropdown onChange={this.changeFormat} format={this.props.format} />
+					<FormatDropdown
+						selectType={this.props.selectType} format={this.props.format} defaultFormat={this.format}
+						onChange={this.changeFormat}
+					/>
 				</label>
 			</p>}
 			<p>
 				<label class="label">
 					Team:<br />
-					<TeamDropdown format={this.props.teamFormat || this.state.format} />
+					<TeamDropdown format={this.props.teamFormat || this.format} />
 				</label>
 			</p>
 			<p>{this.props.children}</p>

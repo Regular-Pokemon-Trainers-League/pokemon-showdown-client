@@ -16,6 +16,11 @@ AddType application/x-web-app-manifest+json .webapp
   </ifModule>
 </filesMatch>
 
+<filesMatch "colors\.json$">
+    Header set Access-Control-Allow-Origin "*" 
+    Header set Access-Control-Allow-Methods "GET,POST,OPTIONS"
+</filesMatch>
+
 <IfModule mod_rewrite.c>
 RewriteEngine on
 
@@ -99,6 +104,8 @@ RewriteRule ^style/fonts?/.*?\.(eot|svg|ttf|woff|woff2)$ - [E=SAFE_RESOURCE:1]
 RewriteRule ^data\/.*\.js(?:on)?$ - [E=SAFE_RESOURCE:1]
 RewriteRule ^interstice$ interstice.php [L,QSA]
 Header set Access-Control-Allow-Origin * env=SAFE_RESOURCE
+Header set Access-Control-Allow-Methods "GET,POST,OPTIONS"
+Header set Access-Control-Allow-Headers "Content-Type, X-Requested-With"
 
 # Redirect old battles to their corresponding replay
 # RewriteCond %{HTTP_HOST} ^rptl\.us$ [NC]
@@ -109,7 +116,7 @@ RewriteCond %{HTTP_HOST} ^rptl\.us$ [NC]
 RewriteRule ^battle-([a-z0-9]+)$ https://replay.rptl.us/$1 [R=302,L]
 
 # TODO: fix bug where you can't join lobby directly
-RewriteRule ^lobby/?$ / [R=301,L]
+RewriteRule ^lobby/?$ / [R=302,L]
 
 # roomid with a slash after it: remove the slash, unless the roomid
 # is also an actual directory
@@ -120,7 +127,7 @@ RewriteRule ^([A-Za-z0-9][A-Za-z0-9-]*)/$ /$1 [R=301,L]
 RewriteCond %{HTTP_COOKIE} ^.*preactalpha=1.*$
 RewriteRule ^(|[A-Za-z0-9][A-Za-z0-9-]*)$ ./preactalpha.html [L,E=INDEX_PAGE:1]
 RewriteRule ^$ - [E=INDEX_PAGE:1]
-RewriteRule ^(preactalpha|dev|development|login|users|(dm|challenge|user|viewuser|ladder)-[a-z0-9-]*)$ ./preactalpha.html [L,E=INDEX_PAGE:1]
+RewriteRule ^(preactalpha|preactbeta|beta|dev|development|login|users|(dm|challenge|user|viewuser|ladder)-[a-z0-9-]*)$ ./preactalpha.html [L,E=INDEX_PAGE:1]
 RewriteRule ^([A-Za-z0-9][A-Za-z0-9-]*)$ ./ [L,E=INDEX_PAGE:1]
 
 # RewriteRule ^crossprotocol\.html$ - [E=CROSSPROTOCOL:1]
