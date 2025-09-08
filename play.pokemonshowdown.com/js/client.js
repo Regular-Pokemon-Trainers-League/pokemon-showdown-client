@@ -1690,6 +1690,7 @@ function toId() {
 				'leaguedraft': LeaguedraftRoom,
 				'rooms': RoomsRoom,
 				'battles': BattlesRoom,
+				'drafts': DraftsRoom,
 				'league': LeagueRoom,
 				'ladder': LadderRoom,
 				'lobby': ChatRoom,

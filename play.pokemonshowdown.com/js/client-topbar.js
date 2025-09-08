@@ -86,6 +86,8 @@
 				return buf + '><i class="fa fa-pencil-square-o"></i> <span>Teambuilder</span></a><button class="closebutton" name="closeRoom" value="' + 'teambuilder" aria-label="Close"><i class="fa fa-times-circle"></i></button></li>';
 			case 'leaguedraft':
 				return buf + '><i class="fa fa-group"></i> <span>League Draft</span></a><button class="closebutton" name="closeRoom" value="' + 'leaguedraft" aria-label="Close"><i class="fa fa-times-circle"></i></button></li>';
+			case 'drafts':
+				return buf + '><i class="fa fa-group"></i> <span>Drafts</span></a><button class="closebutton" name="closeRoom" value="' + 'drafts" aria-label="Close"><i class="fa fa-times-circle"></i></button></li>';
 			case 'ladder':
 				return buf + '><i class="fa fa-list-ol"></i> <span>Ladder</span></a><button class="closebutton" name="closeRoom" value="' + 'ladder" aria-label="Close"><i class="fa fa-times-circle"></i></button></li>';
 			case 'resources':

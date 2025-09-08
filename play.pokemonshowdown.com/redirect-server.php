@@ -13,4 +13,4 @@ $host = preg_replace('/\\./', '-', $host);
 $host = preg_replace('/:/', '--', $host);
 $host = preg_replace('/=/', '---', $host);
 
-header('Location: https://' . $host . '.psim.us/' . $roomid);
+header('Location: https://' . $host . '/' . $roomid);

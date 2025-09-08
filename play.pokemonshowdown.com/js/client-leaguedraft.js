@@ -1,13 +1,13 @@
 (function (exports, $) {
 
 	// this is a useful global
-	var teams;
+	var drafts;
 
 	exports.LeaguedraftRoom = exports.Room.extend({
 		type: 'leaguedraft',
 		title: 'Leaguedraft',
 		initialize: function () {
-			teams = Storage.teams;
+			drafts = Storage.teams;
 
 			// left menu
 			this.$el.addClass('ps-room-light').addClass('scrollable');
@@ -144,7 +144,7 @@
 		exportMode: false,
 		formatResources: {},
 		update: function () {
-			teams = Storage.teams;
+			drafts = Storage.teams;
 			if (this.curTeam) {
 				if (this.curTeam.format && !this.formatResources[this.curTeam.format]) {
 					this.tryLoadFormatResource(this.curTeam.format);
@@ -381,7 +381,7 @@
 			this.$('.folderpane').html(buf);
 		},
 		updateTeamList: function (resetScroll) {
-			var teams = Storage.teams;
+			var drafts = Storage.teams;
 			var buf = '';
 
 			// teampane
@@ -394,10 +394,7 @@
 			var filterFolder;
 
 			if (!this.curFolder) {
-				buf += '<h2>Hi</h2>';
-				buf += '<p>Did you have a good day?</p>';
-				buf += '<p><button class="button" name="greeting" value="Y"><i class="fa fa-smile-o"></i> Yes, my day was pretty good</button> <button class="button" name="greeting" value="N"><i class="fa fa-frown-o"></i> No, it wasn\'t great</button></p>';
-				buf += '<h2>All teams <small style="font-weight: normal">(' + teams.length + ')</small></h2>';
+				buf += '<h2>All drafts <small style="font-weight: normal">(' + drafts.length + ')</small></h2>';
 			} else {
 				if (this.curFolder.slice(-1) === '/') {
 					filterFolder = this.curFolder.slice(0, -1);
@@ -411,7 +408,7 @@
 					var func = function (team) {
 						return team.format === filterFormat;
 					};
-					buf += '<h2><i class="fa fa-folder-open-o"></i> ' + filterFormat + ' <small style="font-weight: normal">(' + teams.filter(func).length + ')</small></h2>';
+					buf += '<h2><i class="fa fa-folder-open-o"></i> ' + filterFormat + ' <small style="font-weight: normal">(' + drafts.filter(func).length + ')</small></h2>';
 				}
 			}
 
@@ -433,28 +430,28 @@
 				buf += '<li>== CAN\'T SAVE ==<br /><small><code>Cookies</code> are disabled so you can\'t save teams! Enable them in your browser settings.</small></li>';
 			}
 			if (Storage.cantSave) buf += '<li>== CAN\'T SAVE ==<br /><small>You hit your browser\'s limit for team storage! Please backup them and delete some of them. Your teams won\'t be saved until you\'re under the limit again.</small></li>';
-			if (!teams.length) {
+			if (!drafts.length) {
 				if (this.deletedTeamLoc >= 0) {
 					buf += '<li><button name="undoDelete"><i class="fa fa-undo"></i> Undo Delete</button></li>';
 				}
 				buf += '<li><p><em>you don\'t have any teams lol</em></p></li>';
 			} else {
 
-				for (var i = 0; i < teams.length + 1; i++) {
+				for (var i = 0; i < drafts.length + 1; i++) {
 					if (i === this.deletedTeamLoc) {
 						if (!atLeastOne) atLeastOne = true;
 						buf += '<li><button name="undoDelete"><i class="fa fa-undo"></i> Undo Delete</button></li>';
 					}
-					if (i >= teams.length) break;
+					if (i >= drafts.length) break;
 
-					var team = teams[i];
+					var team = drafts[i];
 
 					if (team && !team.team && team.team !== '') {
 						team = null;
 					}
 					if (!team) {
 						buf += '<li>Error: A corrupted team was dropped</li>';
-						teams.splice(i, 1);
+						drafts.splice(i, 1);
 						i--;
 						if (this.deletedTeamLoc && this.deletedTeamLoc > i) this.deletedTeamLoc--;
 						continue;
@@ -556,77 +553,6 @@
 			if (state) {
 				this.$('.storage-warning').html('');
 			}
-		},
-		greeting: function (answer, button) {
-			var buf = '<p><strong>' + $(button).html() + '</p></strong>';
-			if (answer === 'N') {
-				buf += '<p>Aww, that\'s too bad. :( I hope playing on Pok&eacute;mon Showdown today can help cheer you up!</p>';
-			} else if (answer === 'Y') {
-				buf += '<p>Cool! I just added some pretty cool teambuilder features, so I\'m pretty happy, too. Did you know you can drag and drop teams to different format-folders? You can also drag and drop them to and from your computer (works best in Chrome).</p>';
-				buf += '<p><button class="button" name="greeting" value="W"><i class="fa fa-question-circle"></i> Wait, who are you? Talking to a teambuilder is weird.</button></p>';
-			} else if (answer === 'W') {
-				buf += '<p>Oh, I\'m Zarel! I made a Credits button for this...</p>';
-				buf += '<div class="menugroup"><p><a href="//pokemonshowdown.com/credits" target="_blank"><button class="button mainmenu4"><i class="fa fa-info-circle"></i> Credits</button></a></p></div>';
-				buf += '<p>Isn\'t it pretty? Matches your background and everything. It used to be in the Main Menu but we had to get rid of it to save space.</p>';
-				buf += '<p>Speaking of, you should try <button class="button" name="background"><i class="fa fa-picture-o"></i> changing your background</button>.';
-				buf += '<p><button class="button" name="greeting" value="B"><i class="fa fa-hand-pointer-o"></i> You might be having too much fun with these buttons and icons</button></p>';
-			} else if (answer === 'B') {
-				buf += '<p>I paid good money for those icons! I need to get my money\'s worth!</p>';
-				buf += '<p><button class="button" name="greeting" value="WR"><i class="fa fa-exclamation-triangle"></i> Wait, really?</button></p>';
-			} else if (answer === 'WR') {
-				buf += '<p>No, they were free. That just makes it easier to get my money\'s worth. Let\'s play rock paper scissors!</p>';
-				buf += '<p><button class="button" name="greeting" value="RR"><i class="fa fa-hand-rock-o"></i> Rock</button> <button class="button" name="greeting" value="RP"><i class="fa fa-hand-paper-o"></i> Paper</button> <button class="button" name="greeting" value="RS"><i class="fa fa-hand-scissors-o"></i> Scissors</button> <button class="button" name="greeting" value="RL"><i class="fa fa-hand-lizard-o"></i> Lizard</button> <button class="button" name="greeting" value="RK"><i class="fa fa-hand-spock-o"></i> Spock</button></p>';
-			} else if (answer[0] === 'R') {
-				buf += '<p>I play laser, I win. <i class="fa fa-hand-o-left"></i></p>';
-				buf += '<p><button class="button" name="greeting" value="YC"><i class="fa fa-thumbs-o-down"></i> You can\'t do that!</button></p>';
-			} else if (answer === 'SP') {
-				buf += '<p>Okay, sure. I warn you, I\'m using the same RNG that makes Stone Edge miss for you.</p>';
-				buf += '<p><button class="button" name="greeting" value="SP3"><i class="fa fa-caret-square-o-right"></i> I want to play Rock Paper Scissors</button> <button class="button" name="greeting" value="SP5"><i class="fa fa-caret-square-o-right"></i> I want to play Rock Paper Scissors Lizard Spock</button></p>';
-			} else if (answer === 'SP3') {
-				buf += '<p><button class="button" name="greeting" value="PR3"><i class="fa fa-hand-rock-o"></i> Rock</button> <button class="button" name="greeting" value="PP3"><i class="fa fa-hand-paper-o"></i> Paper</button> <button class="button" name="greeting" value="PS3"><i class="fa fa-hand-scissors-o"></i> Scissors</button></p>';
-			} else if (answer === 'SP5') {
-				buf += '<p><button class="button" name="greeting" value="PR5"><i class="fa fa-hand-rock-o"></i> Rock</button> <button class="button" name="greeting" value="PP5"><i class="fa fa-hand-paper-o"></i> Paper</button> <button class="button" name="greeting" value="PS5"><i class="fa fa-hand-scissors-o"></i> Scissors</button> <button class="button" name="greeting" value="PL5"><i class="fa fa-hand-lizard-o"></i> Lizard</button> <button class="button" name="greeting" value="PK5"><i class="fa fa-hand-spock-o"></i> Spock</button></p>';
-			} else if (answer[0] === 'P') {
-				var rpsChart = {
-					R: 'rock',
-					P: 'paper',
-					S: 'scissors',
-					L: 'lizard',
-					K: 'spock'
-				};
-				var rpsWinChart = {
-					SP: 'cuts',
-					SL: 'decapitates',
-					PR: 'covers',
-					PK: 'disproves',
-					RL: 'crushes',
-					RS: 'crushes',
-					LK: 'poisons',
-					LP: 'eats',
-					KS: 'smashes',
-					KR: 'vaporizes'
-				};
-				var my = ['R', 'P', 'S', 'L', 'K'][Math.floor(Math.random() * Number(answer[2]))];
-				var your = answer[1];
-				buf += '<p>I play <i class="fa fa-hand-' + rpsChart[my] + '-o"></i> ' + rpsChart[my] + '!</p>';
-				if ((my + your) in rpsWinChart) {
-					buf += '<p>And ' + rpsChart[my] + ' ' + rpsWinChart[my + your] + ' ' + rpsChart[your] + ', so I win!</p>';
-				} else if ((your + my) in rpsWinChart) {
-					buf += '<p>But ' + rpsChart[your] + ' ' + rpsWinChart[your + my] + ' ' + rpsChart[my] + ', so you win...</p>';
-				} else {
-					buf += '<p>We played the same thing, so it\'s a tie.</p>';
-				}
-				if (!this.rpsScores || !this.rpsScores.length) {
-					this.rpsScores = ['pi', '$3.50', '9.80665 m/s<sup>2</sup>', '28°C', '百万点', '<i class="fa fa-bitcoin"></i>0.0000174', '<s>priceless</s> <i class="fa fa-cc-mastercard"></i> MasterCard', '127.0.0.1', 'C&minus;, see me after class'];
-				}
-				var score = this.rpsScores.splice(Math.floor(Math.random() * this.rpsScores.length), 1)[0];
-				buf += '<p>Score: ' + score + '</p>';
-				buf += '<p><button class="button" name="greeting" value="SP' + answer[2] + '"><i class="fa fa-caret-square-o-right"></i> I demand a rematch!</button></p>';
-			} else if (answer === 'YC') {
-				buf += '<p>Okay, then I play peace sign <i class="fa fa-hand-peace-o"></i>, everyone signs a peace treaty, ending the war and ushering in a new era of prosperity.</p>';
-				buf += '<p><button class="button" name="greeting" value="SP"><i class="fa fa-caret-square-o-right"></i> I wanted to play for real...</button></p>';
-			}
-			$(button).parent().replaceWith(buf);
 		},
 		background: function () {
 			app.addPopup(CustomBackgroundPopup);
@@ -745,7 +671,7 @@
 				i = $(i.currentTarget).data('value');
 			}
 			i = +i;
-			this.curTeam = teams[i];
+			this.curTeam = drafts[i];
 			this.curTeam.iconCache = '!';
 			this.curTeam.gen = this.getGen(this.curTeam.format);
 			this.curTeam.dex = Dex.forGen(this.curTeam.gen);
@@ -762,7 +688,7 @@
 		"delete": function (i) {
 			i = +i;
 			this.deletedTeamLoc = i;
-			this.deletedTeam = teams.splice(i, 1)[0];
+			this.deletedTeam = drafts.splice(i, 1)[0];
 			for (var room in app.rooms) {
 				var selection = app.rooms[room].$('button.teamselect').val();
 				if (!selection || selection === 'random') continue;
@@ -779,7 +705,7 @@
 		},
 		undoDelete: function () {
 			if (this.deletedTeamLoc >= 0) {
-				teams.splice(this.deletedTeamLoc, 0, this.deletedTeam);
+				drafts.splice(this.deletedTeamLoc, 0, this.deletedTeam);
 				for (var room in app.rooms) {
 					var selection = app.rooms[room].$('button.teamselect').val();
 					if (!selection || selection === 'random') continue;
@@ -801,7 +727,7 @@
 		saveBackup: function () {
 			Storage.deleteAllTeams();
 			Storage.importTeam(this.$('.teamedit textarea').val(), true);
-			teams = Storage.teams;
+			drafts = Storage.teams;
 			Storage.saveAllTeams();
 			for (var room in app.rooms) {
 				var selection = app.rooms[room].$('button.teamselect').val();
@@ -814,12 +740,12 @@
 		"new": function (type) {
 			var newTeam = this.createTeam(null, type === "box");
 
-			teams.push(newTeam);
-			this.edit(teams.length - 1);
+			drafts.push(newTeam);
+			this.edit(drafts.length - 1);
 		},
 		newTop: function (type) {
 			var newTeam = this.createTeam(null, type === "box");
-			teams.unshift(newTeam);
+			drafts.unshift(newTeam);
 			for (var room in app.rooms) {
 				var selection = app.rooms[room].$('button.teamselect').val();
 				if (!selection || selection === 'random') continue;
@@ -830,8 +756,8 @@
 			this.edit(0);
 		},
 		duplicate: function (i) {
-			var newTeam = this.createTeam(i ? teams[i] : null);
-			teams.unshift(newTeam);
+			var newTeam = this.createTeam(i ? drafts[i] : null);
+			drafts.unshift(newTeam);
 			for (var room in app.rooms) {
 				var selection = app.rooms[room].$('button.teamselect').val();
 				if (!selection || selection === 'random') continue;
@@ -859,7 +785,7 @@
 					format = 'gen9';
 				}
 				newTeam = {
-					name: (isBox ? 'Box ' : 'Untitled ') + (teams.length + 1),
+					name: (isBox ? 'Box ' : 'Untitled ') + (drafts.length + 1),
 					format: format,
 					team: '',
 					capacity: isBox ? 24 : 6,
@@ -1169,7 +1095,7 @@
 						if (format && format.slice(0, 3) !== 'gen') format = 'gen6' + format;
 						if (format && format.endsWith('-box')) {
 							format = format.slice(0, -4);
-							capacity = 24;
+							capacity = 50;
 						}
 						name = $.trim(name.substr(bracketIndex + 1));
 					}
@@ -1293,11 +1219,11 @@
 				buf += '</li>';
 				return buf;
 			}
-			buf += '<div class="setmenu"><button name="copySet"><i class="fa fa-files-o"></i>Copy</button> <button name="importSet"><i class="fa fa-upload"></i>Import/Export</button> <button name="moveSet"><i class="fa fa-arrows"></i>Move</button> <button name="deleteSet"><i class="fa fa-trash"></i>Delete</button></div>';
+			buf += '<div class="setmenu"><button name="draftMon"><i class="fa fa-handshake-o"></i>Draft</button><button name="copySet"><i class="fa fa-files-o"></i>Copy</button> <button name="importSet"><i class="fa fa-upload"></i>Import/Export</button> <button name="moveSet"><i class="fa fa-arrows"></i>Move</button> <button name="deleteSet"><i class="fa fa-trash"></i>Delete</button></div>';
 			buf += '<div class="setchart-nickname">';
 			buf += '<label>Nickname</label><input type="text" name="nickname" class="textbox" value="' + BattleLog.escapeHTML(set.name || '') + '" placeholder="' + BattleLog.escapeHTML(species.baseSpecies) + '" />';
 			buf += '</div>';
-			buf += '<div class="setchart" style="' + Dex.getTeambuilderSprite(set, this.curTeam.gen) + ';">';
+			buf += '<div class="setchart" style="' + Dex.getTeambuilderSprite(set, this.curTeam.dex) + ';">';
 
 			// icon
 			buf += '<div class="setcol setcol-icon">';
@@ -1345,7 +1271,7 @@
 					}
 				}
 				if (this.curTeam.gen === 9) {
-					buf += '<span class="detailcell"><label>Tera Type</label>' + (species.forceTeraType || set.teraType || species.types[0]) + '</span>';
+					buf += '<span class="detailcell"><label>Tera Type</label>' + (set.teraType || species.requiredTeraType || species.types[0]) + '</span>';
 				}
 			}
 			buf += '</button></div></div>';
@@ -1422,7 +1348,6 @@
 					url: url,
 					success: function (data) {
 						if (/^https?:\/\/pokepast\.es\/.*\/json\s*$/.test(url)) {
-
 							var notes = data.notes.split('\n');
 							if (notes[0].startsWith('Format: ')) {
 								var formatid = toID(notes[0].slice(8));
@@ -1806,8 +1731,8 @@
 			this.userSets[format] = {};
 
 			var duplicateNameIndices = {};
-			for (var i = 0; i < teams.length; i++) {
-				var team = teams[i];
+			for (var i = 0; i < drafts.length; i++) {
+				var team = drafts[i];
 				if (team.format !== format || team.capacity !== 24) continue;
 
 				var setList = Storage.unpackTeam(team.team);
@@ -1882,7 +1807,7 @@
 
 			// never preserve current set tera, even if smogon set used default
 			if (this.curSet.gen === 9) {
-				curSet.teraType = species.forceTeraType || sampleSet.teraType || species.types[0];
+				curSet.teraType = sampleSet.teraType || species.requiredTeraType || species.types[0];
 			}
 
 			var text = Storage.exportTeam([curSet], this.curTeam.gen);
@@ -2031,7 +1956,7 @@
 			var set = this.curSet;
 			if (!set) return;
 
-			this.$('.setchart').attr('style', Dex.getTeambuilderSprite(set, this.curTeam.gen));
+			this.$('.setchart').attr('style', Dex.getTeambuilderSprite(set, this.curTeam.dex));
 
 			this.$('.pokemonicon-' + this.curSetLoc).css('background', Dex.getPokemonIcon(set).substr(11));
 
@@ -2913,18 +2838,13 @@
 
 			if (this.curTeam.gen === 9) {
 				buf += '<div class="formrow"><label class="formlabel" title="Tera Type">Tera Type:</label><div>';
-				if (species.forceTeraType) {
-					buf += species.forceTeraType;
-				} else {
 					buf += '<select name="teratype" class="button">';
 					var types = Dex.types.all();
-					var teraType = set.teraType || species.types[0];
+				var teraType = set.teraType || species.requiredTeraType || species.types[0];
 					for (var i = 0; i < types.length; i++) {
 						buf += '<option value="' + types[i].name + '"' + (teraType === types[i].name ? ' selected="selected"' : '') + '>' + types[i].name + '</option>';
 					}
-					buf += '</select>';
-				}
-				buf += '</div></div>';
+				buf += '</select></div></div>';
 			}
 
 			buf += '</form>';
@@ -3035,7 +2955,7 @@
 					}
 				}
 				if (this.curTeam.gen === 9) {
-					buf += '<span class="detailcell"><label>Tera Type</label>' + (species.forceTeraType || set.teraType || species.types[0]) + '</span>';
+					buf += '<span class="detailcell"><label>Tera Type</label>' + (set.teraType || species.requiredTeraType || species.types[0]) + '</span>';
 				}
 			}
 			this.$('button[name=details]').html(buf);
@@ -3701,22 +3621,11 @@
 			this.room = data.room;
 			this.curSet = data.curSet;
 			this.chartIndex = data.index;
-			var species = this.room.curTeam.dex.species.get(this.curSet.species);
+			var dex = this.room.curTeam.dex;
+			var species = dex.species.get(this.curSet.species);
 			var baseid = toID(species.baseSpecies);
 			var forms = [baseid].concat(species.cosmeticFormes.map(toID));
-			var spriteDir = Dex.resourcePrefix + 'sprites/';
-			var spriteSize = 96;
-			var spriteDim = 'width: 96px; height: 96px;';
-
-			var gen = Math.max(this.room.curTeam.gen, species.gen);
-			var dir = gen > 5 ? 'dex' : 'gen' + gen;
-			if (Dex.prefs('nopastgens')) dir = 'dex';
-			if ((Dex.prefs('bwgfx') && dir === 'dex') || species.gen >= 8) dir = 'gen5';
-			spriteDir += dir;
-			if (dir === 'dex') {
-				spriteSize = 120;
-				spriteDim = 'width: 120px; height: 120px;';
-			}
+			var maxSpriteSize = 96;
 
 			var buf = '';
 			buf += '<p>Pick a variant or <button name="close" class="button">Cancel</button></p>';
@@ -3726,14 +3635,20 @@
 			for (var i = 0; i < formCount; i++) {
 				var formid = forms[i].substring(baseid.length);
 				var form = (formid ? formid[0].toUpperCase() + formid.slice(1) : '');
+				var spriteid = baseid + (form ? '-' + formid : '');
+				var data = Dex.getTeambuilderSpriteData(spriteid, dex);
+				var spriteSize = data.spriteDir === 'sprites/dex' ? 120 : 96;
+				maxSpriteSize = Math.max(maxSpriteSize, spriteSize);
+				var spriteDim = 'width: ' + spriteSize + 'px; height: ' + spriteSize + 'px;';
+				var resize = (data.h ? 'background-size:' + data.h + 'px;' : '');
 				buf += '<button name="setForm" value="' + form + '" style="';
-				buf += 'background-image: url(' + spriteDir + '/' + baseid.replace('outlaw', '') + (form ? '-' + formid : '') + '.png); ' + spriteDim + '" class="option';
+				buf += 'background-image: url(' + Dex.resourcePrefix + data.spriteDir + '/' + spriteid + '.png); ' + spriteDim + resize + '" class="option';
 				buf += (form === (species.forme || '') ? ' cur' : '') + '"></button>';
 			}
 			buf += '<div style="clear:both"></div>';
 			buf += '</div>';
 
-			this.$el.html(buf).css({ 'max-width': (4 + spriteSize) * 7 });
+			this.$el.html(buf).css({ 'max-width': (4 + maxSpriteSize) * 7 });
 		},
 		setForm: function (form) {
 			var species = Dex.species.get(this.curSet.species);

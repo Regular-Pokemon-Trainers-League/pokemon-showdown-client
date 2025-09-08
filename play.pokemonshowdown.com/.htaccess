@@ -159,8 +159,7 @@ RewriteCond %{QUERY_STRING} !output=html
 RewriteRule ^ladder\.php$ https://test.rptl.us/ladder/ [R=301,L]
 
 RewriteRule ^~~([^:/]*)(:[0-9]*)?/action\.php$ action.php?serverid=$1 [L,QSA]
-RewriteRule ^~~([^:/]*)(/.*)?$ http://rptl.us:8000$2 [R=301,L]
-RewriteRule ^~~([^:/]*):([0-9]*)(/.*)?$ http://rptl.us:8000$3 [R=301,L]
+RewriteRule ^~~([^/]*)(?:/(.*))?$ redirect-server.php?host=$1&roomid=$2 [L,QSA]
 
 RewriteRule ^backup/ - [F]
 RewriteRule ^\.git/ - [F]
