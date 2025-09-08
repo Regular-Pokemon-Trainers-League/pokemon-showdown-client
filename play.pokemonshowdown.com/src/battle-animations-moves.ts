@@ -551,6 +551,380 @@ export const BattleMoveAnims: AnimTable = {
 			}, 'decel');
 		},
 	},
+	beatofmyowndrum: {
+		anim(scene, [attacker]) {
+			scene.showEffect('heart', {
+				x: attacker.x + 10,
+				y: attacker.y + 10,
+				z: attacker.z,
+				scale: 0.5,
+				opacity: 1,
+				time: 0,
+			}, {
+				scale: 3,
+				opacity: 0,
+				time: 300,
+			}, 'ballistic2Under', 'fade');
+			scene.showEffect('heart', {
+				x: attacker.x + 10,
+				y: attacker.y + 10,
+				z: attacker.z,
+				scale: 3,
+				opacity: 0,
+				time: 100,
+			}, {
+				scale: 0.5,
+				opacity: 1,
+				time: 400,
+			}, 'ballistic2Under', 'fade');
+
+			attacker.anim({
+				y: attacker.y + 15,
+				z: attacker.behind(10),
+				yscale: 1.3,
+				time: 100,
+			}, 'swing');
+			attacker.anim({
+				time: 100,
+			}, 'swing');
+			attacker.delay(225);
+			attacker.anim({
+				x: attacker.leftof(-10),
+				y: attacker.y + 15,
+				z: attacker.behind(5),
+				yscale: 1.3,
+				time: 100,
+			}, 'swing');
+			attacker.anim({
+				time: 100,
+			}, 'swing');
+
+			// Nine Wisps in and fade and decel
+			// Wisp 1
+			scene.showEffect('wisp', {
+				x: attacker.x,
+				y: attacker.y + 50,
+				z: attacker.z,
+				scale: 0.4,
+				opacity: 1,
+			}, {
+				x: attacker.x,
+				y: attacker.y + 60,
+				scale: 0.5,
+				xscale: 0.3,
+				yscale: 0.6,
+				opacity: 1,
+				time: 400,
+			}, 'decel', 'fade');
+
+			scene.showEffect('wisp', {
+				x: attacker.x,
+				y: attacker.y + 60,
+				z: attacker.z,
+				scale: 0.5,
+				xscale: 0.3,
+				yscale: 0.6,
+				opacity: 1,
+				time: 400,
+			}, {
+				x: attacker.x,
+				y: attacker.y + 50,
+				scale: 0.4,
+				xscale: 0.4,
+				yscale: 0.4,
+				opacity: 0,
+				time: 600,
+			}, 'decel');
+
+			// Wisp 2
+			scene.showEffect('wisp', {
+				x: attacker.x - 32,
+				y: attacker.y + 38,
+				z: attacker.z,
+				scale: 0.4,
+				opacity: 1,
+			}, {
+				x: attacker.x - 39,
+				y: attacker.y + 45,
+				scale: 0.5,
+				xscale: 0.3,
+				yscale: 0.6,
+				opacity: 1,
+				time: 400,
+			}, 'decel', 'fade');
+
+			scene.showEffect('wisp', {
+				x: attacker.x - 39,
+				y: attacker.y + 45,
+				z: attacker.z,
+				scale: 0.5,
+				xscale: 0.3,
+				yscale: 0.6,
+				opacity: 1,
+				time: 400,
+			}, {
+				x: attacker.x - 32,
+				y: attacker.y + 38,
+				scale: 0.4,
+				xscale: 0.4,
+				yscale: 0.4,
+				opacity: 0,
+				time: 600,
+			}, 'decel');
+
+			// Wisp 3
+			scene.showEffect('wisp', {
+				x: attacker.x - 49,
+				y: attacker.y + 9,
+				z: attacker.z,
+				scale: 0.4,
+				opacity: 1,
+			}, {
+				x: attacker.x - 59,
+				y: attacker.y + 10,
+				scale: 0.5,
+				xscale: 0.3,
+				yscale: 0.6,
+				opacity: 1,
+				time: 400,
+			}, 'decel', 'fade');
+
+			scene.showEffect('wisp', {
+				x: attacker.x - 59,
+				y: attacker.y + 10,
+				z: attacker.z,
+				scale: 0.5,
+				xscale: 0.3,
+				yscale: 0.6,
+				opacity: 1,
+				time: 400,
+			}, {
+				x: attacker.x - 49,
+				y: attacker.y + 9,
+				scale: 0.4,
+				xscale: 0.4,
+				yscale: 0.4,
+				opacity: 0,
+				time: 600,
+			}, 'decel');
+
+			// Wisp 4
+			scene.showEffect('wisp', {
+				x: attacker.x - 43,
+				y: attacker.y - 25,
+				z: attacker.z,
+				scale: 0.4,
+				opacity: 1,
+			}, {
+				x: attacker.x - 52,
+				y: attacker.y - 30,
+				scale: 0.5,
+				xscale: 0.3,
+				yscale: 0.6,
+				opacity: 1,
+				time: 400,
+			}, 'decel', 'fade');
+
+			scene.showEffect('wisp', {
+				x: attacker.x - 52,
+				y: attacker.y - 30,
+				z: attacker.z,
+				scale: 0.5,
+				xscale: 0.3,
+				yscale: 0.6,
+				opacity: 1,
+				time: 400,
+			}, {
+				x: attacker.x - 43,
+				y: attacker.y - 25,
+				scale: 0.4,
+				xscale: 0.4,
+				yscale: 0.4,
+				opacity: 0,
+				time: 600,
+			}, 'decel');
+
+			// Wisp 5
+			scene.showEffect('wisp', {
+				x: attacker.x - 17,
+				y: attacker.y - 47,
+				z: attacker.z,
+				scale: 0.4,
+				opacity: 1,
+			}, {
+				x: attacker.x - 20,
+				y: attacker.y - 56,
+				scale: 0.5,
+				xscale: 0.3,
+				yscale: 0.6,
+				opacity: 1,
+				time: 400,
+			}, 'decel', 'fade');
+
+			scene.showEffect('wisp', {
+				x: attacker.x - 20,
+				y: attacker.y - 56,
+				z: attacker.z,
+				scale: 0.5,
+				xscale: 0.3,
+				yscale: 0.6,
+				opacity: 1,
+				time: 400,
+			}, {
+				x: attacker.x - 17,
+				y: attacker.y - 47,
+				scale: 0.4,
+				xscale: 0.4,
+				yscale: 0.4,
+				opacity: 0,
+				time: 600,
+			}, 'decel');
+
+			// Wisp 6
+			scene.showEffect('wisp', {
+				x: attacker.x + 17,
+				y: attacker.y - 47,
+				z: attacker.z,
+				scale: 0.4,
+				opacity: 1,
+			}, {
+				x: attacker.x + 20,
+				y: attacker.y - 56,
+				scale: 0.5,
+				xscale: 0.3,
+				yscale: 0.6,
+				opacity: 1,
+				time: 400,
+			}, 'decel', 'fade');
+
+			scene.showEffect('wisp', {
+				x: attacker.x + 20,
+				y: attacker.y - 56,
+				z: attacker.z,
+				scale: 0.5,
+				xscale: 0.3,
+				yscale: 0.6,
+				opacity: 1,
+				time: 400,
+			}, {
+				x: attacker.x + 17,
+				y: attacker.y - 47,
+				scale: 0.4,
+				xscale: 0.4,
+				yscale: 0.4,
+				opacity: 0,
+				time: 600,
+			}, 'decel');
+
+			// Wisp 7
+			scene.showEffect('wisp', {
+				x: attacker.x + 43,
+				y: attacker.y - 25,
+				z: attacker.z,
+				scale: 0.4,
+				opacity: 1,
+			}, {
+				x: attacker.x + 52,
+				y: attacker.y - 30,
+				scale: 0.5,
+				xscale: 0.3,
+				yscale: 0.6,
+				opacity: 1,
+				time: 400,
+			}, 'decel', 'fade');
+
+			scene.showEffect('wisp', {
+				x: attacker.x + 52,
+				y: attacker.y - 30,
+				z: attacker.z,
+				scale: 0.5,
+				xscale: 0.3,
+				yscale: 0.6,
+				opacity: 1,
+				time: 400,
+			}, {
+				x: attacker.x + 43,
+				y: attacker.y - 25,
+				scale: 0.4,
+				xscale: 0.4,
+				yscale: 0.4,
+				opacity: 0,
+				time: 600,
+			}, 'decel');
+
+			// Wisp 8
+			scene.showEffect('wisp', {
+				x: attacker.x + 49,
+				y: attacker.y + 9,
+				z: attacker.z,
+				scale: 0.4,
+				opacity: 1,
+			}, {
+				x: attacker.x + 59,
+				y: attacker.y + 10,
+				scale: 0.5,
+				xscale: 0.3,
+				yscale: 0.6,
+				opacity: 1,
+				time: 400,
+			}, 'decel', 'fade');
+
+			scene.showEffect('wisp', {
+				x: attacker.x + 59,
+				y: attacker.y + 10,
+				z: attacker.z,
+				scale: 0.5,
+				xscale: 0.3,
+				yscale: 0.6,
+				opacity: 1,
+				time: 400,
+			}, {
+				x: attacker.x + 49,
+				y: attacker.y + 9,
+				scale: 0.4,
+				xscale: 0.4,
+				yscale: 0.4,
+				opacity: 0,
+				time: 600,
+			}, 'decel');
+
+			// Wisp 9
+			scene.showEffect('wisp', {
+				x: attacker.x + 32,
+				y: attacker.y + 38,
+				z: attacker.z,
+				scale: 0.4,
+				opacity: 1,
+			}, {
+				x: attacker.x + 39,
+				y: attacker.y + 46,
+				scale: 0.5,
+				xscale: 0.3,
+				yscale: 0.6,
+				opacity: 1,
+				time: 400,
+			}, 'decel', 'fade');
+
+			scene.showEffect('wisp', {
+				x: attacker.x + 39,
+				y: attacker.y + 46,
+				z: attacker.z,
+				scale: 0.5,
+				xscale: 0.3,
+				yscale: 0.6,
+				opacity: 1,
+				time: 400,
+			}, {
+				x: attacker.x + 32,
+				y: attacker.y + 38,
+				scale: 0.4,
+				xscale: 0.4,
+				yscale: 0.4,
+				opacity: 0,
+				time: 600,
+			}, 'decel');
+		},
+	},
 	teeterdance: {
 		anim: BattleOtherAnims.shake.anim,
 	},

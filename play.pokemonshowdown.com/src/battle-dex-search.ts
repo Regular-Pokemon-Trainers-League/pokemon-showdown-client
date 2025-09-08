@@ -1875,6 +1875,7 @@ class BattleMoveSearch extends BattleTypedSearch<'move'> {
 				if (valid) moves.push(id);
 			}
 		}
+		if (format.includes('brackets') && !moves.includes('beatofmyowndrum')) moves.push('beatofmyowndrum');
 
 		moves.sort();
 		sketchMoves.sort();
