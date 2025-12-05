@@ -338,7 +338,11 @@
 		for(var i=0; i < teams.length; i++)
 		{
 			date = new Date(Date.now()).toLocaleString('en-US', { timeZone: teams[i].timeZone });
-			document.getElementById("time" + teams[i].id).innerHTML = date;
+			try {
+				document.getElementById("time" + teams[i].id).innerHTML = date;
+			} catch(TypeError) {
+				break;
+			}
 		}
 		setTimeout(clock, 1000, teams);
 	};
@@ -354,43 +358,16 @@
 			'submit .search': 'submitSearch',
 			'click .accordion': 'expandTeam',
 		},
+		teams: [],
 		initialize: function () {
 			this.$el.addClass('ps-room-light').addClass('scrollable');
 			
 			var buf = '<div class="pad"><button class="button" style="float:right;font-size:10pt;margin-top:3px" name="close"><i class="fa fa-times"></i> Close</button><div class="roomlist"><p><strong>RPTL Rosters</strong></p>';
-       
-			for(var i = 0; i < this.teams.length; i++) {
-				this.teams[i].time = new Date(Date.now()).toLocaleString('en-US', { timeZone: this.teams[i].timeZone });
-				buf+= '<img src="sprites/logos/' + this.teams[i].name.replace(/\s/g, '').replaceAll('\'','').toLowerCase() + '.png" width="200" style="vertical-align:middle;cursor:pointer" />'
-				buf+= '<button class="accordion" id="acc' + this.teams[i].id + '">' + this.teams[i].name + '</button>';
-				buf+= '<table border="4" id="table' + this.teams[i].id + '"><tbody>';
-				buf+= '<tr>';
-				buf+= '<td>&nbsp;Showdown Trainer&nbsp;</td>';
-				buf+= '<td>&nbsp;' + this.teams[i].zone + '&nbsp;</td>';
-				buf+= '<td>&nbsp;' + this.teams[i].coach + '&nbsp;</td>';
-				buf+= '</tr>';
-				buf+= '<tr>';
-				buf+= '<td>&nbsp;Pokémon:&nbsp;</td>';
-				buf+= '<td id="time' + this.teams[i].id + '">&nbsp;</td>';
-				buf+= '<td>&nbsp;Name:&nbsp;</td>';
 
-				var keys = Object.keys(this.teams[i].team);
-				for(var j = 0; j < keys.length; j++) {
-					buf+= '<tr>';
-					buf+= '<td>&nbsp;' + keys[j] + '</td>';
-					if( keys[j].includes("Item")) {
-						buf+= '<td>&nbsp;<span class=itemicon style="' + Dex.getItemIcon(this.teams[i].team[keys[j]]) + ';display:inline-block;vertical-align:middle" class="picon"></span></td>';
-					}
-					else {
-						buf+= '<td>&nbsp;<span style="' + Dex.getPokemonIcon(keys[j]) + ';display:inline-block;vertical-align:middle" class="picon"></span></td>';
-					}
-					buf+= '<td>&nbsp;' + this.teams[i].team[keys[j]] + '</td>';
-					buf+= '</tr>';
-				}
-				buf+= '</tbody></table>';
-				buf+= '<br>';
-				buf+= '<br>';
-			}
+			app.on('response:page', this.getTeams, this)
+			app.send('/cmd page 18ZdLs31r7BulAZWx4N_u3VmhsGD4_jRXYI1HE73XQgg, Teams'); //18ZdLs31r7BulAZWx4N_u3VmhsGD4_jRXYI1HE73XQgg
+
+			buf += this.renderData();
 
 			this.$el.html(buf);
 			this.$list = this.$('.list');
@@ -406,7 +383,6 @@
 			app.send('/cmd roomlist');
 			document.body.onload = clock(this.teams);
 			
-			this.update();
 		},
 		expandTeam: function(e) {
 			// e.target.classList.toggle("active");
@@ -452,234 +428,176 @@
 
 			// Synchronize stored room data with incoming data
 			if (data) this.data = data;
-			var rooms = this.data.rooms;
 
-			var buf = [];
-			for (var id in rooms) {
-				var roomData = rooms[id];
-				var matches = ChatRoom.parseBattleID(id);
-				// bogus room ID could be used to inject JavaScript
-				if (!matches || this.format && matches[1] !== this.format) {
-					continue;
+			var buf = '<div class="pad"><button class="button" style="float:right;font-size:10pt;margin-top:3px" name="close"><i class="fa fa-times"></i> Close</button><div class="roomlist"><p><strong>RPTL Rosters</strong></p>';
+
+			buf += this.renderData();
+
+			return this.$el.html(buf);
+		},
+		getTeams: function(data) {
+			let rosterLength = this.getRosterLength(data);
+			let counter = 0;
+			for ( let y = 0; y < data.length; y += rosterLength + 9 ) {
+				for ( let x = 0; x < data[y].length; x += 4) {
+					team = { 
+							"name": data[y][x],
+							"trainer": data[y+1][x],
+							"zone": data[y+1][x+1],
+							"roster": [],
+							"points": [],
+							"nicknames": [],
+							"id": counter,
+							"wins": 0,
+							"losses": 0,
+							"differential": 0
+					};
+					
+					if ( data[y+rosterLength+5][x+2] != undefined && data[y+rosterLength+5][x+2] != "") {
+						team["wins"] = data[y+rosterLength+5][x+2].split('-')[0];
+						team["losses"] = data[y+rosterLength+5][x+2].split('-')[1];
+						team["differential"] = data[y+rosterLength+6][x+2];
+					}
+					for ( let i = 3; i < rosterLength+3; i++ ) {
+						let mon = data[y+i][x] === undefined ? "" : data[y+i][x];
+						let points = data[y+i][x+1] === undefined ? "" : data[y+i][x+1];
+						team["roster"].push(mon);
+						team["points"].push(points);
+						if (data[y+i][x+2] === undefined) {
+							team["nicknames"].push("");
+						}
+						else {
+							team["nicknames"].push(data[y+i][x+2]);
+						}
+					}
+
+					if (this.zones[team["zone"]]) {
+						team["timeZone"] = this.zones[team["zone"]];
+					}
+					else {
+						team["timeZone"] = 'Africa/Timbuktu';
+					}
+
+					let entry = this.teams.findIndex(x => x.name === team.name);
+
+					if (entry > -1) {
+						this.teams[entry] = team;
+					}
+					else {
+						this.teams.push(team)
+					}
+					counter++;
 				}
-				buf.push(this.renderRoomBtn(id, roomData, matches));
 			}
 
-			if (!buf.length) return this.$list.html('<p>No ' + BattleLog.escapeFormat(this.format) + ' battles are going on right now.</p>');
-			return this.$list.html('<p>' + buf.length + (buf.length === 100 ? '+' : '') + ' ' + BattleLog.escapeFormat(this.format) + ' ' + (buf.length === 1 ? 'battle' : 'battles') + '</p>' + buf.join(""));
+			// Sort in Descending Records
+			this.teams.sort((a, b) => {
+				if(a['wins'] > b['wins']) {
+					return -1;
+				}
+				if(a['wins'] < b['wins']) {
+					return 1;
+				}
+				
+				if(a['losses'] > b['losses']) {
+					return 1;
+				}
+				if(a['losses'] < b['losses']) {
+					return -1;
+				}
+
+				if(parseInt(a['differential']) > parseInt(b['differential'])) {
+					return -1;
+				}
+				if(parseInt(a['differential']) < parseInt(b['differential'])) {
+					return 1;
+				}
+
+				return 0;
+			});
+			this.update()
 		},
-		teams: [
-			{
-				'id': 0,
-				'name': 'Beads of Ruin',
-				'coach': 'Superperson00',
-				'zone': 'AEST',
-				'timeZone': 'Australia/Brisbane',
-				'team': {
-					'Togekiss': 'Togekiss',
-					'Dragonite': 'Dragonite',
-					'Arcanine': 'Arcanine',
-					'Quaquaval': 'Quaquaval',
-					'Jolteon': 'Jolteon',
-					'Mudsdale': 'Mudsdale',
-					'Vileplume': 'Vileplume',
-					'Weavile': 'Weavile',
-					'Item1': 'Banettite',
-					'Item2': 'Rusted Shield',
-					'Item3': 'Pinsirite',
-					'Item4': 'Glalitite',
+		renderData: function() {
+			let buf = '';
+			for(var i = 0; i < this.teams.length; i++) {
+				this.teams[i].time = new Date(Date.now()).toLocaleString('en-US', { timeZone: this.teams[i].timeZone });
+				buf+= '<img src="sprites/logos/' + this.teams[i].name.replace(/\s/g, '').replaceAll('\'','').toLowerCase() + '.png" width="200" style="vertical-align:middle;cursor:pointer" />'
+				buf+= '<button class="accordion" id="acc' + this.teams[i].id + '">' + this.teams[i].name + '</button>';
+				buf+= '<table border="4" id="table' + this.teams[i].id + '"><tbody>';
+				buf+= '<tr>';
+				buf+= '<td>&nbsp;<b>Showdown Trainer:</b>&nbsp;</td>';
+				buf+= '<td style="text-align: center; vertical-align: middle;" colspan="2">&nbsp;' + this.teams[i].trainer + '&nbsp;</td>';
+				buf+= '</tr>';
+				buf+= '<tr>';
+				buf+= '<td>&nbsp;<b>LocalTime:</b>&nbsp;</td>';
+				buf+= '<td id="time' + this.teams[i].id + '">&nbsp;</td>';
+				buf+= '<td style="text-align: center; vertical-align: middle;">&nbsp;' + this.teams[i].zone + '&nbsp;</td>';
+				buf+= '</tr>';
+				buf+= '<tr>';
+				buf+= '<td style="text-align: center; vertical-align: middle;" colspan="2">&nbsp;<b>Pokémon:</b>&nbsp;</td>';
+				buf+= '<td>&nbsp;<b>Nickname:</b>&nbsp;</td>';
+
+				for(var j = 0; j < this.teams[i].roster.length; j++) {
+					buf+= '<tr>';
+					buf+= '<td>&nbsp;' + this.teams[i].roster[j] + '</td>';
+
+					item = window.BattleItems[toID(this.teams[i].roster[j])];
+
+					if (item?.spritenum) {
+						// TODO: We never hit this now
+						buf+= '<td style="text-align: center; vertical-align: middle;">&nbsp;<span class=itemicon style="' + Dex.getItemIcon(this.teams[i].roster[j]) + ';display:inline-block;vertical-align:middle" class="picon"></span></td>';
+					}
+					else {
+						buf+= '<td style="text-align: center; vertical-align: middle;">&nbsp;<span style="' + Dex.getPokemonIcon(this.teams[i].roster[j]) + ';display:inline-block;vertical-align:middle" class="picon"></span></td>';
+					}
+					buf+= '<td>&nbsp;' + this.teams[i].nicknames[j] + '</td>';
+					buf+= '</tr>';
 				}
-			},
-			{
-				'id': 1,
-				'name': 'Mario Kart Wii 2',
-				'coach': 'RyinThyme',
-				'zone': 'EST',
-				'timeZone': 'America/New_York',
-				'team': {
-					'Archaludon': 'Archaludon',
-					'Toedscruel': 'Toedscruel',
-					'Whimsicott': 'Whimsicott',
-					'Shiftry': 'Shiftry',
-					'Barraskewda': 'Barraskewda',
-					'Golisopod': 'Golisopod',
-					'Iron Moth': 'Iron Moth',
-					'Bronzong': 'Bronzong',
-					'Item1': 'Blue Orb',
-					'Item2': 'Mewtwonite-X',
-					'Item3': 'Salamencite',
-					'Item4': 'Zap Plate',
+				buf+= '<td>&nbsp;<b>Record:</b></td>';
+				buf+= '<td style="text-align: center; vertical-align: middle;" colspan="2">&nbsp;<b>' + this.teams[i].wins + '-' + this.teams[i].losses + ' (' + this.teams[i].differential + ')' + '</b></td>';
+				buf+= '</tbody></table>';
+				buf+= '<br>';
+				buf+= '<br>';
+			}
+			return buf;
+		},
+		getRosterLength: function(data) {
+			const teamdata = data;
+
+			let rosterLength = 0;
+			let startIndex = 0;
+			let endIndex = 0;
+
+			for ( let y = 0; y < data.length; y++ ) {
+				if( teamdata[y][0] === "Pokemon") {
+					startIndex = y+1;
 				}
-			},
-			{
-				'id': 2,
-				'name': 'Team Zoroark',
-				'coach': 'Milotic42',
-				'zone': 'EST',
-				'timeZone': 'America/New_York',
-				'team': {
-					'Amoonguss': 'Amoonguss',
-					'Greninja': 'Greninja',
-					'Raichu': 'Raichu',
-					'Gliscor': 'Gliscor',
-					'Slither Wing': 'Slither Wing',
-					'Blacephalon': 'Blacephalon',
-					'Meowstic': 'Meowstic',
-					'Altaria': 'Altaria',
-					'Item1': 'Audinite',
-					'Item2': 'Diancite',
-					'Item3': 'Absolite',
-					'Item4': 'Hearthflame Mask',
+				else if( teamdata[y][0] === "Remaining Points:") {
+					endIndex = y;
+					break;
 				}
-			},
-			{
-				'id': 3,
-				'name': 'Kalifornia Krooks',
-				'coach': 'Silvestron',
-				'zone': 'EST',
-				'timeZone': 'America/New_York',
-				'team': {
-					'Gengar': 'Picaro',
-					'Rhyperior': 'Rhyperior',
-					'Buzzwole': 'Buzzwole',
-					'Noivern': 'Noivern',
-					'Magmortar': 'Magmortar',
-					'Hatterene': 'Hatterene',
-					'Gourgeist': 'Gourgeist',
-					'Magnezone': 'Magnezone',
-					'Item1': 'Altarianite',
-					'Item2': 'Cameruptite',
-					'Item3': 'Gyaradosite',
-					'Item4': 'Latiasite',
-				}
-			},
-			{
-				'id': 4,
-				'name': 'The Goofy Goomers',
-				'coach': 'RubyFlame57',
-				'zone': 'EST',
-				'timeZone': 'America/New_York',
-				'team': {
-					'Goodra': 'Goodra',
-					'Pheromosa': 'Pheromosa',
-					'Tsareena': 'Tsareena',
-					'Lilligant-Hisui': 'Lilligant-Hisui',
-					'Corviknight': 'Corviknight',
-					'Dudunsparce': 'Dudunsparce',
-					'Ninetales-Alola': 'Ninetales-Alola',
-					'Charjabug': 'Charjabug',
-					'Item1': 'Slowbronite',
-					'Item2': 'Lopunnite',
-					'Item3': 'Charizardite-Y',
-					'Item4': 'Wellspring Mask',
-				}
-			},
-			{
-				'id': 5,
-				'name': 'Pocket Monsters',
-				'coach': 'dankmaster1738',
-				'zone': 'EST',
-				'timeZone': 'America/New_York',
-				'team': {
-					'Toxapex': 'Toxapex',
-					'Garganacl': 'Garganacl',
-					'Rillaboom': 'Rillaboom',
-					'Aggronite': 'Aggronite',
-					'Clefable': 'Clefable',
-					'Ferrothorn': 'Ferrothorn',
-					'Guzzlord': 'Guzzlord',
-					'Cofagrigus': 'Cofagrigus',
-					'Nihilego': 'Nihilego',
-					'Item1': 'Blastoisinite',
-					'Item2': 'Aggronite',
-					'Item3': 'Venusaurite',
-					'Item4': 'Aerodactylite',
-				}
-			},
-			{
-				'id': 6,
-				'name': 'Garden State Gastlys',
-				'coach': 'DiegoNegro',
-				'zone': 'EST',
-				'timeZone': 'America/New_York',
-				'team': {
-					'Smeargle': 'Bullfighter',
-					'Dragapult': 'James Baxter',
-					'Overqwil': 'Overqwil',
-					'Glimmora': 'Oblina',
-					'Dugtrio-Alola': 'Jess, Tina, Carl',
-					'Illumise': 'Sasha',
-					'Sinistcha': 'Sinistcha',
-					'Archeops': 'Crookneck',
-					'Item1': 'Steelixite',
-					'Item2': 'Scizorite',
-					'Item3': 'Alakazite',
-					'Item4': 'Tyranitarite',
-				}
-			},
-			{
-				'id': 7,
-				'name': 'Edison Electric Millivolts',
-				'coach': 'Automajon',
-				'zone': 'CST',
-				'timeZone': 'America/Chicago',
-				'team': {
-					'Great Tusk': 'Great Tusk',
-					'Armarouge': 'Armarouge',
-					'Aerodactyl': 'Aerodactyl',
-					'Arctozolt': 'Arctozolt',
-					'Weezing-Galar': 'Weezing-Galar',
-					'Ceruledge': 'Ceruledge',
-					'Reuniclus': 'Reuniclus',
-					'Vikavolt': 'Vikavolt',
-					'Item1': 'Lucarionite',
-					'Item2': 'Latiosite',
-					'Item3': 'Abomasite',
-					'Item4': 'Cornerstone Mask',
-				}
-			},
-			{
-				'id': 8,
-				'name': 'Pittsburgh Sphealers',
-				'coach': 'Chuke',
-				'zone': 'EST',
-				'timeZone': 'America/New_York',
-				'team': {
-					'Scrafty': 'Scrafty',
-					'Celesteela': 'Celesteela',
-					'Pelipper': 'Pelipper',
-					'Dracovish': 'Dracovish',
-					'Tangela': 'Tangela',
-					'Eelektross': 'Eelektross',
-					'Froslass': 'Froslass',
-					'Clodsire': 'Clodsire',
-					'Item1': 'Manectite',
-					'Item2': 'Sceptilite',
-					'Item3': 'Swampertite',
-					'Item4': 'Charizardite-X',
-				}
-			},
-			{
-				'id': 9,
-				'name': 'Baja Blastoise',
-				'coach': 'HeroOfZero',
-				'zone': 'EST',
-				'timeZone': 'America/New_York',
-				'team': {
-					'Charizard': 'Charizard',
-					'Garchomp': 'Garchomp',
-					'Tinkaton': 'Tinkaton',
-					'Farigiraf': 'Farigiraf',
-					'Pangoro': 'Pangoro',
-					'Hydrapple': 'Hydrapple',
-					'Mismagius': 'Mismagius',
-					'Lickilicky': 'Lickilicky',
-					'Item1': 'Pidgeotite',
-					'Item2': 'Galladite',
-					'Item3': 'Metagrossite',
-					'Item4': 'Ampharosite',
-				}
-			},
-		]
+			}
+
+			if (startIndex >= 0 && endIndex != 0) {
+				rosterLength = endIndex - startIndex;
+			}
+			else {
+				console.log("Issue finding roster mark points!");
+			}
+			return rosterLength;
+		},
+		// TODO: Add in more time zones.
+		zones: {
+			'AEST': 'Australia/Brisbane',
+			'CCT': 'Asia/Taipei',
+			'CET': 'Europe/Berlin',
+			'CST': 'America/Chicago',
+			'EST': 'America/New_York',
+			'GMT+8': 'Asia/Taipei',
+			'MST': 'America/Phoenix',
+			'PST': 'America/Los_Angeles',
+			'UTC+8': 'Asia/Taipei',
+			'GMT+2': 'Europe/Berlin'
+		}
 	});
 }).call(this, jQuery);

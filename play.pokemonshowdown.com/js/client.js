@@ -3042,7 +3042,7 @@ function toId() {
 		initialize: function (data) {
 			var buf = '';
 			buf = '<p>Your replay has been uploaded! It\'s available at:</p>';
-			buf += '<p> <a class="replay-link" href="http://' + Config.routes.replays + '/' + data.id + '" target="_blank" class="no-panel-intercept">http://' + Config.routes.replays + '/' + data.id + '</a> <button name="copyReplayLink" class="button">Copy</button></p>';
+			buf += '<p> <a class="replay-link" href="https://' + Config.routes.replays + '/' + data.id + '" target="_blank" class="no-panel-intercept">https://' + Config.routes.replays + '/' + data.id + '</a> <button name="copyReplayLink" class="button">Copy</button></p>';
 			buf += '<p><button class="button autofocus" name="close">Close</button><p>';
 			this.$el.html(buf).css('max-width', 620);
 		},
