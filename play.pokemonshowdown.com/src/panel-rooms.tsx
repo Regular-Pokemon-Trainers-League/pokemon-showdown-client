@@ -8,7 +8,7 @@
 import { PS, PSRoom, type RoomID, type RoomOptions } from "./client-main";
 import { PSPanelWrapper, PSRoomPanel } from "./panels";
 import type { RoomInfo } from "./panel-mainmenu";
-import { toID } from "./battle-dex";
+import { Dex, toID } from "./battle-dex";
 
 export class RoomsRoom extends PSRoom {
 	override readonly classType: string = 'rooms';

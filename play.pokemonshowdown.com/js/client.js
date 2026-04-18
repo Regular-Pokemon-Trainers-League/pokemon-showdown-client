@@ -695,12 +695,12 @@ function toId() {
 			Storage.whenAppLoaded.load(this);
 
 			// load custom colors from loginserver
-			$.get('/config/colors.json', {}, function (data) {
+			$.get('/config/colors.json?' + Math.random(), {}, function (data) {
 				Object.assign(Config.customcolors, data);
 			});
 
 			// get coil values too
-			$.get('/config/coil.json', {}, function (data) {
+			$.get('/config/coil.json?' + Math.random(), {}, function (data) {
 				Object.assign(LadderRoom.COIL_B, data);
 			});
 
@@ -1388,6 +1388,7 @@ function toId() {
 					var partner = false;
 					var bestOfDefault = false;
 					var teraPreviewDefault = false;
+					var itemClauseDefault = false;
 					var team = null;
 					var teambuilderLevel = null;
 					var lastCommaIndex = name.lastIndexOf(',');
@@ -1402,6 +1403,7 @@ function toId() {
 						if (code & 32) partner = true;
 						if (code & 64) bestOfDefault = true;
 						if (code & 128) teraPreviewDefault = true;
+						if (code & 256) itemClauseDefault = true;
 					} else {
 						// Backwards compatibility: late 0.9.0 -> 0.10.0
 						if (name.substr(name.length - 2) === ',#') { // preset teams
@@ -1467,6 +1469,7 @@ function toId() {
 						tournamentShow: tournamentShow,
 						bestOfDefault: bestOfDefault,
 						teraPreviewDefault: teraPreviewDefault,
+						itemClauseDefault: itemClauseDefault,
 						rated: searchShow && id.substr(4, 7) !== 'unrated',
 						teambuilderLevel: teambuilderLevel,
 						partner: partner,

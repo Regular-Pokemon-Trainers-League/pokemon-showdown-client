@@ -996,6 +996,10 @@ p.or:after {
 .roomcounters button:hover .usercount {
 	background: url(https://play.pokemonshowdown.com/sprites/gen5ani/gengar.gif) center no-repeat;
 }
+.roomcounters .usercount.afd,
+.roomcounters button:hover .usercount.afd {
+	background: url(https://play.pokemonshowdown.com/sprites/afd/meloetta.png) center no-repeat;
+}
 .roomcounters .battlecount {
 	display: block;
 	width: 83px;

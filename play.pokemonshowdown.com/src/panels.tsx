@@ -542,6 +542,13 @@ export class PSView extends preact.Component {
 			}
 			const modifierKey = ev.ctrlKey || ev.altKey || ev.metaKey || ev.shiftKey;
 			const altKey = !ev.ctrlKey && ev.altKey && !ev.metaKey && !ev.shiftKey;
+			if (ev.altKey && ev.shiftKey && ev.keyCode === 37) { // alt + shift + left
+				PS.arrowKeysUsed = true;
+				PS.focusUnreadRoom('left');
+			} else if (ev.altKey && ev.shiftKey && ev.keyCode === 39) { // alt + shift + right
+				PS.arrowKeysUsed = true;
+				PS.focusUnreadRoom('right');
+			}
 			if (altKey && ev.keyCode === 38) { // alt + up
 				PS.arrowKeysUsed = true;
 				PS.focusUpRoom();
@@ -699,6 +706,11 @@ export class PSView extends preact.Component {
 			return true;
 		case 'register':
 			PS.join('register' as RoomID, {
+				parentElem: elem,
+			});
+			return true;
+		case 'openOptions':
+			PS.join('options' as RoomID, {
 				parentElem: elem,
 			});
 			return true;
@@ -916,7 +928,7 @@ export class PSView extends preact.Component {
 
 export function PSIcon(
 	props: { pokemon: string | Pokemon | ServerPokemon | Dex.PokemonSet | null } |
-		{ item: string } | { type: string, b?: boolean } | { category: string }
+		{ item: string | null } | { type: string, b?: boolean } | { category: string }
 ) {
 	if ('pokemon' in props) {
 		return <span class="picon" style={Dex.getPokemonIcon(props.pokemon)} />;
@@ -930,7 +942,7 @@ export function PSIcon(
 		let sanitizedType = type.replace(/\?/g, '%3f');
 		return <img
 			src={`${Dex.resourcePrefix}sprites/types/${sanitizedType}.png`} alt={type}
-			height="14" width="32" class={`pixelated${props.b ? ' b' : ''}`}
+			height="14" width="32" class={`pixelated${props.b ? ' b' : ''}`} style="vertical-align:middle"
 		/>;
 	}
 	if ('category' in props) {
@@ -948,7 +960,7 @@ export function PSIcon(
 		}
 		return <img
 			src={`${Dex.resourcePrefix}sprites/categories/${sanitizedCategory}.png`} alt={sanitizedCategory}
-			height="14" width="32" class="pixelated"
+			height="14" width="32" class="pixelated" style="vertical-align:middle"
 		/>;
 	}
 	return null!;

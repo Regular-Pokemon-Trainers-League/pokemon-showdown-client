@@ -66,6 +66,11 @@ RewriteRule ^insecure\/?$ http://test.rptl.us/?insecure [R=302,L]
 RewriteCond %{HTTP_HOST} ^rptl\.us$ [NC]
 RewriteRule ^formatsuggestions/?$ http://pokemonshowdown.com/pages/formatsuggestions [R=302,L]
 
+# data dir names
+RewriteRule ^images?\/?$ /sprites/ [R=302,L]
+RewriteRule ^css\/?$ /style/ [R=302,L]
+RewriteRule ^styles\/?$ /style/ [R=302,L]
+
 # rewrite old sprite directories/files
 RewriteRule ^sprites\/xyani(.*)?$ sprites/ani$1 [L,QSA]
 RewriteRule ^sprites\/xydex(.*)?$ sprites/dex$1 [L,QSA]
@@ -95,10 +100,15 @@ RewriteRule ^sprites\/gen4dp-2-back(.*)?$ sprites/gen4-back$1 [L,QSA]
 RewriteCond %{REQUEST_FILENAME} !-f
 RewriteRule ^sprites\/gen3frlg(.*)?$ sprites/gen3$1 [L,QSA]
 
+<<<<<<< HEAD
 RewriteRule ^replays?\/?$ http://replay.localhost/ [R=302,L]
 
 RewriteCond %{HTTP_HOST} ^www\.rptl\.us$ [NC]
 RewriteRule ^(.*) https://test.rptl.us/$1 [R=301,L]
+=======
+RewriteCond %{HTTP_HOST} ^www\.play\.pokemonshowdown\.com$ [NC]
+RewriteRule ^(.*) https://play.pokemonshowdown.com/$1 [R=301,L]
+>>>>>>> origin
 
 RewriteRule ^style/fonts?/.*?\.(eot|svg|ttf|woff|woff2)$ - [E=SAFE_RESOURCE:1]
 RewriteRule ^data\/.*\.js(?:on)?$ - [E=SAFE_RESOURCE:1]
