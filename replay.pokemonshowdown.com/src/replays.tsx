@@ -34,9 +34,9 @@ class FeaturedReplays extends preact.Component {
   };
   override render() {
     return <section class="section">
-      <h1>RPTL S13</h1>
+      <h1>Featured Replays</h1>
       <img src="//rptl.us/sprites/sudowoodo_punching.gif" alt="" style={{imageRendering: 'pixelated'}} />
-      <ul class="linklist">
+      {/* <ul class="linklist">
         <h2>Week 4</h2>
         <li><a href="mundanton-gen9natdex6v6doublesdraft-1006" class="blocklink">
           <small>[gen9natdex6v6doublesdraft]<br /></small>
@@ -318,7 +318,7 @@ class FeaturedReplays extends preact.Component {
           <strong>KinderGarden State Gastlys</strong> vs. <strong>Inazuma Elekid</strong>
           <small><br />Week 1</small>
         </a></li></ul>}
-      </ul>
+      </ul> */}
     </section>;
   }
 }

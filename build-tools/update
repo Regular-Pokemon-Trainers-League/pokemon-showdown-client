@@ -151,11 +151,11 @@ process.stdout.write("Updating cachebuster and URLs... ");
 const URL_REGEX = /(src=|href=|linkStyle\()"(.*?)(\?[a-z0-9]*?)?"/g;
 
 function addCachebuster(_, attr, url, urlQuery) {
-	url = url.replace('/replay.pokemonshowdown.com/', '/' + routes.replays + '/');
-	url = url.replace('/dex.pokemonshowdown.com/', '/' + routes.dex + '/');
-	url = url.replace('/play.pokemonshowdown.com/', '/' + routes.client + '/');
-	url = url.replace('/pokemonshowdown.com/', '/' + routes.root + '/');
-	url = url.replace('/teams.pokemonshowdown.com/', '/' + routes.teams + '/');
+	url = url.replace('/replay.rptl.us/', '/' + routes.replays + '/');
+	url = url.replace('/dex.rptl.us/', '/' + routes.dex + '/');
+	url = url.replace('/play.rptl.us/', '/' + routes.client + '/');
+	url = url.replace('/rptl.us/', '/' + routes.root + '/');
+	url = url.replace('/teams.rptl.us/', '/' + routes.teams + '/');
 
 	if (urlQuery) {
 		if (url.startsWith('/')) {
