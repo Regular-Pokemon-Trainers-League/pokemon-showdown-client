@@ -1086,6 +1086,10 @@ form.menugroup {
 .roomcounters .button:hover .usercount {
 	background: url(https://play.pokemonshowdown.com/sprites/gen5ani/gengar.gif) center no-repeat;
 }
+.roomcounters .usercount.afd,
+.roomcounters .button:hover .usercount.afd {
+	background: url(https://play.pokemonshowdown.com/sprites/afd/meloetta.png) center no-repeat;
+}
 .roomcounters .battlecount {
 	display: block;
 	width: 83px;
@@ -1136,6 +1140,10 @@ form.menugroup {
 	display: block;
 	font-size: 18pt;
 	font-weight: normal;
+}
+.roomcounters .battlecount.afd,
+.roomcounters .button:hover .battlecount.afd {
+	background: url(https://play.pokemonshowdown.com/sprites/afd/meloetta-pirouette.png) center no-repeat;
 }
 
 .roomlist {
