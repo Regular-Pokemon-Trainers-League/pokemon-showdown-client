@@ -1,6 +1,6 @@
 {
-    "root": "test.rptl.us",
-    "client": "test.rptl.us",
+    "root": "rptl.us",
+    "client": "rptl.us",
     "dex": "dex.pokemonshowdown.com",
     "replays": "replay.rptl.us",
     "users": "pokemonshowdown.com/users",
