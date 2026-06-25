@@ -12,6 +12,8 @@ import { ChatUserList, type ChatRoom } from "./panel-chat";
 import { PSRoomPanel, PSPanelWrapper, PSView } from "./panels";
 import { PSHeader } from "./panel-topbar";
 
+const WARNING_SECONDS = 5;
+
 /**
  * User popup
  */
@@ -56,16 +58,18 @@ class UserPanel extends PSRoomPanel<UserRoom> {
 
 		const group = PS.server.getGroup(room.name);
 		let groupName: preact.ComponentChild = group.name || null;
-		if (group.type === 'punishment') {
-			groupName = <span style="color:#777777">{groupName}</span>;
-		}
 
 		const globalGroup = PS.server.getGroup(user.group);
 		let globalGroupName: preact.ComponentChild = globalGroup.name && `Global ${globalGroup.name}` || null;
+		if (globalGroup.name === groupName) groupName = null;
+		let customGroup = toID(user.customgroup) !== toID(globalGroupName || groupName) ? user.customgroup : '';
+
+		if (group.type === 'punishment') {
+			groupName = <span style="color:#777777">{groupName}</span>;
+		}
 		if (globalGroup.type === 'punishment') {
 			globalGroupName = <span style="color:#777777">{globalGroupName}</span>;
 		}
-		if (globalGroup.name === group.name) groupName = null;
 
 		let roomsList: preact.ComponentChild = null;
 		if (user.rooms) {
@@ -174,7 +178,7 @@ class UserPanel extends PSRoomPanel<UserRoom> {
 			{status && <div class="userstatus">{status}</div>}
 			{groupName && <div class="usergroup roomgroup">{groupName}</div>}
 			{globalGroupName && <div class="usergroup globalgroup">{globalGroupName}</div>}
-			{user.customgroup && <div class="usergroup globalgroup">{user.customgroup}</div>}
+			{customGroup && <div class="usergroup globalgroup">{customGroup}</div>}
 			{!hideInteraction && roomsList}
 		</div>, buttonbar];
 	}
@@ -470,7 +474,7 @@ class UserOptionsPanel extends PSRoomPanel {
 class UserListPanel extends PSRoomPanel {
 	static readonly id = 'userlist';
 	static readonly routes = ['userlist'];
-	static readonly location = 'semimodal-popup';
+	static readonly location = 'modal-popup';
 	static readonly noURL = true;
 	override render() {
 		const room = this.props.room;
@@ -556,7 +560,7 @@ class VolumePanel extends PSRoomPanel {
 class OptionsPanel extends PSRoomPanel {
 	static readonly id = 'options';
 	static readonly routes = ['options'];
-	static readonly location = 'semimodal-popup';
+	static readonly location = 'modal-popup';
 	declare state: { showStatusInput?: boolean, showStatusUpdated?: boolean };
 
 	override componentDidMount() {
@@ -605,12 +609,12 @@ class OptionsPanel extends PSRoomPanel {
 		let value = elem.checked;
 		switch (setting) {
 		case 'blockPMs': {
-			PS.prefs.set("blockPMs", value);
+			PS.prefs.set('serversettings', { ...PS.prefs.serversettings, blockPMs: value });
 			PS.send(value ? '/blockpms' : '/unblockpms');
 			break;
 		}
 		case 'blockChallenges': {
-			PS.prefs.set("blockChallenges", value);
+			PS.prefs.set('serversettings', { ...PS.prefs.serversettings, blockChallenges: value });
 			PS.send(value ? '/blockchallenges' : '/unblockchallenges');
 			break;
 		}
@@ -620,12 +624,12 @@ class OptionsPanel extends PSRoomPanel {
 			break;
 		}
 		case 'language': {
-			PS.prefs.set(setting, elem.value);
+			PS.prefs.set('serversettings', { ...PS.prefs.serversettings, language: elem.value });
 			PS.send(`/language ${elem.value}`);
 			break;
 		}
 		case 'tournaments': {
-			PS.prefs.set(setting, !elem.value ? null : elem.value as 'hide' | 'notify');
+			PS.prefs.set(setting, elem.value as 'hide' | 'notify' | 'nonotify');
 			break;
 		}
 		case 'refreshprompt':
@@ -649,7 +653,8 @@ class OptionsPanel extends PSRoomPanel {
 
 	override render() {
 		const room = this.props.room;
-		return <PSPanelWrapper room={room}><div class="pad">
+		const serverSettings = PS.prefs.serversettings;
+		return <PSPanelWrapper room={room} width={340}><div class="pad">
 			<p>
 				<img
 					class="trainersprite yours" width="40" height="40" style={{ verticalAlign: 'middle' }}
@@ -663,7 +668,7 @@ class OptionsPanel extends PSRoomPanel {
 
 			{this.state.showStatusInput ? (
 				<p>
-					<input name="statustext" />
+					<input class="textbox" name="statustext" />
 					<button class="button" onClick={this.editStatus}><i class="fa fa-pencil" aria-hidden></i></button>
 				</p>
 			) : (
@@ -680,17 +685,22 @@ class OptionsPanel extends PSRoomPanel {
 			<hr />
 			<h3>Graphics</h3>
 			<p>
-				<label class="optlabel">Theme: <select name="theme" class="button" onChange={this.setTheme}>
-					<option value="light" selected={PS.prefs.theme === 'light'}>Light</option>
-					<option value="dark" selected={PS.prefs.theme === 'dark'}>Dark</option>
-					<option value="system" selected={PS.prefs.theme === 'system'}>Match system theme</option>
+				<label class="optlabel">Theme: <select
+					name="theme" class="button" onChange={this.setTheme} value={PS.prefs.theme || 'light'}
+				>
+					<option value="light">Light</option>
+					<option value="dark">Dark</option>
+					<option value="system">Match system theme</option>
 				</select></label>
 			</p>
 			<p>
-				<label class="optlabel">Layout: <select name="layout" class="button" onChange={this.setLayout}>
-					<option value="" selected={!PS.prefs.onepanel}>Two panels (if wide enough)</option>
-					<option value="onepanel" selected={PS.prefs.onepanel === true}>Single panel</option>
-					<option value="vertical" selected={PS.prefs.onepanel === 'vertical'}>Vertical tabs</option>
+				<label class="optlabel">Layout: <select
+					name="layout" class="button" onChange={this.setLayout}
+					value={PS.prefs.onepanel === true ? 'onepanel' : PS.prefs.onepanel || ''}
+				>
+					<option value="">Two panels (if wide enough)</option>
+					<option value="onepanel">Single panel</option>
+					<option value="vertical">Vertical tabs</option>
 				</select></label>
 			</p>
 			<p>
@@ -719,18 +729,18 @@ class OptionsPanel extends PSRoomPanel {
 			<h3>Chat</h3>
 			<p>
 				<label class="checkbox"><input
-					name="blockPMs" checked={PS.prefs.blockPMs || false} type="checkbox" onChange={this.handleOnChange}
-				/> Block PMs</label>
+					name="blockPMs" checked={!!serverSettings.blockPMs} type="checkbox" onChange={this.handleOnChange}
+				/> Block DMs</label>
 			</p>
 			<p>
 				<label class="checkbox"><input
-					name="blockChallenges" checked={PS.prefs.blockChallenges || false} type="checkbox" onChange={this.handleOnChange}
+					name="blockChallenges" checked={!!serverSettings.blockChallenges} type="checkbox" onChange={this.handleOnChange}
 				/> Block challenges</label>
 			</p>
 			<p>
 				<label class="checkbox"><input
 					name="inchatpm" checked={PS.prefs.inchatpm || false} type="checkbox" onChange={this.handleOnChange}
-				/> Show PMs in chatrooms</label>
+				/> Show DMs in chatrooms</label>
 			</p>
 			<p>
 				<label class="checkbox"><input
@@ -750,43 +760,49 @@ class OptionsPanel extends PSRoomPanel {
 			<p>
 				<label class="optlabel">
 					Language: {}
-					<select name="language" onChange={this.handleOnChange} class="button">
-						<option value="german" selected={PS.prefs.language === "german"}>Deutsch</option>
-						<option value="english" selected={PS.prefs.language === "english"}>English</option>
-						<option value="spanish" selected={PS.prefs.language === "spanish"}>Español</option>
-						<option value="french" selected={PS.prefs.language === "french"}>Français</option>
-						<option value="italian" selected={PS.prefs.language === "italian"}>Italiano</option>
-						<option value="dutch" selected={PS.prefs.language === "dutch"}>Nederlands</option>
-						<option value="portuguese" selected={PS.prefs.language === "portuguese"}>Português</option>
-						<option value="turkish" selected={PS.prefs.language === "turkish"}>Türkçe</option>
-						<option value="hindi" selected={PS.prefs.language === "hindi"}>हिंदी</option>
-						<option value="japanese" selected={PS.prefs.language === "japanese"}>日本語</option>
-						<option value="simplifiedchinese" selected={PS.prefs.language === "simplifiedchinese"}>简体中文</option>
-						<option value="traditionalchinese" selected={PS.prefs.language === "traditionalchinese"}>中文</option>
+					<select name="language" onChange={this.handleOnChange} class="button" value={serverSettings.language || 'english'}>
+						<option value="english">English</option>
+						<option value="german">Deutsch</option>
+						<option value="spanish">Español</option>
+						<option value="french">Français</option>
+						<option value="italian">Italiano</option>
+						<option value="dutch">Nederlands</option>
+						<option value="portuguese">Português</option>
+						<option value="turkish">Türkçe</option>
+						<option value="hindi">हिंदी</option>
+						<option value="japanese">日本語</option>
+						<option value="simplifiedchinese">简体中文</option>
+						<option value="traditionalchinese">中文</option>
 					</select>
 				</label>
 			</p>
 			<p>
 				<label class="optlabel">
-					Tournaments: <select name="tournaments" class="button" onChange={this.handleOnChange}>
-						<option value="" selected={!PS.prefs.tournaments}>Notify when joined</option>
-						<option value="notify" selected={PS.prefs.tournaments === "notify"}>Always notify</option>
-						<option value="hide" selected={PS.prefs.tournaments === "hide"}>Hide</option>
+					Tournaments: <select
+						name="tournaments" class="button" onChange={this.handleOnChange} value={PS.prefs.tournaments || 'notify'}
+					>
+						<option value="notify">Always notify</option>
+						<option value="nonotify">Notify when joined</option>
+						<option value="hide">Hide</option>
 					</select>
 				</label>
 			</p>
 			<p>
-				<label class="optlabel">Timestamps: <select name="layout" class="button" onChange={this.setChatroomTimestamp}>
-					<option value="" selected={!PS.prefs.timestamps.chatrooms}>Off</option>
-					<option value="minutes" selected={PS.prefs.timestamps.chatrooms === "minutes"}>[HH:MM]</option>
-					<option value="seconds" selected={PS.prefs.timestamps.chatrooms === "seconds"}>[HH:MM:SS]</option>
+				<label class="optlabel">Timestamps: <select
+					name="layout" class="button" onChange={this.setChatroomTimestamp} value={PS.prefs.timestamps.chatrooms || ''}
+				>
+					<option value="">Off</option>
+					<option value="minutes">[HH:MM]</option>
+					<option value="seconds">[HH:MM:SS]</option>
 				</select></label>
 			</p>
 			<p>
-				<label class="optlabel">Timestamps in DMs: <select name="layout" class="button" onChange={this.setPMsTimestamp}>
-					<option value="" selected={!PS.prefs.timestamps.pms}>Off</option>
-					<option value="minutes" selected={PS.prefs.timestamps.pms === "minutes"}>[HH:MM]</option>
-					<option value="seconds" selected={PS.prefs.timestamps.pms === "seconds"}>[HH:MM:SS]</option>
+				<label class="optlabel">Timestamps in DMs: <select
+					name="layout" class="button" onChange={this.setPMsTimestamp} value={PS.prefs.timestamps.pms || ''}
+				>
+					<option value="">Off</option>
+					<option value="minutes">[HH:MM]</option>
+					<option value="seconds">[HH:MM:SS]</option>
 				</select></label>
 			</p>
 			<p>
@@ -836,7 +852,7 @@ class GooglePasswordBox extends preact.Component<{ name: string }> {
 class LoginPanel extends PSRoomPanel {
 	static readonly id = 'login';
 	static readonly routes = ['login'];
-	static readonly location = 'semimodal-popup';
+	static readonly location = 'modal-popup';
 	declare state: { passwordShown?: boolean };
 
 	override componentDidMount() {
@@ -963,7 +979,7 @@ class LoginPanel extends PSRoomPanel {
 class AvatarsPanel extends PSRoomPanel {
 	static readonly id = 'avatars';
 	static readonly routes = ['avatars'];
-	static readonly location = 'semimodal-popup';
+	static readonly location = 'modal-popup';
 
 	override render() {
 		const room = this.props.room;
@@ -996,7 +1012,7 @@ class AvatarsPanel extends PSRoomPanel {
 class BattleForfeitPanel extends PSRoomPanel {
 	static readonly id = 'forfeit';
 	static readonly routes = ['forfeitbattle'];
-	static readonly location = 'semimodal-popup';
+	static readonly location = 'modal-popup';
 	static readonly noURL = true;
 
 	override render() {
@@ -1022,7 +1038,7 @@ class BattleForfeitPanel extends PSRoomPanel {
 class ReplacePlayerPanel extends PSRoomPanel {
 	static readonly id = 'replaceplayer';
 	static readonly routes = ['replaceplayer'];
-	static readonly location = 'semimodal-popup';
+	static readonly location = 'modal-popup';
 	static readonly noURL = true;
 
 	handleReplacePlayer = (ev: Event) => {
@@ -1047,7 +1063,7 @@ class ReplacePlayerPanel extends PSRoomPanel {
 				<p>
 					<input name="newplayer" class="textbox autofocus" />
 				</p>
-				<p>
+				<p class="buttonbar">
 					<button type="submit" class="button">
 						<strong>Replace</strong>
 					</button> {}
@@ -1063,7 +1079,7 @@ class ReplacePlayerPanel extends PSRoomPanel {
 class ChangePasswordPanel extends PSRoomPanel {
 	static readonly id = "changepassword";
 	static readonly routes = ["changepassword"];
-	static readonly location = "semimodal-popup";
+	static readonly location = "modal-popup";
 	static readonly noURL = true;
 
 	declare state: { errorMsg: string };
@@ -1141,7 +1157,7 @@ class ChangePasswordPanel extends PSRoomPanel {
 class RegisterPanel extends PSRoomPanel {
 	static readonly id = "register";
 	static readonly routes = ["register"];
-	static readonly location = "semimodal-popup";
+	static readonly location = "modal-popup";
 	static readonly noURL = true;
 	static readonly rightPopup = true;
 
@@ -1232,7 +1248,7 @@ class RegisterPanel extends PSRoomPanel {
 class BackgroundListPanel extends PSRoomPanel {
 	static readonly id = 'changebackground';
 	static readonly routes = ['changebackground'];
-	static readonly location = 'semimodal-popup';
+	static readonly location = 'modal-popup';
 	static readonly noURL = true;
 	static handleDrop(ev: DragEvent) {
 		const files = ev.dataTransfer?.files;
@@ -1385,7 +1401,7 @@ class BackgroundListPanel extends PSRoomPanel {
 class ChatFormattingPanel extends PSRoomPanel {
 	static readonly id = 'chatformatting';
 	static readonly routes = ['chatformatting'];
-	static readonly location = 'semimodal-popup';
+	static readonly location = 'modal-popup';
 	static readonly noURL = true;
 
 	handleOnChange = (ev: Event) => {
@@ -1469,7 +1485,7 @@ class ChatFormattingPanel extends PSRoomPanel {
 class LeaveRoomPanel extends PSRoomPanel {
 	static readonly id = 'confirmleaveroom';
 	static readonly routes = ['confirmleaveroom'];
-	static readonly location = 'semimodal-popup';
+	static readonly location = 'modal-popup';
 	static readonly noURL = true;
 
 	override render() {
@@ -1492,7 +1508,7 @@ class LeaveRoomPanel extends PSRoomPanel {
 class BattleOptionsPanel extends PSRoomPanel {
 	static readonly id = 'battleoptions';
 	static readonly routes = ['battleoptions'];
-	static readonly location = 'semimodal-popup';
+	static readonly location = 'modal-popup';
 	static readonly noURL = true;
 
 	handleHardcoreMode = (ev: Event) => {
@@ -1569,6 +1585,10 @@ class BattleOptionsPanel extends PSRoomPanel {
 				room.battle.setHardcoreMode(value);
 				room.update(null);
 			}
+			break;
+		}
+		case 'spectatefromstart': {
+			PS.prefs.set('spectatefromstart', value);
 			break;
 		}
 		case 'ignoreopp': {
@@ -1692,6 +1712,14 @@ class BattleOptionsPanel extends PSRoomPanel {
 					/> Automatically enable hardcore mode
 				</label>
 			</p>
+			<p>
+				<label class="checkbox">
+					<input
+						name="spectatefromstart" checked={!!PS.prefs.spectatefromstart}
+						type="checkbox" onChange={this.handleAllSettings}
+					/> Start at turn 0 when spectating battles
+				</label>
+			</p>
 			{!PS.prefs.onepanel && document.body.offsetWidth >= 800 && <p>
 				<label class="checkbox">
 					<input
@@ -1722,7 +1750,7 @@ class PopupRoom extends PSRoom {
 class PopupPanel extends PSRoomPanel<PopupRoom> {
 	static readonly id = 'popup';
 	static readonly routes = ['popup-*'];
-	static readonly location = 'semimodal-popup';
+	static readonly location = 'modal-popup';
 	static readonly noURL = true;
 	static readonly Model = PopupRoom;
 
@@ -1745,6 +1773,10 @@ class PopupPanel extends PSRoomPanel<PopupRoom> {
 		textbox.select();
 	}
 	parseMessage(message: string) {
+		if (message.startsWith('|modal|')) {
+			message = message.slice(7);
+			this.props.room.closable = false;
+		}
 		if (message.startsWith('|html|')) {
 			return BattleLog.sanitizeHTML(message.slice(6));
 		}
@@ -1787,7 +1819,7 @@ class PopupPanel extends PSRoomPanel<PopupRoom> {
 class RoomTabListPanel extends PSRoomPanel {
 	static readonly id = 'roomtablist';
 	static readonly routes = ['roomtablist'];
-	static readonly location = 'semimodal-popup';
+	static readonly location = 'modal-popup';
 	static readonly noURL = true;
 
 	startingLayout = PS.prefs.onepanel;
@@ -1814,7 +1846,7 @@ class RoomTabListPanel extends PSRoomPanel {
 class BattleTimerPanel extends PSRoomPanel {
 	static readonly id = 'battletimer';
 	static readonly routes = ['battletimer'];
-	static readonly location = 'semimodal-popup';
+	static readonly location = 'modal-popup';
 	static readonly noURL = true;
 
 	override render() {
@@ -1840,19 +1872,26 @@ class RulesPanel extends PSRoomPanel<PopupRoom> {
 
 	override componentDidMount() {
 		super.componentDidMount();
-		const args = this.props.room.args;
-		const isWarn = args?.type === 'warn';
-		if (isWarn && args) {
+		const room = this.props.room;
+		const isWarn = room.args?.type === 'warn';
+		if (isWarn) {
+			room.closable = false;
 			const timerRef = setInterval(() => {
-				const timeLeft = this.state.timeLeft || 5;
-				const canClose = timeLeft === 1;
-				this.setState({ canClose, timeLeft: timeLeft - 1 });
-				if (canClose) {
+				const timeLeft = this.state.timeLeft!;
+				if (timeLeft === 1) {
 					clearInterval(this.state.timerRef);
-					this.setState({ timerRef: null });
+					this.setState({ canClose: true, timeLeft: 0, timerRef: null });
+				} else {
+					this.setState({ canClose: false, timeLeft: timeLeft - 1 });
 				}
 			}, 1000);
-			if (!this.state.timerRef) this.setState({ timerRef });
+			this.setState({ timeLeft: WARNING_SECONDS, canClose: false, timerRef });
+		}
+	}
+
+	override componentWillUnmount(): void {
+		if (this.state.timerRef) {
+			clearInterval(this.state.timerRef);
 		}
 	}
 
@@ -1870,51 +1909,51 @@ class RulesPanel extends PSRoomPanel<PopupRoom> {
 				}
 				<h2>Pok&eacute;mon Showdown Rules</h2>
 				<p><b>1.</b> Be nice to people. Respect people. Don't be rude or mean to people.</p>
-				<p><b>2.</b> {' '}
-					Follow US laws (PS is based in the US). No porn (minors use PS), don't distribute pirated material, {' '}
+				<p><b>2.</b> {}
+					Follow US laws (PS is based in the US). No porn (minors use PS), don't distribute pirated material, {}
 					and don't slander others.</p>
-				<p><b>3.</b> {' '}
-					&nbsp;No sex. Don't discuss anything sexually explicit, not even in private messages, {' '}
+				<p><b>3.</b> {}
+					&nbsp;No sex. Don't discuss anything sexually explicit, not even in private messages, {}
 					not even if you're both adults.</p>
-				<p><b>4.</b> {' '}
-					&nbsp;No cheating. Don't exploit bugs to gain an unfair advantage. {' '}
-					Don't game the system (by intentionally losing against yourself or a friend in a ladder match, by timerstalling, etc). {' '}
+				<p><b>4.</b> {}
+					&nbsp;No cheating. Don't exploit bugs to gain an unfair advantage. {}
+					Don't game the system (by intentionally losing against yourself or a friend in a ladder match, by timerstalling, etc). {}
 					Don't impersonate staff if you're not.</p>
-				<p><b>5.</b> {' '}
-					Moderators have discretion to punish any behaviour they deem inappropriate, whether or not it's on this list. {' '}
-					If you disagree with a moderator ruling, appeal to an administrator (a user with ~ next to their name) or {' '}
+				<p><b>5.</b> {}
+					Moderators have discretion to punish any behaviour they deem inappropriate, whether or not it's on this list. {}
+					If you disagree with a moderator ruling, appeal to an administrator (a user with ~ next to their name) or {}
 					<a href="https://pokemonshowdown.com/appeal">Discipline Appeals</a>.</p>
 				<p>(Note: The First Amendment does not apply to PS, since PS is not a government organization.)</p>
 				<p><b>Chat</b></p>
-				<p><b>1.</b> {' '}
-					Do not spam, flame, or troll. This includes advertising, raiding, {' '}
-					asking questions with one-word answers in the lobby, {' '}
+				<p><b>1.</b> {}
+					Do not spam, flame, or troll. This includes advertising, raiding, {}
+					asking questions with one-word answers in the lobby, {}
 					and flooding the chat such as by copy/pasting logs in the lobby.</p>
-				<p><b>2.</b> {' '}
-					Don't call unnecessary attention to yourself. Don't be obnoxious. ALL CAPS and <i>formatting</i> {' '}
+				<p><b>2.</b> {}
+					Don't call unnecessary attention to yourself. Don't be obnoxious. ALL CAPS and <i>formatting</i> {}
 					are acceptable to emphasize things, but should be used sparingly, not all the time.</p>
-				<p><b>3.</b> {' '}
-					No minimodding: don't mod if it's not your job. Don't tell people they'll be muted, {' '}
-					don't ask for people to be muted, {' '}
-					and don't talk about whether or not people should be muted ('inb4 mute\, etc). {' '}
+				<p><b>3.</b> {}
+					No minimodding: don't mod if it's not your job. Don't tell people they'll be muted, {}
+					don't ask for people to be muted, {}
+					and don't talk about whether or not people should be muted ('inb4 mute\, etc). {}
 					This applies to bans and other punishments, too.</p>
-				<p><b>4.</b> {' '}
+				<p><b>4.</b> {}
 					We reserve the right to tell you to stop discussing moderator decisions if you become unreasonable or belligerent</p>
 				<p><b>5.</b> English only, unless specified otherwise.</p>
-				<p>(Note: You can opt out of chat rules in private chat rooms and battle rooms, {' '}
+				<p>(Note: You can opt out of chat rules in private chat rooms and battle rooms, {}
 					but only if all ROs or players agree to it.)</p>
 				{
 					!isWarn && <>
 						<p><b>Usernames</b></p>
 						<p>Your username can be chosen and changed at any time. Keep in mind:</p>
-						<p><b>1.</b> Usernames may not impersonate a recognized user (a user with %, @, #, or ~ next to their name) {' '}
+						<p><b>1.</b> Usernames may not impersonate a recognized user (a user with %, @, #, or ~ next to their name) {}
 							or a famous person/organization that uses PS or is associated with Pokémon.</p>
-						<p><b>2.</b> Usernames may not be derogatory or insulting in nature, to an individual or group {' '}
+						<p><b>2.</b> Usernames may not be derogatory or insulting in nature, to an individual or group {}
 							(insulting yourself is okay as long as it's not too serious).</p>
 						<p><b>3.</b> Usernames may not directly reference sexual activity, or be excessively disgusting.</p>
-						<p>This policy is less restrictive than that of many places, so you might see some "borderline" nicknames {' '}
-							that might not be accepted elsewhere. You might consider it unfair that they are allowed to keep their {' '}
-							nickname. The fact remains that their nickname follows the above rules, and {' '}
+						<p>This policy is less restrictive than that of many places, so you might see some "borderline" nicknames {}
+							that might not be accepted elsewhere. You might consider it unfair that they are allowed to keep their {}
+							nickname. The fact remains that their nickname follows the above rules, and {}
 							if you were asked to choose a new name, yours does not.</p>
 					</>
 				}

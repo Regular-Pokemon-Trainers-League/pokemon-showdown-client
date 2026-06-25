@@ -88,7 +88,7 @@ class BattlesPanel extends PSRoomPanel<BattlesRoom> {
 	}
 	override render() {
 		const room = this.props.room;
-		return <PSPanelWrapper room={room} scrollable><div class="pad">
+		return <PSPanelWrapper room={room}><div class="pad">
 			<button class="button" style="float:right;font-size:10pt;margin-top:3px" name="closeRoom">
 				<i class="fa fa-times" aria-hidden></i> Close
 			</button>
@@ -147,10 +147,22 @@ export class BattleRoom extends ChatRoom {
 	request: BattleRequest | null = null;
 	choices: BattleChoiceBuilder | null = null;
 	autoTimerActivated: boolean | null = null;
+	/** should be false if we joined right after accepting or challenging a battle,
+	  * and true if we refreshed and rejoined a battle.
+		* null = initializing, we don't know yet */
+	rejoining: boolean | null = null;
+
+	override interruptClose(explicit?: boolean, elem?: HTMLElement | null) {
+		if (!this.battle.ended && this.users[PS.user.userid]?.startsWith('☆') && !this.battle.isReplay) {
+			PS.join('forfeitbattle' as RoomID, { parentElem: elem, parentRoomid: this.id });
+			return `You are still in ${this.title}`;
+		}
+		return super.interruptClose(explicit, elem);
+	}
 
 	loadReplay() {
 		const replayid = this.id.slice(7);
-		Net(`https://replay.pokemonshowdown.com/${replayid}.json`).get().catch().then(data => {
+		Net(`https://replay.pokemonshowdown.com/${replayid}.json`).get().catch(() => '').then(data => {
 			try {
 				const replay = JSON.parse(data);
 				this.title = `[${replay.format}] ${replay.players.join(' vs. ')}`;
@@ -161,7 +173,10 @@ export class BattleRoom extends ChatRoom {
 				this.connected = 'client-only';
 				this.update(null);
 			} catch {
-				this.receiveLine(['error', 'Battle not found']);
+				this.receiveLine(['bigerror', `Battle "${replayid}" not found`]);
+				this.receiveLine(['html',
+					`<div class="broadcast-red pad"><p class="buttonbar"><button class="button" data-cmd="/close"><strong>Close</strong></button></p></div>`,
+				]);
 			}
 		});
 	}
@@ -360,7 +375,7 @@ class BattlePanel extends PSRoomPanel<BattleRoom> {
 		scene.tooltips.listen($elem.find('.battle-controls-container'));
 		scene.tooltips.listen(scene.log.elem);
 		super.componentDidMount();
-		battle.seekTurn(Infinity);
+		if (!PS.prefs.spectatefromstart) battle.seekTurn(Infinity);
 		if (PS.prefs.autohardcore) {
 			battle.setHardcoreMode(true);
 		}
@@ -380,11 +395,17 @@ class BattlePanel extends PSRoomPanel<BattleRoom> {
 			this.battleHeight = 360;
 		}
 	}
+	fastForwardIfRejoining() {
+		const room = this.props.room;
+		if (!room.rejoining || !room.side) return;
+		room.rejoining = false;
+		room.battle.seekTurn(Infinity);
+	}
 	override receiveLine(args: Args) {
 		const room = this.props.room;
 		switch (args[0]) {
 		case 'initdone':
-			room.battle.seekTurn(Infinity);
+			if (!PS.prefs.spectatefromstart) room.battle.seekTurn(Infinity);
 			return;
 		case 'request':
 			this.receiveRequest(args[1] ? JSON.parse(args[1]) : null);
@@ -421,9 +442,11 @@ class BattlePanel extends PSRoomPanel<BattleRoom> {
 		BattleChoiceBuilder.fixRequest(request, room.battle);
 
 		if (request.side) {
+			const wasPlayer = !!room.side;
 			room.battle.myPokemon = request.side.pokemon;
 			room.battle.setViewpoint(request.side.id);
 			room.side = request.side;
+			if (!wasPlayer) this.fastForwardIfRejoining();
 		}
 		if (request.ally) {
 			room.battle.myAllyPokemon = request.ally.pokemon;
@@ -694,8 +717,8 @@ class BattlePanel extends PSRoomPanel<BattleRoom> {
 		const userSlot = choices.index() + Math.floor(battle.mySide.n / 2) * battle.pokemonControlled;
 		const userSlotCross = battle.farSide.active.length - 1 - userSlot;
 
-		return [
-			battle.farSide.active.map((pokemon, i) => {
+		return <>
+			{battle.farSide.active.map((pokemon, i) => {
 				let disabled = false;
 				if (moveTarget === 'adjacentAlly' || moveTarget === 'adjacentAllyOrSelf') {
 					disabled = true;
@@ -710,9 +733,9 @@ class BattlePanel extends PSRoomPanel<BattleRoom> {
 					disabled: disabled && 'fade',
 					tooltip: `activepokemon|1|${i}`,
 				});
-			}).reverse(),
-			<div style="clear: left"></div>,
-			battle.nearSide.active.map((pokemon, i) => {
+			}).reverse()}
+			<div style={{ clear: 'left' }}></div>
+			{battle.nearSide.active.map((pokemon, i) => {
 				let disabled = false;
 				if (moveTarget === 'adjacentFoe') {
 					disabled = true;
@@ -728,8 +751,8 @@ class BattlePanel extends PSRoomPanel<BattleRoom> {
 					disabled: disabled && 'fade',
 					tooltip: `activepokemon|0|${i}`,
 				});
-			}),
-		];
+			})}
+		</>;
 	}
 	renderSwitchMenu(
 		request: BattleMoveRequest | BattleSwitchRequest, choices: BattleChoiceBuilder, ignoreTrapping?: boolean
@@ -848,7 +871,7 @@ class BattlePanel extends PSRoomPanel<BattleRoom> {
 				if (choice.tera) buf.push(`Terastallize (`, <strong>{active?.canTerastallize || '???'}</strong>, `) and `);
 				if (choice.max && active?.canDynamax) buf.push(active?.gigantamax ? `Gigantamax and ` : `Dynamax and `);
 				buf.push(`use `, <strong>{choices.currentMove(choice, i)?.name}</strong>);
-				if (choice.targetLoc > 0 || battle.gameType === 'freeforall') {
+				if (choice.targetLoc > 0) {
 					const target = battle.farSide.active[choice.targetLoc - 1];
 					if (!target) {
 						buf.push(` at slot ${choice.targetLoc}`);
@@ -857,10 +880,11 @@ class BattlePanel extends PSRoomPanel<BattleRoom> {
 					}
 				} else if (choice.targetLoc < 0) {
 					const target = battle.nearSide.active[-choice.targetLoc - 1];
+					const ally = battle.gameType !== 'freeforall' ? 'ally' : '';
 					if (!target) {
-						buf.push(` at ally slot ${choice.targetLoc}`);
+						buf.push(` at ${ally} slot ${choice.targetLoc}`);
 					} else {
-						buf.push(` at ally ${target.name}`);
+						buf.push(` at ${ally} ${target.name}`);
 					}
 				}
 			} else if (choice.choiceType === 'switch') {
@@ -1072,11 +1096,11 @@ class BattlePanel extends PSRoomPanel<BattleRoom> {
 		></style> : null;
 
 		if (room.width < 700) {
-			return <PSPanelWrapper room={room} focusClick scrollable="hidden">
+			return <PSPanelWrapper room={room} focusClick noScroll="hidden">
 				{hardcoreStyle}
 				<BattleDiv room={room} />
 				<ChatLog
-					class="battle-log hasuserlist" room={room} top={this.battleHeight} noSubscription
+					class="battle-log hasuserlist" room={room} top={this.battleHeight} noSubscription hasPreempt
 				>
 					<div class="battle-controls" role="complementary" aria-label="Battle Controls">
 						{this.renderControls()}
@@ -1086,7 +1110,7 @@ class BattlePanel extends PSRoomPanel<BattleRoom> {
 				<ChatUserList room={room} top={this.battleHeight} minimized />
 				<button
 					data-href="battleoptions" class="button"
-					style={{ position: 'absolute', right: '75px', top: this.battleHeight }}
+					style={{ position: 'absolute', right: '10px', top: this.battleHeight + 2 }}
 				>
 					Battle options
 				</button>
@@ -1096,11 +1120,11 @@ class BattlePanel extends PSRoomPanel<BattleRoom> {
 			</PSPanelWrapper>;
 		}
 
-		return <PSPanelWrapper room={room} focusClick scrollable="hidden">
+		return <PSPanelWrapper room={room} focusClick noScroll="hidden">
 			{hardcoreStyle}
 			<BattleDiv room={room} />
 			<ChatLog
-				class="battle-log hasuserlist" room={room} left={640} noSubscription
+				class="battle-log hasuserlist" room={room} left={640} noSubscription hasPreempt
 			>
 				{}
 			</ChatLog>
@@ -1108,7 +1132,7 @@ class BattlePanel extends PSRoomPanel<BattleRoom> {
 			<ChatUserList room={room} left={640} minimized />
 			<button
 				data-href="battleoptions" class="button"
-				style={{ position: 'absolute', right: '15px' }}
+				style={{ position: 'absolute', right: '10px', top: '2px' }}
 			>
 				Battle options
 			</button>

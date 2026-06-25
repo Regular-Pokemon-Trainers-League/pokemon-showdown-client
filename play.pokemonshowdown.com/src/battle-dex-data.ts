@@ -746,6 +746,7 @@ export const BattlePokemonIconIndexes: { [id: string]: number } = {
 	unownoutlawy: 1032 + 33,
 	unownoutlawz: 1032 + 34,
 	sphealoutlaw: 363,
+	obliteryx: 1560 + 81,
 };
 
 export const BattlePokemonIconIndexesLeft: { [id: string]: number } = {
@@ -1681,7 +1682,7 @@ export class Species implements Effect {
 
 		this.isTotem = false;
 		this.isBuff = false;
-		this.isMega = !!(this.forme && ['-mega', '-megax', '-megay'].includes(this.formeid));
+		this.isMega = !!(this.forme && this.formeid.includes('mega'));
 		this.isPrimal = !!(this.forme && this.formeid === '-primal');
 		this.canGigantamax = !!data.canGigantamax;
 		this.cannotDynamax = !!data.cannotDynamax;
